@@ -1,0 +1,577 @@
+# ================================================================================
+# `himalaya` configuration file.
+#
+# Loaded from the first valid path among:
+#   - $XDG_CONFIG_HOME/himalaya/config.toml
+#   - $HOME/.config/himalaya/config.toml
+#   - $HOME/.himalayarc
+#
+# Override with `himalaya -c <PATH>`. Multiple paths can be passed at once,
+# separated by `;` on Windows and `:` elsewhere, as `$PATH` separates them, or
+# by repeating `-c`; the first one is the base and the rest are deep-merged on
+# top of it.
+#
+# Bare `himalaya` launches the wizard, which discovers an account from your
+# email address and offers to write it here. Prompts go to stderr and the
+# document to stdout, so `himalaya > <path>` writes the file itself.
+#
+# Everything discovery does not cover is written by hand, from this page.
+# ================================================================================
+
+# --------------------------------------------------------------------------------
+# Global config
+# --------------------------------------------------------------------------------
+
+# Fallback name the `From` address carries. Quoting and encoding are done for
+# you, so write the name as it should read. Also spelled `from-name`, the key
+# himalaya-tui writes; both binaries read both.
+#display-name = "Alice"
+
+# Fallback signature, and the separator introducing it. The delimiter defaults
+# to the RFC 3676 section 4.3 `"-- \n"` and is written verbatim, so one meant to
+# stand on its own line carries its own trailing newline.
+#signature = "Regards,\nAlice"
+#signature-delim = "-- \n"
+
+# Directory attachments are downloaded to, falling back to `$TMPDIR`.
+#downloads-dir = "~/downloads"
+
+# Mailbox a sent message is copied to when `--save` is not passed, `--no-save`
+# skipping it for one send. A name, alias or role; `true` stands for `sent`.
+# Leave it unset on Gmail and Microsoft Graph, which file the sent message
+# themselves.
+#message.send.save-copy = "sent"
+
+# Posting style of `message reply` and `message forward` when `--posting-style`
+# is not passed: `top`, `bottom` or `none`, defaulting to `top`.
+#message.reply.posting-style = "bottom"
+#message.forward.posting-style = "top"
+
+# One character per table component, a space skipping it.
+# https://docs.rs/comfy-table/latest/comfy_table/presets/index.html
+#table.preset = "││──╞═╪╡┆    ┬┴┌┐└┘"
+
+# How the columns are fitted to the terminal width.
+# https://docs.rs/comfy-table/latest/comfy_table/enum.ContentArrangement.html
+#table.arrangement = "dynamic"
+#table.arrangement = "dynamic-full-width"
+#table.arrangement = "disabled"
+
+# chrono strftime format of the DATE column, defaulting to `"%F %R%:z"`.
+#envelope.list.datetime-fmt = "%F %R%:z"
+
+# Convert a `Date` header to the local timezone before formatting. Defaults to
+# false, which keeps the wire offset.
+#envelope.list.datetime-local-tz = false
+
+# Render recent dates relative to today, in the local timezone: the time of day
+# for today, `yesterday`, then the weekday for the past week. Older dates fall
+# back to `datetime-fmt`. Defaults to false.
+#envelope.list.datetime-relative = false
+
+# Default page size of `envelope list`. The `-s/--page-size` flag wins when
+# passed, and 25 is the hard fallback.
+#envelope.list.page-size = 50
+
+# --------------------------------------------------------------------------------
+# Table rendering: envelope list
+# --------------------------------------------------------------------------------
+
+# Per-column colors of the envelopes table, each a named crossterm color or a
+# `{ Rgb = { r, g, b } }` or `{ AnsiValue = N }` table. They apply to the shared
+# listing and to the protocol-specific ones alike, so one key covers every
+# backend. The values below are the defaults.
+#envelope.list.table.id-color = "red"
+#envelope.list.table.flags-color = "reset"
+#envelope.list.table.att-color = "reset"
+#envelope.list.table.subject-color = "green"
+#envelope.list.table.from-color = "blue"
+#envelope.list.table.to-color = "blue"
+#envelope.list.table.date-color = "dark_yellow"
+#envelope.list.table.size-color = "reset"
+
+# Glyphs drawn in the FLAGS and ATT columns, one character each. The values
+# below are the defaults.
+#envelope.list.table.unseen-char = "*"      # FLAGS slot 1, `\Seen` absent
+#envelope.list.table.replied-char = "R"     # FLAGS slot 2, `\Answered` set
+#envelope.list.table.flagged-char = "!"     # FLAGS slot 3, `\Flagged` set
+#envelope.list.table.attachment-char = "@"  # ATT column, an attachment
+
+# --------------------------------------------------------------------------------
+# Table rendering: mailbox list
+# --------------------------------------------------------------------------------
+
+# Per-column colors of the mailboxes table. The values below are the defaults.
+#mailbox.list.table.id-color = "reset"
+#mailbox.list.table.name-color = "blue"
+#mailbox.list.table.role-color = "reset"
+#mailbox.list.table.total-color = "reset"
+#mailbox.list.table.unread-color = "reset"
+
+# --------------------------------------------------------------------------------
+# Table rendering: attachment list
+# --------------------------------------------------------------------------------
+
+# Per-column colors of the attachments table, every one neutral by default.
+#attachment.list.table.id-color = "reset"
+#attachment.list.table.filename-color = "reset"
+#attachment.list.table.type-color = "reset"
+#attachment.list.table.size-color = "reset"
+#attachment.list.table.inline-color = "reset"
+#attachment.list.table.path-color = "reset"
+
+# --------------------------------------------------------------------------------
+# Table rendering: account list
+# --------------------------------------------------------------------------------
+
+# Per-column colors of the accounts table. The values below are the defaults.
+#account.list.table.name-color = "green"
+#account.list.table.backends-color = "blue"
+#account.list.table.default-color = "reset"
+
+# --------------------------------------------------------------------------------
+# Mailbox aliases
+# --------------------------------------------------------------------------------
+
+# Map a friendly name to a backend-native mailbox id. Alias names are
+# case-insensitive both on lookup and on storage, where ids are stored verbatim,
+# and an account entry overrides the global one of the same name.
+#
+# An entry named after a mailbox role (inbox, sent, drafts, trash, junk,
+# archive, flagged, important) overrides the role the backend reports. JMAP,
+# Gmail, Graph and pimdir report their roles, IMAP and mbox the inbox alone for
+# now, and Maildir and m2dir none, so set them by hand there. The `inbox` role
+# is the default mailbox every shared command falls back to when
+# `-m/--mailbox` is not passed.
+#mailbox.alias.inbox = "INBOX"
+#mailbox.alias.sent = "[Gmail]/Sent Mail"
+#mailbox.alias.drafts = "[Gmail]/Drafts"
+#mailbox.alias.trash = "[Gmail]/Trash"
+
+# --------------------------------------------------------------------------------
+# Account config
+# --------------------------------------------------------------------------------
+
+# One section per account, picked with `-a/--account <NAME>` or, failing that,
+# by the entry flagged `default = true`.
+[accounts.example]
+
+# Use this account when `-a/--account` is not passed.
+default = true
+
+# Address this account sends as, and the name it carries. They fill the `From`
+# header of a composed message absent `--from`, and without them the header is
+# left out. Also spelled `from` and `from-name`, the keys himalaya-tui writes;
+# both binaries read both, one file backing the two.
+#email = "alice@example.org"
+#display-name = "Alice"
+
+# Signature appended after the body, and after any quoted source text, absent
+# `--signature` and `--signature-file`.
+#signature = "Best,\nAlice"
+#signature-delim = "-- \n"
+
+# Per-account overrides for the global options above.
+#downloads-dir = "~/downloads/example"
+#message.send.save-copy = "sent"
+#message.reply.posting-style = "bottom"
+#message.forward.posting-style = "top"
+#table.preset = "││──╞═╪╡┆    ┬┴┌┐└┘"
+#table.arrangement = "dynamic"
+#envelope.list.datetime-fmt = "%F %R%:z"
+#envelope.list.datetime-local-tz = false
+#envelope.list.datetime-relative = false
+
+# Proxy the network backends connect through, absent their own `<backend>.proxy`
+# block (same keys). Without any, the `all_proxy` and `https_proxy` environment
+# variables are read. The URL takes `socks5://`, `socks5h://` or `http://`.
+#proxy.url = "socks5h://localhost:1080"
+#proxy.username = "alice"
+#proxy.password.command = "pass show proxy"
+
+# --------------------------------------------------------------------------------
+# IMAP config
+# https://www.iana.org/go/rfc9051
+# --------------------------------------------------------------------------------
+
+# IMAP server: a bare authority, which takes `imaps://` and its implicit TLS,
+# or a full URL, `imap://` being cleartext with an optional STARTTLS upgrade.
+imap.server = "example.com"
+#imap.server = "imap.example.com:993"
+#imap.server = "imap://example.com:143"
+#imap.server = "imaps://example.com:993"
+
+# TLS provider, defaults to the first available at runtime.
+#imap.tls.provider = "rustls"
+#imap.tls.provider = "native-tls"
+
+# Crypto provider for rustls, defaults to the first available at runtime.
+#imap.tls.rustls.crypto = "ring"
+#imap.tls.rustls.crypto = "aws"
+
+# Custom TLS certificate (extra root, PEM-encoded).
+#imap.tls.cert = "/path/to/custom/cert.pem"
+
+# Upgrade the connection with STARTTLS, valid only for an `imap://` server.
+#imap.starttls = false
+
+# ALPN identifiers offered during the TLS handshake, defaulting to ["imap"]. An
+# empty list skips ALPN. Only rustls reads it, native-tls ignoring ALPN.
+#imap.alpn = ["imap"]
+#imap.alpn = []
+
+# Exactly one SASL mechanism among `anonymous`, `login`, `plain`, `oauthbearer`,
+# `xoauth2` and `scram-sha-256`. Omitting the whole table skips authentication,
+# no `AUTHENTICATE` command being sent at all.
+
+# SASL ANONYMOUS
+# https://datatracker.ietf.org/doc/html/rfc4505
+#imap.sasl.anonymous.message = "himalaya"
+
+# SASL PLAIN
+# https://datatracker.ietf.org/doc/html/rfc4616
+imap.sasl.plain.username = "user@example.com"
+imap.sasl.plain.password.raw = "***"
+#imap.sasl.plain.password.command = "pass show example"
+
+# IMAP LOGIN command (not SASL), for servers advertising no usable mechanism
+# https://www.rfc-editor.org/rfc/rfc9051.html#name-login-command
+#imap.sasl.login.username = "user@example.com"
+#imap.sasl.login.password.raw = "***"
+
+# SASL OAUTHBEARER, whose GS2 host and port come from the server URL.
+# https://datatracker.ietf.org/doc/html/rfc7628
+#imap.sasl.oauthbearer.username = "user@example.com"
+#imap.sasl.oauthbearer.token.raw = "***"
+#imap.sasl.oauthbearer.token.command = ["ortie", "token", "show", "-a", "example"]
+
+# SASL XOAUTH2 (Google's pre-standard OAuth 2.0 SASL).
+# https://developers.google.com/gmail/imap/xoauth2-protocol
+#imap.sasl.xoauth2.username = "user@example.com"
+#imap.sasl.xoauth2.token.raw = "***"
+
+# SASL SCRAM-SHA-256.
+# https://datatracker.ietf.org/doc/html/rfc7677
+#imap.sasl.scram-sha-256.username = "user@example.com"
+#imap.sasl.scram-sha-256.password.raw = "***"
+
+# SASL-IR, unset following the advertised capability. `false` waits for the
+# server's continuation request rather than inline the credentials, which
+# Coremail (126.com, 163.com) needs: it advertises SASL-IR falsely. 163.com
+# also refuses `AUTHENTICATE PLAIN`: take `imap.sasl.login` there.
+# https://www.rfc-editor.org/rfc/rfc4959.html
+#imap.sasl-ir = false
+
+# Exchange an `ID` straight after authentication, which mail.qq.com, fastmail,
+# 126.com and 163.com want.
+# https://www.rfc-editor.org/rfc/rfc2971.html
+#imap.id.auto = false
+
+# What the auto-`ID` sends. A key absent from the map is not transmitted at all.
+# `true` substitutes himalaya's canned value for a well-known key and NIL, with
+# a warning, otherwise; `false` always sends NIL. Unset sends every canned
+# value, an empty map sends `ID NIL`, which 163.com refuses as `Unsafe Login`.
+#imap.id.fields = { name = true, version = true, vendor = true, support-url = true }
+
+# Sort client-side with SEARCH and FETCH rather than issue a server SORT. Unset,
+# the fallback runs only when the server lacks the SORT capability.
+# https://www.rfc-editor.org/rfc/rfc5256.html
+#imap.sort.fallback = false
+
+# --------------------------------------------------------------------------------
+# JMAP config
+# https://www.iana.org/go/rfc8620
+# https://www.iana.org/go/rfc8621
+# --------------------------------------------------------------------------------
+
+# JMAP server: a bare authority, discovered through `GET /.well-known/jmap`, or
+# a full URL reaching the session endpoint directly.
+#jmap.server = "fastmail.com"
+#jmap.server = "https://api.fastmail.com/jmap/session"
+
+# JMAP TLS provider (mirrors the imap.tls block above).
+#jmap.tls.provider = "rustls"
+#jmap.tls.rustls.crypto = "ring"
+#jmap.tls.cert = "/path/to/custom/cert.pem"
+
+# ALPN identifiers offered during the TLS handshake, defaulting to ["http/1.1"]
+# since JMAP rides on HTTP/1.1. An empty list skips ALPN.
+#jmap.alpn = ["http/1.1"]
+#jmap.alpn = []
+
+# Exactly one of `header`, `bearer` and `basic`.
+
+# Raw `Authorization` header value, used verbatim.
+#jmap.auth.header.raw = "Bearer eyJhbGciOiJ..."
+#jmap.auth.header.command = ["pass", "show", "fastmail-token"]
+
+# OAuth 2.0 / API token bearer.
+#jmap.auth.bearer.token.raw = "***"
+#jmap.auth.bearer.token.command = ["ortie", "token", "show", "-a", "fastmail"]
+
+# HTTP Basic.
+#jmap.auth.basic.username = "user@example.com"
+#jmap.auth.basic.password.raw = "***"
+#jmap.auth.basic.password.command = "pass show fastmail"
+
+# Identity `message send` submits under. Unset, the account's default one is
+# used, which is the first `himalaya jmap identity get` reports.
+#jmap.identity-id = "I0123abc"
+
+# Mailbox `message send` stages a message in before submitting it. Unset, the
+# `drafts`-role one is used; `himalaya jmap mailbox query --role drafts` finds
+# its id.
+#jmap.drafts-mailbox-id = "M0123abc"
+
+# Mailbox a sent message is moved to once submitted, losing its `$draft`
+# keyword. Unset, the `sent`-role one is used; without one, the message stays
+# in the drafts mailbox as a sent message.
+#jmap.sent-mailbox-id = "M4567def"
+
+# --------------------------------------------------------------------------------
+# Gmail config
+# --------------------------------------------------------------------------------
+#
+# The Gmail REST API backend. A label is a mailbox and a system label backs a
+# shared flag, `\Seen` being the absence of `UNREAD`.
+#
+# The shared commands reach it, and `--backend gmail` selects it when the
+# account configures several backends.
+# --------------------------------------------------------------------------------
+
+# The mailbox owner, defaulting to "me", the authenticated user.
+#gmail.user-id = "me"
+
+# Gmail TLS provider (mirrors the imap.tls block above).
+#gmail.tls.provider = "rustls"
+#gmail.tls.rustls.crypto = "ring"
+#gmail.tls.cert = "/path/to/custom/cert.pem"
+
+# ALPN identifiers offered during the TLS handshake, defaulting to ["http/1.1"]
+# since the REST API rides on HTTP/1.1. An empty list skips ALPN.
+#gmail.alpn = ["http/1.1"]
+
+# Gmail accepts OAuth 2.0 bearer tokens alone, so this is a short-lived access
+# token, refreshing it being yours to arrange. The client adds the `Bearer `
+# prefix itself.
+#gmail.auth.token.raw = "***"
+#gmail.auth.token.command = ["ortie", "token", "show", "-a", "gmail"]
+
+# --------------------------------------------------------------------------------
+# Microsoft Graph config
+# --------------------------------------------------------------------------------
+#
+# The Microsoft Graph API backend. A mail folder is a mailbox and a scalar
+# message field backs a shared flag: `\Seen` is `isRead`, `\Flagged` the
+# follow-up flag, `$Important` a high importance.
+#
+# The shared commands reach it, and `--backend msgraph` selects it when the
+# account configures several backends.
+# --------------------------------------------------------------------------------
+
+# The mailbox owner, defaulting to "me", the authenticated user.
+#msgraph.user-id = "me"
+
+# Graph TLS provider (mirrors the imap.tls block above).
+#msgraph.tls.provider = "rustls"
+#msgraph.tls.rustls.crypto = "ring"
+#msgraph.tls.cert = "/path/to/custom/cert.pem"
+
+# ALPN identifiers offered during the TLS handshake, defaulting to ["http/1.1"]
+# since the Graph API rides on HTTP/1.1. An empty list skips ALPN.
+#msgraph.alpn = ["http/1.1"]
+
+# Graph accepts OAuth 2.0 bearer tokens alone, so this is a short-lived access
+# token, refreshing it being yours to arrange. The client adds the `Bearer `
+# prefix itself.
+#msgraph.auth.token.raw = "***"
+#msgraph.auth.token.command = ["ortie", "token", "show", "-a", "msgraph"]
+
+# --------------------------------------------------------------------------------
+# Maildir config
+# --------------------------------------------------------------------------------
+
+# The Maildir++ root, one subdirectory per mailbox below it.
+#maildir.root = "~/Mail/example"
+
+# Resolve custom keywords through each mailbox's own dovecot-keywords file,
+# which maps a lowercase info-section letter to a keyword. Off by default,
+# leaving those letters unread.
+#maildir.keywords.dovecot = true
+
+# Read custom keywords from a body header instead: `x-keywords` is the
+# comma-separated OfflineIMAP and mbsync convention, `x-label` the
+# space-separated mutt and notmuch one. Unset by default, reading neither.
+#maildir.keywords.header = "x-keywords"
+#maildir.keywords.header = "x-label"
+
+# Reading keywords is not a round trip: no command can name a custom keyword, so
+# `flag set` replaces the whole set and drops the ones the message carried.
+
+# --------------------------------------------------------------------------------
+# mbox config
+# https://manpages.debian.org/bookworm/mutt/mbox.5.en.html
+# --------------------------------------------------------------------------------
+
+# The directory holding the mbox files, one file per mailbox, walked
+# recursively: `lists/rust` is the file `lists/rust` below it. Any other mbox
+# file opens too, by passing its absolute path as the mailbox.
+#mbox.root = "~/Mail/example"
+
+# The spool, surfaced as the `INBOX` mailbox wherever it lives. Unset, the
+# `INBOX` mailbox is the file named so below the root.
+#mbox.inbox = "$MAIL"
+
+# The variant new messages are written in, and whose quoting reads undo:
+# `mboxo`, `mboxrd` (default), `mboxcl` or `mboxcl2`.
+#mbox.format = "mboxrd"
+
+# Lay the children of mailbox `a` out in the directory `a.sbd`, as
+# Thunderbird does, rather than in `a`. Off by default.
+#mbox.thunderbird = true
+
+# Every write takes the `<mbox>.lock` dotlock, then an fcntl lock, as MTAs and
+# MUAs agree on. A spool directory the user cannot write to (Debian's
+# /var/mail outside the `mail` group) refuses the dotlock: turn it off there,
+# the fcntl lock remaining. The timeout is how many seconds to wait for a lock
+# another process holds, 10 by default.
+#mbox.lock.dotlock = false
+#mbox.lock.fcntl = true
+#mbox.lock.timeout = 10
+
+# Himalaya keeps an index of each mbox file and the envelopes it already read
+# under the XDG cache directory (~/.cache/himalaya/mbox), so a listing reads
+# only what changed. Deleting it is always safe.
+
+# --------------------------------------------------------------------------------
+# pimdir config
+# https://github.com/pimalaya/pimdir
+# --------------------------------------------------------------------------------
+
+# A local pimdir store, a SQLite index beside content-addressed blobs, that the
+# Neverest sync engine populates. Read mail offline and stage the edits the next
+# sync pushes. For an account you already sync, the line below is all it takes,
+# and no network is involved.
+
+# The store directory Neverest writes, holding `pimdir.db` and `objects/`. It
+# lives under the XDG state directory per account by default, or wherever the
+# Neverest `store.root` points.
+#pimdir.root = "~/.local/state/neverest/example"
+
+# The account whose collections this client reads, the name Neverest syncs
+# under. Leave it unset: a store synced by one account is read as that one. Set
+# it for a store several accounts share, where guessing shows the wrong
+# mailboxes.
+#pimdir.account = "example"
+
+# A mailbox is its collection id, verbatim: Neverest binds a source's
+# collections under a namespace, so the mailbox your server calls `INBOX` is
+# `imap/INBOX` here and that is what `-m` takes. Alias it to avoid typing it:
+#mailbox.alias.inbox = "imap/INBOX"
+
+# A sent message is queued for the store's owner to send, filed under the
+# `--save` mailbox or else this one; the `smtp` section is not used.
+#mailbox.alias.sent = "imap/Sent"
+
+# --------------------------------------------------------------------------------
+# SMTP config
+# https://www.iana.org/go/rfc5321
+# --------------------------------------------------------------------------------
+
+# SMTP server: a bare authority, which takes `smtps://` and its implicit TLS, or
+# a full URL, `smtp://` being cleartext with an optional STARTTLS upgrade.
+smtp.server = "example.com"
+#smtp.server = "smtp.example.com:465"
+#smtp.server = "smtp://example.com:587"
+#smtp.server = "smtps://example.com:465"
+
+# TLS provider, defaults to the first available at runtime.
+#smtp.tls.provider = "rustls"
+#smtp.tls.provider = "native-tls"
+
+# Crypto provider for rustls, defaults to the first available at runtime.
+#smtp.tls.rustls.crypto = "ring"
+#smtp.tls.rustls.crypto = "aws"
+
+# Custom TLS certificate (extra root, PEM-encoded).
+#smtp.tls.cert = "/path/to/custom/cert.pem"
+
+# Upgrade the connection with STARTTLS, valid only for an `smtp://` server.
+#smtp.starttls = false
+
+# ALPN identifiers offered during the TLS handshake, defaulting to ["smtp"]. An
+# empty list skips ALPN.
+#smtp.alpn = ["smtp"]
+#smtp.alpn = []
+
+# Exactly one SASL mechanism among `anonymous`, `login`, `plain`, `oauthbearer`,
+# `xoauth2` and `scram-sha-256`. Omitting the whole table skips authentication.
+
+# SASL ANONYMOUS
+#smtp.sasl.anonymous.message = "himalaya"
+
+# SASL PLAIN
+smtp.sasl.plain.username = "user@example.com"
+smtp.sasl.plain.password.raw = "***"
+#smtp.sasl.plain.password.command = "pass show example"
+
+# SASL LOGIN
+#smtp.sasl.login.username = "user@example.com"
+#smtp.sasl.login.password.raw = "***"
+
+# SASL OAUTHBEARER, whose GS2 host and port come from the server URL.
+#smtp.sasl.oauthbearer.username = "user@example.com"
+#smtp.sasl.oauthbearer.token.raw = "***"
+
+# SASL XOAUTH2
+#smtp.sasl.xoauth2.username = "user@example.com"
+#smtp.sasl.xoauth2.token.raw = "***"
+
+# SASL SCRAM-SHA-256
+#smtp.sasl.scram-sha-256.username = "user@example.com"
+#smtp.sasl.scram-sha-256.password.raw = "***"
+
+# --------------------------------------------------------------------------------
+# ManageSieve config (RFC 5804)
+# --------------------------------------------------------------------------------
+
+# ManageSieve server. RFC 5804 registers one port, 4190, and reaches TLS on it
+# through STARTTLS, so a bare authority takes `sieve://` where the IMAP and SMTP
+# ones take their implicit-TLS scheme.
+#
+# `sieves://` is for the deployments listening for a handshake straight away,
+# and `unix:///path` reaches a local pre-authenticated proxy.
+#sieve.server = "sieve.example.com"
+#sieve.server = "sieve://sieve.example.com:4190"
+#sieve.server = "sieves://sieve.example.com:4190"
+#sieve.server = "unix:///run/sieve.sock"
+
+# TLS provider and custom certificate use the same settings as IMAP/SMTP.
+#sieve.tls.provider = "rustls"
+#sieve.tls.provider = "native-tls"
+#sieve.tls.cert = "/path/to/custom/cert.pem"
+
+# Upgrade the connection with STARTTLS, unset following the scheme: on for
+# `sieve://`, off for `sieves://` and `unix://`. Set it to false for a cleartext
+# link you trust.
+#sieve.starttls = false
+
+# ALPN identifiers offered during the TLS handshake, defaulting to none since
+# ManageSieve registers none.
+#sieve.alpn = []
+
+# Let a mechanism disclosing a reusable credential run over a cleartext
+# connection. `plain`, `login`, `oauthbearer` and `xoauth2` hand a passive
+# observer something it can replay, so they are refused unless the connection is
+# encrypted. Set this for a trusted local link.
+#sieve.allow-cleartext-auth = true
+
+# Exactly one SASL mechanism among `anonymous`, `login`, `plain`, `oauthbearer`,
+# `xoauth2` and `scram-sha-256`. Omitting the whole table skips authentication,
+# which is what a `unix://` proxy wants.
+#sieve.sasl.plain.username = "user@example.com"
+#sieve.sasl.plain.password.command = "pass show sieve"
+#sieve.sasl.login.username = "user@example.com"
+#sieve.sasl.login.password.command = "pass show sieve"
+#sieve.sasl.scram-sha-256.username = "user@example.com"
+#sieve.sasl.scram-sha-256.password.command = "pass show sieve"
