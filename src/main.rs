@@ -1,0 +1,207 @@
+//! # Himalaya
+//!
+//! A CLI to manage emails, and the crate architecture (header-001): the
+//! behavioural contract lives in cairn/spec/, the manual provider test
+//! reports in cairn/spec/testing/, the history in cairn/log/, the shared
+//! conventions in the [Pimalaya ARCHITECTURE][pimalaya].
+//!
+//! [pimalaya]: https://github.com/pimalaya/.github/blob/master/ARCHITECTURE.md
+//!
+//! ## Place in the stack
+//!
+//! An application, the top of the Pimalaya stack: it writes no protocol
+//! and no storage logic of its own and ships no library target, only this
+//! binary. A thin shell driving the sans-I/O io-* libraries below it,
+//! consuming their blocking `*Std` clients and rendering the results.
+//!
+//! ## Backends and plumbing
+//!
+//! The network backends are io-imap, io-jmap, io-gmail, io-msgraph,
+//! io-smtp and io-managesieve, the local ones io-maildir, io-m2dir, io-mbox
+//! and io-pimdir.
+//! Account discovery comes from io-pim-discovery: Mozilla autoconfig,
+//! PACC, RFC 6186 SRV, RFC 8620 JMAP resolve.
+//!
+//! The CLI plumbing, TOML loading and blocking stream runtime come from
+//! pimalaya-cli, pimalaya-config and pimalaya-stream. Every backend sits
+//! behind its own cargo feature, so a build ships only the protocols it
+//! needs.
+//!
+//! ## Command families
+//!
+//! The command tree ([`cli`], `Command`) splits in three. The shared API
+//! (mailbox, envelope, flag, message, attachment) is the cross-protocol
+//! surface: the union of what the backends serve, each verb meaning one
+//! thing wherever it runs, a backend that cannot give that result
+//! declaring it unserved ([`capability`]).
+//!
+//! The protocol-specific APIs (imap, jmap, gmail, msgraph, maildir,
+//! m2dir, mbox, pimdir, smtp, sieve) each expose the full surface of one backend,
+//! including operations the shared API cannot model. The meta commands
+//! cover account configuration, completions, man pages and JSON Schemas.
+//!
+//! ## Shared commands and backend selection
+//!
+//! The shared commands run over a [`shared::client`] `EmailClient` owning
+//! one `BackendClient` variant per compiled-in backend: the first
+//! configured storage backend the global `--backend` flag allows, local
+//! before network, plus an SMTP transport for those that cannot send.
+//! The [`capability`] resolver picks them from the account's blocks and
+//! refuses, before connecting, a verb the resolved backend does not
+//! serve, under `capability-missing`; its tables also write each shared
+//! command's `--help` footer and filter the MCP tool list.
+//!
+//! Each shared method matches the active backend and calls its
+//! per-protocol adapter, which converts io-* results into the CLI's own
+//! [`email`] shared types. The active [`account`] context is threaded as
+//! a sibling argument through every `execute` chain.
+//!
+//! ## Protocol-specific commands
+//!
+//! Each protocol module builds its client via a `build_<proto>_client`
+//! helper and a `<Proto>Client` wrapper that derefs onto the io-* `*Std`
+//! client, ignoring `--backend`. Subcommands are clap-derived structs
+//! with an `execute` method the module's command enum dispatches to.
+//!
+//! The imap command mirrors IMAP's flat command list, gmail and msgraph
+//! track their REST resource domains one-to-one, and the filesystem
+//! backends expose only what maps to their on-disk layout, leaving MIME
+//! rendering to the shared commands.
+//!
+//! ## Sessions
+//!
+//! Every command runs over a [`session`] `Session`, which builds the client
+//! the command needs on first use and keeps it, dropping it when a command
+//! fails on it. A one-shot run uses a fresh session for its single command;
+//! the [`repl`] keeps one across the lines of its stdin, so each client
+//! connects once for the whole session. The [`mcp`] server keeps one the
+//! same way, each tool call parsed back into a shared API command.
+//!
+//! ## Configuration and output
+//!
+//! Config is loaded by pimalaya-config from every existing canonical path
+//! (the rc file last), or the `-c` override, later paths deep-merged on
+//! top. The schema
+//! ([`config`]) is multi-account: a top-level block plus named account
+//! blocks carrying optional per-backend sub-blocks.
+//!
+//! Bare `himalaya` runs the interactive [`wizard`], which discovers an
+//! account and offers to save it, or prints it on stdout when redirected;
+//! it is also proposed when a command finds no config. A config that
+//! exists but lacks the requested account is a hard error.
+//!
+//! Output follows the Pimalaya rule: data and errors go to stdout through
+//! the printer, `--json` switching every command to JSON, and stderr
+//! carries logs only. Each command's doc comment is its `--help`, so
+//! `himalaya <command> --help` is the canonical usage reference.
+
+mod account;
+mod backend;
+mod capability;
+mod cli;
+mod config;
+mod email;
+mod error;
+#[cfg(feature = "gmail")]
+mod gmail;
+#[cfg(feature = "imap")]
+mod imap;
+#[cfg(feature = "jmap")]
+mod jmap;
+mod json_schema;
+#[cfg(feature = "m2dir")]
+mod m2dir;
+#[cfg(feature = "maildir")]
+mod maildir;
+#[cfg(feature = "mbox")]
+mod mbox;
+mod mcp;
+#[cfg(feature = "msgraph")]
+mod msgraph;
+#[cfg(feature = "pimdir")]
+mod pimdir;
+mod repl;
+mod session;
+mod shared;
+#[cfg(feature = "sieve")]
+mod sieve;
+#[cfg(feature = "smtp")]
+mod smtp;
+#[cfg(feature = "wizard")]
+mod wizard;
+
+use std::{
+    io::{IsTerminal, stdin},
+    path::PathBuf,
+};
+
+use anyhow::Result;
+use clap::{CommandFactory, Parser};
+use pimalaya_cli::{error::ErrorReport, log::Logger, printer::Printer, printer::StdoutPrinter};
+use pimalaya_config::toml::TomlConfig;
+
+use crate::{
+    cli::Cli,
+    config::Config,
+    error::ErrorCode,
+    session::{Session, SessionAccount},
+};
+
+fn main() {
+    let cli = Cli::parse();
+    let mut printer = StdoutPrinter::new(&cli.json);
+    let result = execute(cli, &mut printer);
+    ErrorReport::<ErrorCode>::eval_coded(&mut printer, result);
+}
+
+fn execute(cli: Cli, printer: &mut StdoutPrinter) -> Result<()> {
+    Logger::try_init(&cli.log)?;
+    let config = cli.config.paths.as_ref();
+    let account = cli.account.name.as_deref();
+    let backend = cli.backend;
+
+    let Some(cmd) = cli.cmd else {
+        return meet_bare_invocation(printer, config, account.is_some());
+    };
+
+    let mut session = Session {
+        account: SessionAccount {
+            config_paths: config,
+            name: account,
+            backend,
+        },
+        ..Default::default()
+    };
+
+    cmd.execute(printer, &mut session)
+}
+
+/// Meets a bare `himalaya`, which is where a newcomer lands.
+///
+/// A missing configuration raises the offer; anything else gets the help.
+/// A broken file counts as a configuration, so the offer never writes over
+/// one, and `--account` alone is a half-typed command, not a first run.
+fn meet_bare_invocation(
+    printer: &mut StdoutPrinter,
+    config_paths: &[PathBuf],
+    named_account: bool,
+) -> Result<()> {
+    let configured = Config::from_paths_or_default(config_paths)
+        .ok()
+        .flatten()
+        .is_some();
+
+    if !configured && !named_account && !printer.is_json() && stdin().is_terminal() {
+        let path = Config::target_path(config_paths)?;
+
+        // NOTE: a bare invocation has nothing to run after the offer, so a
+        // declined one falls back to the help.
+        if cli::offer_configuration(printer, config_paths, &path)? {
+            return Ok(());
+        }
+    }
+
+    Cli::command().print_help()?;
+
+    Ok(())
+}

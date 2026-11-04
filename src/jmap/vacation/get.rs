@@ -1,0 +1,118 @@
+//! # JMAP vacation get
+//!
+//! The `jmap vacation-response get` command, RFC 8621
+//! `VacationResponse/get`.
+
+use std::fmt;
+
+use anyhow::{Result, bail};
+use clap::Parser;
+use io_jmap::rfc8621::vacation_response::{
+    JMAP_VACATION_RESPONSE_CAPABILITY, JmapVacationResponse,
+};
+use pimalaya_cli::printer::Printer;
+use pimalaya_cli::table::{Cell, Row, Table, sanitize};
+use schemars::JsonSchema;
+use serde::Serialize;
+
+use crate::{
+    account::context::Account, jmap::client::JmapClient, shared::table::style_from_preset,
+};
+
+/// Get the JMAP vacation response (VacationResponse/get).
+#[derive(Debug, Parser)]
+pub struct JmapVacationGetCommand;
+
+impl JmapVacationGetCommand {
+    /// Fetches the vacation response and prints it.
+    pub fn execute(
+        self,
+        printer: &mut impl Printer,
+        account: &mut Account,
+        client: &mut JmapClient,
+    ) -> Result<()> {
+        let has_vacation = client
+            .session()
+            .map(|s| {
+                s.capabilities
+                    .contains_key(JMAP_VACATION_RESPONSE_CAPABILITY)
+            })
+            .unwrap_or(false);
+
+        if !has_vacation {
+            bail!("Vacation response is not supported by the server");
+        }
+
+        // NOTE: RFC 8621 makes the singleton always exist; a server
+        // returning none holds no response, which reads as a disabled one.
+        let vacation = client
+            .vacation_response_get()?
+            .unwrap_or_else(|| JmapVacationResponse {
+                id: "singleton".into(),
+                is_enabled: false,
+                from_date: None,
+                to_date: None,
+                subject: None,
+                text_body: None,
+                html_body: None,
+            });
+
+        let table = JmapVacationResponseGetOutput {
+            preset: account.table_preset().to_string(),
+            vacation,
+        };
+
+        printer.out(table)
+    }
+}
+
+/// Renderable table of the vacation response settings.
+/// The vacation response rendered as a table.
+#[derive(Clone, Debug, Serialize, JsonSchema)]
+#[serde(transparent)]
+pub struct JmapVacationResponseGetOutput {
+    /// The `comfy_table` preset string the table renders with.
+    #[serde(skip)]
+    pub preset: String,
+    /// The vacation response the server holds.
+    pub vacation: JmapVacationResponse,
+}
+
+impl fmt::Display for JmapVacationResponseGetOutput {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut table = Table::new();
+        let v = &self.vacation;
+
+        table
+            .load_style(style_from_preset(&self.preset))
+            .set_header(Row::from([Cell::new("KEY"), Cell::new("VALUE")]));
+
+        table.add_row(Row::from([
+            Cell::new("Enabled"),
+            Cell::new(if v.is_enabled { "true" } else { "" }),
+        ]));
+
+        if let Some(d) = &v.from_date {
+            table.add_row(Row::from([Cell::new("From"), Cell::new(sanitize(d))]));
+        }
+
+        if let Some(d) = &v.to_date {
+            table.add_row(Row::from([Cell::new("To"), Cell::new(sanitize(d))]));
+        }
+
+        if let Some(s) = &v.subject {
+            table.add_row(Row::from([Cell::new("Subject"), Cell::new(sanitize(s))]));
+        }
+
+        if let Some(b) = &v.text_body {
+            table.add_row(Row::from([Cell::new("Body (plain)"), Cell::new(b)]));
+        }
+
+        if let Some(b) = &v.html_body {
+            table.add_row(Row::from([Cell::new("Body (HTML)"), Cell::new(b)]));
+        }
+
+        writeln!(f)?;
+        writeln!(f, "{table}")
+    }
+}

@@ -1,0 +1,273 @@
+//! # m2dir backend
+//!
+//! The m2dir adapter of the shared cross-protocol client, glue over the
+//! io-m2dir client [`M2dirClient`] wraps.
+//!
+//! m2dir is content-addressed and has no native copy or move, so a copy
+//! is a get and a store, and a move deletes after them.
+
+use std::path::Path;
+
+use anyhow::{Result, bail};
+use io_m2dir::{entry::M2dirEntry, flag::M2dirFlags, m2dir::M2dir};
+
+use crate::{
+    email::{
+        envelope::{self, Envelope},
+        flag::{Flag, FlagOp, IanaFlag},
+        mailbox::Mailbox,
+        search::{eval, query::SearchEmailsQuery},
+    },
+    m2dir::client::M2dirClient,
+};
+
+impl M2dirClient {
+    /// Resolves a shared mailbox argument into an opened [`M2dir`].
+    ///
+    /// An absolute path opens directly, and a relative name is resolved
+    /// under the store root first, percent-encoded as the spec wants,
+    /// io-m2dir taking a filesystem path alone.
+    ///
+    /// That is what lets a shared command address a folder by name or by
+    /// id, as the raw `m2dir` commands and the Maildir backend do.
+    fn resolve_m2dir(&self, mailbox: &str) -> Result<M2dir> {
+        if Path::new(mailbox).is_absolute() {
+            return Ok(self.open_m2dir(mailbox)?);
+        }
+
+        let store = self.open_store()?;
+        let path = store.resolve_folder_path(mailbox)?;
+        Ok(self.open_m2dir(path)?)
+    }
+
+    /// Lists every m2dir under the configured root, sorted by name.
+    /// `with_counts` is ignored (m2dir does not surface counts cheaply).
+    pub fn list_mailboxes(&self, _with_counts: bool) -> Result<Vec<Mailbox>> {
+        let mut mailboxes: Vec<Mailbox> =
+            self.list_m2dirs()?.into_iter().map(mailbox_from).collect();
+        mailboxes.sort_by(|a, b| a.name.cmp(&b.name));
+        Ok(mailboxes)
+    }
+
+    /// Lists envelopes from `mailbox`, sorted by `Date:` descending then
+    /// paginated.
+    pub fn list_envelopes(
+        &self,
+        mailbox: &str,
+        page: Option<u32>,
+        page_size: Option<u32>,
+        with_attachment: bool,
+    ) -> Result<Vec<Envelope>> {
+        let m2dir = self.resolve_m2dir(mailbox)?;
+        let entries = self.list_entries(m2dir.clone())?;
+
+        let mut envelopes = Vec::with_capacity(entries.len());
+        for entry in &entries {
+            let bytes = self.read_entry(entry)?;
+            let flags = self.read_flags(&m2dir, entry.id())?;
+            let envelope = envelope_from(entry, &flags, &bytes, with_attachment);
+            envelopes.push(envelope);
+        }
+        envelopes.sort_by_key(|envelope| std::cmp::Reverse(envelope.date));
+
+        Ok(paginate(envelopes, page, page_size))
+    }
+
+    /// Searches envelopes in `mailbox`: lists them, then applies the
+    /// shared filter/sort/paginate client-side (body clauses reuse the
+    /// already-read message bytes).
+    pub fn search_envelopes(
+        &self,
+        mailbox: &str,
+        query: Option<&SearchEmailsQuery>,
+        page: Option<u32>,
+        page_size: Option<u32>,
+        _with_attachment: bool,
+    ) -> Result<Vec<Envelope>> {
+        let m2dir = self.resolve_m2dir(mailbox)?;
+        let entries = self.list_entries(m2dir.clone())?;
+
+        let filter = query.and_then(|q| q.filter.as_ref());
+        let mut hits = Vec::new();
+        for entry in &entries {
+            let bytes = self.read_entry(entry)?;
+            let flags = self.read_flags(&m2dir, entry.id())?;
+            let envelope = envelope_from(entry, &flags, &bytes, false);
+            let keep = match filter {
+                Some(filter) => eval::matches_filter(&envelope, None, &bytes, filter),
+                None => true,
+            };
+            if keep {
+                hits.push(envelope);
+            }
+        }
+
+        eval::sort_envelopes(&mut hits, query.and_then(|q| q.sort.as_deref()));
+        Ok(paginate(hits, page, page_size))
+    }
+
+    /// Adds, sets, or removes `flags` on an m2dir id set.
+    pub fn store_flags(
+        &self,
+        mailbox: &str,
+        ids: &[&str],
+        flags: &[Flag],
+        op: FlagOp,
+    ) -> Result<usize> {
+        let m2dir = self.resolve_m2dir(mailbox)?;
+        let m2dir_flags = flags_to_m2dir(flags);
+
+        for id in ids {
+            match op {
+                FlagOp::Add => self.add_flags(&m2dir, *id, m2dir_flags.clone())?,
+                FlagOp::Set => self.set_flags(&m2dir, *id, m2dir_flags.clone())?,
+                FlagOp::Remove => self.remove_flags(&m2dir, *id, m2dir_flags.clone())?,
+            }
+        }
+
+        Ok(ids.len())
+    }
+
+    /// Reads one message's raw RFC 5322 bytes from `mailbox`.
+    pub fn get_message(&self, mailbox: &str, id: &str, seen: bool) -> Result<Vec<u8>> {
+        let m2dir = self.resolve_m2dir(mailbox)?;
+        let (_entry, bytes) = self.get(m2dir, id)?;
+
+        // NOTE: reading the bytes never touches the sidecar, so `--seen`
+        // costs a separate write of the `S` flag.
+        if seen {
+            let seen = Flag::from_iana(IanaFlag::Seen);
+            self.store_flags(mailbox, &[id], &[seen], FlagOp::Add)?;
+        }
+
+        Ok(bytes)
+    }
+
+    /// Stores `raw` under `mailbox`, then writes `flags` to the sidecar.
+    /// Returns the content-addressed id.
+    pub fn add_message(&self, mailbox: &str, flags: &[Flag], raw: Vec<u8>) -> Result<String> {
+        let m2dir = self.resolve_m2dir(mailbox)?;
+        let entry = self.store(m2dir.clone(), raw)?;
+        let id = entry.id().to_string();
+
+        if !flags.is_empty() {
+            self.set_flags(&m2dir, &id, flags_to_m2dir(flags))?;
+        }
+
+        Ok(id)
+    }
+
+    /// Copies every id from `from` to `to` (get + store; flags are not
+    /// propagated, matching io-email).
+    pub fn copy_messages(&self, from: &str, to: &str, ids: &[&str]) -> Result<usize> {
+        let source = self.resolve_m2dir(from)?;
+        let target = self.resolve_m2dir(to)?;
+
+        for id in ids {
+            let (_entry, bytes) = self.get(source.clone(), *id)?;
+            self.store(target.clone(), bytes)?;
+        }
+
+        Ok(ids.len())
+    }
+
+    /// Moves every id from `from` to `to` (copy then delete the source).
+    pub fn move_messages(&self, from: &str, to: &str, ids: &[&str]) -> Result<usize> {
+        let source = self.resolve_m2dir(from)?;
+        let target = self.resolve_m2dir(to)?;
+
+        for id in ids {
+            let (_entry, bytes) = self.get(source.clone(), *id)?;
+            self.store(target.clone(), bytes)?;
+            self.delete_entry(source.clone(), *id)?;
+        }
+
+        Ok(ids.len())
+    }
+
+    /// Creates the folder `name`, the store initialised first when it does
+    /// not exist yet, returning its id, its path on disk.
+    ///
+    /// m2dir folders are flat, so a parent is refused rather than dropped.
+    pub fn create_mailbox(&self, name: &str, parent: Option<&str>) -> Result<String> {
+        if let Some(parent) = parent {
+            bail!("Cannot create `{name}` under `{parent}`: m2dir folders are flat");
+        }
+
+        self.init_store()?;
+        let m2dir = self.create_m2dir(name)?;
+        Ok(m2dir.path().as_str().to_string())
+    }
+
+    /// Deletes the folder `mailbox` and every message in it.
+    pub fn delete_mailbox(&self, mailbox: &str) -> Result<()> {
+        let m2dir = self.resolve_m2dir(mailbox)?;
+        self.delete_m2dir(m2dir.path().clone())?;
+        Ok(())
+    }
+
+    /// Permanently deletes `ids` from `mailbox` by unlinking their files.
+    pub fn delete_messages(&self, mailbox: &str, ids: &[&str]) -> Result<()> {
+        let m2dir = self.resolve_m2dir(mailbox)?;
+
+        for id in ids {
+            self.delete_entry(m2dir.clone(), *id)?;
+        }
+
+        Ok(())
+    }
+}
+
+/// Converts one [`M2dir`] into the shared [`Mailbox`] shape: `id` is the
+/// on-disk path, `name` is the last path segment.
+fn mailbox_from(m2dir: M2dir) -> Mailbox {
+    let path = m2dir.path();
+    Mailbox {
+        id: path.as_str().to_string(),
+        name: path.file_name().unwrap_or("").to_string(),
+        role: None,
+        total: None,
+        unread: None,
+    }
+}
+
+/// Folds an entry, its meta flags and its bytes into an [`Envelope`].
+fn envelope_from(
+    entry: &M2dirEntry,
+    meta: &M2dirFlags,
+    raw: &[u8],
+    with_attachment: bool,
+) -> Envelope {
+    Envelope {
+        id: entry.id().to_string(),
+        flags: meta.iter().map(flag_from_meta_line).collect(),
+        ..envelope::from_raw(raw, with_attachment)
+    }
+}
+
+/// One `.meta/<id>.flags` line to a shared [`Flag`]; whitespace trimmed.
+fn flag_from_meta_line(line: &str) -> Flag {
+    Flag::from_raw(line.trim())
+}
+
+/// Shared flag slice to [`M2dirFlags`], one canonical line per flag.
+fn flags_to_m2dir(flags: &[Flag]) -> M2dirFlags {
+    flags.iter().map(|flag| flag.raw().to_string()).collect()
+}
+
+/// 1-indexed in-memory pagination; `page_size = None` returns the full
+/// slice; size 0 or a page past the end returns empty.
+fn paginate<T>(items: Vec<T>, page: Option<u32>, page_size: Option<u32>) -> Vec<T> {
+    let Some(size) = page_size else {
+        return items;
+    };
+    if size == 0 {
+        return Vec::new();
+    }
+    let page = page.unwrap_or(1).max(1);
+    let skip = ((page - 1) as usize).saturating_mul(size as usize);
+    if skip >= items.len() {
+        return Vec::new();
+    }
+    items.into_iter().skip(skip).take(size as usize).collect()
+}

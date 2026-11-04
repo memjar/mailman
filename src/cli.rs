@@ -1,0 +1,569 @@
+//! # Parser
+//!
+//! Top-level clap parser and subcommand dispatcher, running each command
+//! over the [`Session`] client it needs.
+
+use std::{
+    io::{IsTerminal, stdin},
+    path::{Path, PathBuf},
+};
+
+use anyhow::{Result, bail};
+use clap::{CommandFactory, Parser, Subcommand};
+#[cfg(feature = "wizard")]
+use pimalaya_cli::prompt;
+use pimalaya_cli::{
+    clap::{
+        args::{AccountFlag, JsonFlag, LogFlags},
+        commands::{CompletionCommand, JsonSchemaCommand, ManualCommand},
+        parsers::path_parser,
+    },
+    footer, long_version,
+    printer::Printer,
+};
+use pimalaya_config::toml::TomlConfig;
+
+#[cfg(feature = "gmail")]
+use crate::gmail::{cli::GmailCommand, client::build_gmail_client};
+#[cfg(feature = "imap")]
+use crate::imap::{cli::ImapCommand, client::build_imap_client};
+#[cfg(feature = "jmap")]
+use crate::jmap::{cli::JmapCommand, client::build_jmap_client};
+#[cfg(feature = "m2dir")]
+use crate::m2dir::{cli::M2dirCommand, client::build_m2dir_client};
+#[cfg(feature = "maildir")]
+use crate::maildir::{cli::MaildirCommand, client::build_maildir_client};
+#[cfg(feature = "mbox")]
+use crate::mbox::{cli::MboxCommand, client::build_mbox_client};
+#[cfg(feature = "msgraph")]
+use crate::msgraph::{cli::MsgraphCommand, client::build_msgraph_client};
+#[cfg(feature = "pimdir")]
+use crate::pimdir::{cli::PimdirCommand, client::build_pimdir_client};
+#[cfg(any(feature = "jmap", feature = "gmail"))]
+use crate::shared::vacation::cli::VacationClient;
+#[cfg(any(backend, feature = "smtp"))]
+use crate::shared::{
+    attachment::cli::AttachmentCommand, envelope::cli::EnvelopeCommand, flag::cli::FlagCommand,
+    mailbox::cli::MailboxCommand, vacation::cli::VacationCommand,
+};
+// NOTE: `EmailClient` and the `message` command host the send path, so
+// they exist for any backend rather than for storage ones alone.
+#[cfg(any(backend, feature = "smtp"))]
+use crate::shared::{client::EmailClient, message::cli::MessageCommand};
+#[cfg(feature = "sieve")]
+use crate::sieve::{cli::SieveCommand, client::build_sieve_client};
+#[cfg(feature = "smtp")]
+use crate::smtp::{cli::SmtpCommand, client::build_smtp_client};
+#[cfg(feature = "wizard")]
+use crate::wizard::{self, configure::ConfigureCommand};
+use crate::{
+    account::cli::AccountCommand,
+    backend::Backend,
+    config::{AccountConfig, Config, NO_CONFIG_HINT},
+    json_schema,
+    mcp::McpCommand,
+    repl::ReplCommand,
+    session::Session,
+};
+#[cfg(any(backend, feature = "smtp"))]
+use crate::{
+    account::context::Account,
+    capability::{self, Capability, Resolution},
+};
+
+/// Top-level command-line interface parser.
+#[derive(Parser, Debug)]
+#[command(name = env!("CARGO_PKG_NAME"))]
+#[command(author, version, about)]
+#[command(long_about = concat!(
+    "CLI to manage emails.\n\n",
+    "First time here? Run `himalaya` with no command: it offers to generate an ",
+    "account discovered from your email address, which `himalaya configure` does ",
+    "again later. Everything discovery does not cover is written by hand.",
+))]
+#[command(long_version = long_version!())]
+#[command(after_help = footer!())]
+#[command(propagate_version = true, infer_subcommands = true)]
+pub struct Cli {
+    /// The subcommand to run.
+    ///
+    /// Omitted, a bare `himalaya` offers to generate a configuration when
+    /// it finds none, and shows this help otherwise.
+    #[command(subcommand)]
+    pub cmd: Option<Command>,
+    #[command(flatten)]
+    pub config: ConfigPathsArg,
+    #[command(flatten)]
+    pub account: AccountFlag,
+    /// Force a specific backend for cross-protocol commands.
+    ///
+    /// Only the shared commands read it, the protocol-specific ones always
+    /// using their own backend. `auto`, the default, picks the first
+    /// configured backend the command supports; an explicit value bails when
+    /// the account has no such block, or the command no such implementation.
+    #[arg(short, long, global = true, default_value_t)]
+    pub backend: Backend,
+    #[command(flatten)]
+    pub json: JsonFlag,
+    #[command(flatten)]
+    pub log: LogFlags,
+}
+
+/// Top-level subcommands.
+///
+/// NOTE: parsed once per run, so the size of its largest variant, which
+/// depends on the features built, costs nothing worth a box.
+#[allow(clippy::large_enum_variant)]
+#[derive(Debug, Subcommand)]
+pub enum Command {
+    #[cfg(any(backend, feature = "smtp"))]
+    #[command(subcommand, alias = "mailboxes")]
+    Mailbox(MailboxCommand),
+    #[cfg(any(backend, feature = "smtp"))]
+    #[command(subcommand, alias = "envelopes")]
+    Envelope(EnvelopeCommand),
+    #[cfg(any(backend, feature = "smtp"))]
+    #[command(subcommand, alias = "flags")]
+    Flag(FlagCommand),
+    #[cfg(any(backend, feature = "smtp"))]
+    #[command(subcommand, visible_alias = "msg", alias = "messages")]
+    Message(MessageCommand),
+    #[cfg(any(backend, feature = "smtp"))]
+    #[command(subcommand, alias = "attachments")]
+    Attachment(AttachmentCommand),
+    #[cfg(any(backend, feature = "smtp"))]
+    #[command(subcommand)]
+    Vacation(VacationCommand),
+    #[cfg(feature = "imap")]
+    #[command(subcommand)]
+    Imap(ImapCommand),
+    #[cfg(feature = "jmap")]
+    #[command(subcommand)]
+    Jmap(JmapCommand),
+    #[cfg(feature = "gmail")]
+    #[command(subcommand)]
+    Gmail(GmailCommand),
+    #[cfg(feature = "msgraph")]
+    #[command(subcommand)]
+    Msgraph(MsgraphCommand),
+    #[cfg(feature = "maildir")]
+    #[command(subcommand)]
+    Maildir(MaildirCommand),
+    #[cfg(feature = "m2dir")]
+    #[command(subcommand)]
+    M2dir(M2dirCommand),
+    #[cfg(feature = "mbox")]
+    #[command(subcommand)]
+    Mbox(MboxCommand),
+    #[cfg(feature = "pimdir")]
+    #[command(subcommand)]
+    Pimdir(PimdirCommand),
+    #[cfg(feature = "smtp")]
+    #[command(subcommand)]
+    Smtp(SmtpCommand),
+    #[cfg(feature = "sieve")]
+    #[command(subcommand)]
+    Sieve(SieveCommand),
+    Repl(ReplCommand),
+    Mcp(McpCommand),
+    /// Configure an account interactively.
+    #[cfg(feature = "wizard")]
+    #[command(visible_alias = "wizard")]
+    Configure(ConfigureCommand),
+    #[command(subcommand)]
+    Account(AccountCommand),
+    #[command(alias = "completions")]
+    Completion(CompletionCommand),
+    #[command(alias = "manuals")]
+    Manual(ManualCommand),
+    #[command(alias = "json-schemas")]
+    JsonSchema(JsonSchemaCommand),
+}
+
+/// The character separating several configuration paths, `$PATH`'s own: `;`
+/// on Windows, where a colon belongs to the drive letter of an absolute path,
+/// and `:` elsewhere.
+#[cfg(windows)]
+const CONFIG_PATH_DELIMITER: char = ';';
+#[cfg(not(windows))]
+const CONFIG_PATH_DELIMITER: char = ':';
+
+/// Path(s) to the TOML configuration file(s).
+///
+/// Declared here rather than taken from pimalaya-cli, so the environment
+/// variable carries this product's name.
+#[derive(Debug, Default, Parser)]
+pub struct ConfigPathsArg {
+    /// Override the default configuration file path.
+    ///
+    /// Paths are shell-expanded then canonicalized, and several may be given
+    /// at once, delimited like `$PATH` (`;` on Windows, `:` elsewhere). The
+    /// first is the base and the rest are merged on top, which is how a public
+    /// configuration stays separate from the private ones.
+    #[arg(long = "config", short = 'c', global = true, env = "HIMALAYA_CONFIG")]
+    #[arg(name = "config_paths", value_name = "PATH", value_parser = path_parser, value_delimiter = CONFIG_PATH_DELIMITER)]
+    pub paths: Vec<PathBuf>,
+}
+
+/// Welcomes, then offers to generate a first configuration, returning
+/// whether the wizard ran.
+///
+/// A hook rather than a gate: declining decides nothing, and what happens
+/// next is the business of the caller, a bare invocation or a command
+/// that needs an account.
+#[cfg(feature = "wizard")]
+pub fn offer_configuration(
+    printer: &mut impl Printer,
+    config_paths: &[PathBuf],
+    path: &Path,
+) -> Result<bool> {
+    wizard::configure::print_welcome(path);
+
+    if !prompt::bool("Create a configuration with a default account?", true)? {
+        return Ok(false);
+    }
+
+    ConfigureCommand.execute(printer, config_paths)?;
+
+    Ok(true)
+}
+
+/// Offers nothing in a build without the wizard, so the caller falls back
+/// to what it does when the offer is declined.
+#[cfg(not(feature = "wizard"))]
+pub fn offer_configuration(
+    _printer: &mut impl Printer,
+    _config_paths: &[PathBuf],
+    _path: &Path,
+) -> Result<bool> {
+    Ok(false)
+}
+
+/// Resolves the account a command runs against, returning the leftover
+/// global config, the account name and its config.
+///
+/// A missing configuration is met with the wizard rather than an error, and
+/// the command carries on either way: accepting gives it a chance to work,
+/// declining leaves it to fail on the configuration it still has not got.
+pub fn resolve_account(
+    printer: &mut impl Printer,
+    config_paths: &[PathBuf],
+    account_name: Option<&str>,
+) -> Result<(Config, String, AccountConfig)> {
+    let mut config = match Config::from_paths_or_default(config_paths)? {
+        Some(config) => config,
+        None => {
+            // NOTE: the target path is where `-c` pointed, so a mistyped
+            // path shows up as itself rather than as a generic first run.
+            let path = Config::target_path(config_paths)?;
+
+            // NOTE: a script and a JSON consumer cannot answer a prompt, so
+            // both skip the offer and fail below.
+            if !printer.is_json() && stdin().is_terminal() {
+                offer_configuration(printer, config_paths, &path)?;
+            }
+
+            // NOTE: the wizard may print the account instead of writing it,
+            // so having run it proves nothing and the lookup runs again.
+            match Config::from_paths_or_default(config_paths)? {
+                Some(config) => config,
+                None => bail!(
+                    "No configuration found at {}, {NO_CONFIG_HINT}",
+                    path.display(),
+                ),
+            }
+        }
+    };
+
+    // NOTE: an empty name and `default` both mean the default account,
+    // which is the next block's business.
+    let named = account_name.filter(|name| !name.is_empty() && *name != "default");
+
+    if let Some(name) = named.filter(|name| !config.accounts.contains_key(*name)) {
+        let mut names: Vec<&str> = config.accounts.keys().map(String::as_str).collect();
+        names.sort_unstable();
+
+        bail!(
+            "Account `{name}` not found, the configuration holds: {}",
+            names.join(", "),
+        );
+    }
+
+    let Some((name, account_config)) = config.take_account(account_name)? else {
+        bail!(
+            "No default account found, name one with `-a <NAME>` or mark one with `default = true`"
+        );
+    };
+
+    Ok((config, name, account_config))
+}
+
+/// Runs a shared command over the session's email client, refusing it
+/// first when the account does not serve what it reaches.
+///
+/// Checked against the kept client's resolution, or against the
+/// account's blocks before a new client connects, so a refusal costs no
+/// connection and drops no kept client. An account configuring no
+/// transport at all is left to the client's own error, which names the
+/// v1 configuration when that is the cause.
+#[cfg(any(backend, feature = "smtp"))]
+fn run_shared<P: Printer>(
+    printer: &mut P,
+    session: &mut Session,
+    capabilities: Vec<Capability>,
+    command: impl FnOnce(&mut P, &mut Account, &mut EmailClient) -> Result<()>,
+) -> Result<()> {
+    let account = session.account;
+    let backend = account.backend;
+
+    if let Some((_, client)) = &session.email {
+        client.require(&capabilities)?;
+    }
+
+    let build = |config, name: String, account_config| {
+        let resolution = Resolution::of(&name, &account_config, backend);
+        if resolution.storage.is_some() || resolution.sender.is_some() {
+            resolution.require(&capabilities)?;
+        }
+        EmailClient::new(config, &name, account_config, backend)
+    };
+
+    account.run(printer, &mut session.email, build, command)
+}
+
+/// Runs a `vacation` command over the client of the backend keeping the
+/// auto-reply: the first configured one `--backend` allows that serves it,
+/// whatever backend stores the mail.
+///
+/// The account is read to resolve it, nothing connecting, so a refusal
+/// costs no connection; the client is the session's protocol one, kept
+/// for the commands after it.
+#[cfg(any(backend, feature = "smtp"))]
+#[cfg_attr(not(any(feature = "jmap", feature = "gmail")), allow(unused_variables))]
+fn run_vacation<P: Printer>(
+    printer: &mut P,
+    session: &mut Session,
+    command: VacationCommand,
+) -> Result<()> {
+    let account = session.account;
+    let (_, name, account_config) = resolve_account(printer, account.config_paths, account.name)?;
+    let resolution = Resolution::of(&name, &account_config, account.backend);
+    resolution.require(&[Capability::Vacation])?;
+
+    match resolution.transport(Capability::Vacation) {
+        #[cfg(feature = "jmap")]
+        Some(Backend::Jmap) => account.run(
+            printer,
+            &mut session.jmap,
+            build_jmap_client,
+            |printer, account, client| {
+                command.execute(printer, account, VacationClient::Jmap(client))
+            },
+        ),
+        #[cfg(feature = "gmail")]
+        Some(Backend::Gmail) => account.run(
+            printer,
+            &mut session.gmail,
+            build_gmail_client,
+            |printer, account, client| {
+                command.execute(printer, account, VacationClient::Gmail(client))
+            },
+        ),
+        // NOTE: the resolver let through a backend serving it, every one of
+        // which has its arm above.
+        _ => Err(capability::missing(format!(
+            "Account `{name}` cannot `vacation`: this build keeps no client for it"
+        ))),
+    }
+}
+
+impl Command {
+    /// Runs the subcommand over the session's client for it, built on
+    /// first use against the account `-a` names, or the default one.
+    pub fn execute(self, printer: &mut impl Printer, session: &mut Session) -> Result<()> {
+        let account = session.account;
+
+        match self {
+            #[cfg(any(backend, feature = "smtp"))]
+            Self::Mailbox(cmd) => run_shared(
+                printer,
+                session,
+                cmd.capabilities(),
+                |printer, account, client| cmd.execute(printer, account, client),
+            ),
+            #[cfg(any(backend, feature = "smtp"))]
+            Self::Envelope(cmd) => run_shared(
+                printer,
+                session,
+                cmd.capabilities()?,
+                |printer, account, client| cmd.execute(printer, account, client),
+            ),
+            #[cfg(any(backend, feature = "smtp"))]
+            Self::Flag(cmd) => run_shared(
+                printer,
+                session,
+                cmd.capabilities(),
+                |printer, account, client| cmd.execute(printer, account, client),
+            ),
+            // NOTE: `message parse` reads a raw message it is given, so it
+            // resolves no account and reads no configuration at all.
+            #[cfg(any(backend, feature = "smtp"))]
+            Self::Message(MessageCommand::Parse(cmd)) => cmd.execute(printer),
+            #[cfg(any(backend, feature = "smtp"))]
+            Self::Message(cmd) => run_shared(
+                printer,
+                session,
+                cmd.capabilities(),
+                |printer, account, client| cmd.execute(printer, account, client),
+            ),
+            #[cfg(any(backend, feature = "smtp"))]
+            Self::Attachment(cmd) => run_shared(
+                printer,
+                session,
+                vec![Capability::AttachmentList],
+                |printer, account, client| cmd.execute(printer, account, client),
+            ),
+            #[cfg(any(backend, feature = "smtp"))]
+            Self::Vacation(cmd) => run_vacation(printer, session, cmd),
+
+            #[cfg(feature = "imap")]
+            Self::Imap(cmd) => account.run(
+                printer,
+                &mut session.imap,
+                build_imap_client,
+                |printer, account, client| cmd.execute(printer, account, client),
+            ),
+            #[cfg(feature = "jmap")]
+            Self::Jmap(cmd) => account.run(
+                printer,
+                &mut session.jmap,
+                build_jmap_client,
+                |printer, account, client| cmd.execute(printer, account, client),
+            ),
+            #[cfg(feature = "gmail")]
+            Self::Gmail(cmd) => account.run(
+                printer,
+                &mut session.gmail,
+                build_gmail_client,
+                |printer, account, client| cmd.execute(printer, account, client),
+            ),
+            #[cfg(feature = "msgraph")]
+            Self::Msgraph(cmd) => account.run(
+                printer,
+                &mut session.msgraph,
+                build_msgraph_client,
+                |printer, account, client| cmd.execute(printer, account, client),
+            ),
+            #[cfg(feature = "maildir")]
+            Self::Maildir(cmd) => account.run(
+                printer,
+                &mut session.maildir,
+                build_maildir_client,
+                |printer, account, client| cmd.execute(printer, account, client),
+            ),
+            #[cfg(feature = "m2dir")]
+            Self::M2dir(cmd) => account.run(
+                printer,
+                &mut session.m2dir,
+                build_m2dir_client,
+                |printer, account, client| cmd.execute(printer, account, client),
+            ),
+            #[cfg(feature = "mbox")]
+            Self::Mbox(cmd) => account.run(
+                printer,
+                &mut session.mbox,
+                build_mbox_client,
+                |printer, account, client| cmd.execute(printer, account, client),
+            ),
+            #[cfg(feature = "pimdir")]
+            Self::Pimdir(cmd) => account.run(
+                printer,
+                &mut session.pimdir,
+                build_pimdir_client,
+                |printer, account, client| cmd.execute(printer, account, client),
+            ),
+            #[cfg(feature = "smtp")]
+            Self::Smtp(cmd) => account.run(
+                printer,
+                &mut session.smtp,
+                build_smtp_client,
+                |printer, _account, client| cmd.execute(printer, client),
+            ),
+            #[cfg(feature = "sieve")]
+            Self::Sieve(cmd) => account.run(
+                printer,
+                &mut session.sieve,
+                build_sieve_client,
+                |printer, account, client| cmd.execute(printer, account, client),
+            ),
+
+            Self::Repl(cmd) => cmd.execute(printer, session),
+            Self::Mcp(cmd) => cmd.execute(printer, session),
+            #[cfg(feature = "wizard")]
+            Self::Configure(cmd) => cmd.execute(printer, account.config_paths),
+            Self::Account(cmd) => {
+                cmd.execute(printer, account.config_paths, account.name, account.backend)
+            }
+            Self::Completion(cmd) => cmd.execute(printer, Cli::command()),
+            Self::Manual(cmd) => cmd.execute(printer, Cli::command()),
+            Self::JsonSchema(cmd) => cmd.execute(printer, json_schema::registry()),
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::{env, path::PathBuf, process};
+
+    use clap::Parser;
+
+    use super::{CONFIG_PATH_DELIMITER, Cli};
+
+    /// A directory that is never created, so the paths below it keep the
+    /// spelling they were given instead of being canonicalized.
+    fn absent_dir() -> PathBuf {
+        env::temp_dir().join(format!("himalaya-config-paths-{}", process::id()))
+    }
+
+    fn paths(args: &[&str]) -> Vec<PathBuf> {
+        Cli::try_parse_from([&["himalaya"], args].concat())
+            .expect("parse")
+            .config
+            .paths
+    }
+
+    #[test]
+    fn a_config_path_is_never_split() {
+        // NOTE: an absolute Windows path holds a colon of its own, so splitting
+        // on it would read `C:\dir\config.toml` as two paths and find neither.
+        let path = absent_dir().join("config.toml");
+
+        assert_eq!(
+            paths(&["-c", path.to_str().unwrap(), "account", "list"]),
+            [path]
+        );
+    }
+
+    #[test]
+    fn several_config_paths_split_on_the_platform_delimiter() {
+        let dir = absent_dir();
+        let (one, two) = (dir.join("one.toml"), dir.join("two.toml"));
+        let given = format!(
+            "{}{}{}",
+            one.display(),
+            CONFIG_PATH_DELIMITER,
+            two.display()
+        );
+
+        assert_eq!(paths(&["-c", &given, "account", "list"]), [one, two]);
+    }
+
+    #[test]
+    fn the_delimiter_is_the_platform_one() {
+        // NOTE: `$PATH` separates with `;` on Windows, where a colon belongs to
+        // the drive letter of an absolute path, and with `:` elsewhere.
+        let expected = if cfg!(windows) { ';' } else { ':' };
+
+        assert_eq!(CONFIG_PATH_DELIMITER, expected);
+    }
+}
