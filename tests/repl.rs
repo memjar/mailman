@@ -1,6 +1,6 @@
 //! # Repl
 //!
-//! `himalaya repl` run as the built binary against a Maildir, fed a piped
+//! `mailman repl` run as the built binary against a Maildir, fed a piped
 //! session, asserting that every line gets exactly one answer, that a
 //! failing line leaves the session running, and that a command reading its
 //! input off stdin is refused rather than swallowing the lines after it.

@@ -1,6 +1,6 @@
 //! # MCP
 //!
-//! `himalaya mcp` run as the built binary against a Maildir, fed JSON-RPC
+//! `mailman mcp` run as the built binary against a Maildir, fed JSON-RPC
 //! requests on stdin, asserting the tools each gate lists, that a call
 //! answers the command's payload, that an unknown argument or a failing
 //! command is a tool error the caller reads, and that a path given as a

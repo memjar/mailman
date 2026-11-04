@@ -1,6 +1,6 @@
 //! # Account capability
 //!
-//! `himalaya account capability` run as the built binary, asserting it
+//! `mailman account capability` run as the built binary, asserting it
 //! resolves each capability to the backend serving it without connecting:
 //! the JMAP block points at a port nothing listens on and a credential
 //! command that fails, so reaching the network would fail the command.

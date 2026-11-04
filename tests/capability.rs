@@ -152,7 +152,7 @@ fn imap_refuses_the_auto_reply_and_names_sieve() {
         IMAP,
         &["vacation", "get"],
         "capability-missing",
-        "himalaya sieve",
+        "mailman sieve",
     );
 }
 
