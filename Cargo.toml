@@ -2,14 +2,14 @@
 name = "mailman"
 description = "CLI to manage emails"
 version = "2.2.1"
-authors = ["Clément DOUIN (soywod) <pimalaya.org@posteo.net>"]
+authors = ["AXE Team <hello@mailman.app>"]
 rust-version = "1.89"
 edition = "2024"
 license = "MIT OR Apache-2.0"
 categories = ["command-line-utilities", "email"]
 keywords = ["cli", "mail", "imap", "smtp", "jmap"]
-homepage = "https://pimalaya.org"
-repository = "https://github.com/pimalaya/mailman"
+homepage = "https://mailman.app"
+repository = "https://github.com/memjar/mailman"
 
 [features]
 default = ["rustls-ring", "imap", "smtp", "jmap", "gmail", "msgraph", "maildir", "mbox", "sieve", "pimdir", "vendored", "wizard"]
