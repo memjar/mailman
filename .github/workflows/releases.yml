@@ -4,13 +4,22 @@ on:
   push:
     tags:
       - v*
-    branches:
-      - master
 
 jobs:
   release:
-    uses: pimalaya/nix/.github/workflows/releases.yml@master
-    secrets: inherit
-    with:
-      project: mailman
-      nixpkgs: nixos-25.11
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Build
+        run: cargo build --release
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: mailman
+          path: target/release/mailman
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: target/release/mailman
+          generate_release_notes: true

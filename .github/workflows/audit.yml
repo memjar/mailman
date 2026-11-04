@@ -2,8 +2,16 @@ name: Audit
 
 on:
   push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   audit:
-    uses: pimalaya/nix/.github/workflows/audit.yml@master
-    secrets: inherit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Security audit
+        run: cargo audit
+      - name: Deny vulnerabilities
+        run: cargo deny check advisories
