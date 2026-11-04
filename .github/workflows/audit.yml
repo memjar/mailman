@@ -15,5 +15,7 @@ jobs:
         run: cargo install cargo-audit
       - name: Security audit
         run: cargo audit
+      - name: Install cargo-deny
+        run: cargo install cargo-deny
       - name: Deny vulnerabilities
-        run: cargo install cargo-deny && cargo deny check advisories
+        run: cargo deny check advisories
