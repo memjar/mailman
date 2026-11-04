@@ -33,7 +33,7 @@ use crate::{
 /// can be selected at all.
 #[derive(Debug, Parser)]
 pub struct ImapIdCommand {
-    /// Extra parameters to send, on top of himalaya's own.
+    /// Extra parameters to send, on top of mailman's own.
     #[arg(short, long, num_args = 1..)]
     #[arg(value_name = "KEY:VAL", value_parser = parameter_parser)]
     parameter: Option<Vec<(IString<'static>, NString<'static>)>>,
@@ -124,7 +124,7 @@ impl fmt::Display for ImapIdOutput {
 /// io-imap auth coroutines send.
 ///
 /// `None` when `auto` is off. Unset fields take every canned pair. A key
-/// set to `true` takes himalaya's canned value, or `NIL` with a warning
+/// set to `true` takes mailman's canned value, or `NIL` with a warning
 /// when there is none.
 pub fn resolve_auto_id_params(
     config: &ImapIdConfig,
@@ -188,16 +188,16 @@ fn parameter_parser(param: &str) -> Result<(IString<'static>, NString<'static>),
     Ok((ikey.into_static(), nval.into_static()))
 }
 
-/// The well-known `ID` keys himalaya has a canned value for.
+/// The well-known `ID` keys mailman has a canned value for.
 const CANNED_KEYS: [&str; 4] = ["name", "version", "vendor", "support-url"];
 
-/// himalaya's own value for a well-known `ID` key.
+/// mailman's own value for a well-known `ID` key.
 fn canned_value(key: &str) -> Option<&'static str> {
     match key {
         "name" => Some(env!("CARGO_PKG_NAME")),
         "version" => Some(env!("CARGO_PKG_VERSION")),
         "vendor" => Some("Pimalaya"),
-        "support-url" => Some("https://github.com/pimalaya/himalaya"),
+        "support-url" => Some("https://github.com/pimalaya/mailman"),
         _ => None,
     }
 }

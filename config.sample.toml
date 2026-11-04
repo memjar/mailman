@@ -1,19 +1,19 @@
 # ================================================================================
-# `himalaya` configuration file.
+# `mailman` configuration file.
 #
 # Loaded from the first valid path among:
-#   - $XDG_CONFIG_HOME/himalaya/config.toml
-#   - $HOME/.config/himalaya/config.toml
-#   - $HOME/.himalayarc
+#   - $XDG_CONFIG_HOME/mailman/config.toml
+#   - $HOME/.config/mailman/config.toml
+#   - $HOME/.mailmanrc
 #
-# Override with `himalaya -c <PATH>`. Multiple paths can be passed at once,
+# Override with `mailman -c <PATH>`. Multiple paths can be passed at once,
 # separated by `;` on Windows and `:` elsewhere, as `$PATH` separates them, or
 # by repeating `-c`; the first one is the base and the rest are deep-merged on
 # top of it.
 #
-# Bare `himalaya` launches the wizard, which discovers an account from your
+# Bare `mailman` launches the wizard, which discovers an account from your
 # email address and offers to write it here. Prompts go to stderr and the
-# document to stdout, so `himalaya > <path>` writes the file itself.
+# document to stdout, so `mailman > <path>` writes the file itself.
 #
 # Everything discovery does not cover is written by hand, from this page.
 # ================================================================================
@@ -24,7 +24,7 @@
 
 # Fallback name the `From` address carries. Quoting and encoding are done for
 # you, so write the name as it should read. Also spelled `from-name`, the key
-# himalaya-tui writes; both binaries read both.
+# mailman-tui writes; both binaries read both.
 #display-name = "Alice"
 
 # Fallback signature, and the separator introducing it. The delimiter defaults
@@ -161,7 +161,7 @@ default = true
 
 # Address this account sends as, and the name it carries. They fill the `From`
 # header of a composed message absent `--from`, and without them the header is
-# left out. Also spelled `from` and `from-name`, the keys himalaya-tui writes;
+# left out. Also spelled `from` and `from-name`, the keys mailman-tui writes;
 # both binaries read both, one file backing the two.
 #email = "alice@example.org"
 #display-name = "Alice"
@@ -226,7 +226,7 @@ imap.server = "example.com"
 
 # SASL ANONYMOUS
 # https://datatracker.ietf.org/doc/html/rfc4505
-#imap.sasl.anonymous.message = "himalaya"
+#imap.sasl.anonymous.message = "mailman"
 
 # SASL PLAIN
 # https://datatracker.ietf.org/doc/html/rfc4616
@@ -268,7 +268,7 @@ imap.sasl.plain.password.raw = "***"
 #imap.id.auto = false
 
 # What the auto-`ID` sends. A key absent from the map is not transmitted at all.
-# `true` substitutes himalaya's canned value for a well-known key and NIL, with
+# `true` substitutes mailman's canned value for a well-known key and NIL, with
 # a warning, otherwise; `false` always sends NIL. Unset sends every canned
 # value, an empty map sends `ID NIL`, which 163.com refuses as `Unsafe Login`.
 #imap.id.fields = { name = true, version = true, vendor = true, support-url = true }
@@ -315,11 +315,11 @@ imap.sasl.plain.password.raw = "***"
 #jmap.auth.basic.password.command = "pass show fastmail"
 
 # Identity `message send` submits under. Unset, the account's default one is
-# used, which is the first `himalaya jmap identity get` reports.
+# used, which is the first `mailman jmap identity get` reports.
 #jmap.identity-id = "I0123abc"
 
 # Mailbox `message send` stages a message in before submitting it. Unset, the
-# `drafts`-role one is used; `himalaya jmap mailbox query --role drafts` finds
+# `drafts`-role one is used; `mailman jmap mailbox query --role drafts` finds
 # its id.
 #jmap.drafts-mailbox-id = "M0123abc"
 
@@ -439,8 +439,8 @@ imap.sasl.plain.password.raw = "***"
 #mbox.lock.fcntl = true
 #mbox.lock.timeout = 10
 
-# Himalaya keeps an index of each mbox file and the envelopes it already read
-# under the XDG cache directory (~/.cache/himalaya/mbox), so a listing reads
+# Mailman keeps an index of each mbox file and the envelopes it already read
+# under the XDG cache directory (~/.cache/mailman/mbox), so a listing reads
 # only what changed. Deleting it is always safe.
 
 # --------------------------------------------------------------------------------
@@ -508,7 +508,7 @@ smtp.server = "example.com"
 # `xoauth2` and `scram-sha-256`. Omitting the whole table skips authentication.
 
 # SASL ANONYMOUS
-#smtp.sasl.anonymous.message = "himalaya"
+#smtp.sasl.anonymous.message = "mailman"
 
 # SASL PLAIN
 smtp.sasl.plain.username = "user@example.com"

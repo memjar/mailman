@@ -7,8 +7,8 @@
 //! a file to create, a block to append or a document on stdout. Whatever
 //! discovery does not cover is written by hand against the sample.
 //!
-//! It runs from `himalaya configure`, and from the offer a bare
-//! `himalaya` raises when it finds no configuration. That offer is the
+//! It runs from `mailman configure`, and from the offer a bare
+//! `mailman` raises when it finds no configuration. That offer is the
 //! only place the wizard introduces itself, the command asked for by name
 //! going straight to the prompts.
 //!
@@ -156,17 +156,17 @@ impl fmt::Display for ConfigureOutput {
     }
 }
 
-/// Frames Himalaya, names the missing configuration file, and points at
+/// Frames Mailman, names the missing configuration file, and points at
 /// the sample for what the wizard does not cover.
 ///
-/// It runs before the offer a bare `himalaya` raises, where the wizard
+/// It runs before the offer a bare `mailman` raises, where the wizard
 /// meets someone who did not ask for it, and `configure` skips it. On
 /// stderr, so a redirected stdout holds the document alone.
 pub fn print_welcome(path: &Path) {
     eprintln!();
-    eprintln!("Welcome to Himalaya, the CLI to manage emails.");
+    eprintln!("Welcome to Mailman, the CLI to manage emails.");
     eprintln!();
-    eprintln!("Himalaya talks to your existing mailbox over IMAP, JMAP, Gmail, Microsoft");
+    eprintln!("Mailman talks to your existing mailbox over IMAP, JMAP, Gmail, Microsoft");
     eprintln!("Graph or a local Maildir. It needs one account to know which mailbox to");
     eprintln!("read, and no configuration file was found at:");
     eprintln!();
@@ -180,7 +180,7 @@ pub fn print_welcome(path: &Path) {
     eprintln!();
     eprintln!("At anytime, you can create a new account with the command:");
     eprintln!();
-    eprintln!("  himalaya configure");
+    eprintln!("  mailman configure");
     eprintln!();
 }
 
@@ -295,7 +295,7 @@ fn print_saved(path: &Path, config: &ConfigureOutput) {
         eprintln!("Another account holds the default, so name this one with `-a {name}`.");
     }
 
-    eprintln!("Run `himalaya envelope list` to read your mailbox.");
+    eprintln!("Run `mailman envelope list` to read your mailbox.");
 }
 
 #[cfg(test)]
@@ -317,7 +317,7 @@ mod tests {
     /// A path in the temporary directory no other test writes to.
     fn config_path() -> PathBuf {
         let id = NEXT_CONFIG.fetch_add(1, Ordering::Relaxed);
-        env::temp_dir().join(format!("himalaya-configure-{id}.toml"))
+        env::temp_dir().join(format!("mailman-configure-{id}.toml"))
     }
 
     /// A minimal account naming a Maildir root, the one backend needing

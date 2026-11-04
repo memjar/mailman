@@ -10,20 +10,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Added `--page-token` to `envelope list` and `envelope search`, which print `nextPage` (the next page number while a page comes back full, `null` otherwise), and to `msgraph messages list`, whose `nextPage` is the `$skip` of Graph's next link.
-- Added a JSON Schema for every command, 216 in all, checked by a test walking the command tree, with `himalaya-imap-raw.events` and `himalaya-sieve-raw.events` describing the events those commands print.
+- Added a JSON Schema for every command, 216 in all, checked by a test walking the command tree, with `mailman-imap-raw.events` and `mailman-sieve-raw.events` describing the events those commands print.
 - Added events to the MCP tool results, one text content each before the result; a refused protocol completion or a failed `account check` keeps its result as `structuredContent` with `isError`.
 - Added `mailbox create <NAME> [--parent <MAILBOX>]`, `mailbox rename <MAILBOX> <NAME>` and `mailbox delete <MAILBOX>` to the shared API, on every backend: a name is one level of the hierarchy, a rename keeps the parent, a delete takes the messages the mailbox holds. IMAP joins the levels with the delimiter its `LIST` reports, Gmail and the local stores with `/`. On pimdir each is queued, its `id` `null`. m2dir has no rename and refuses `--parent`, its folders being flat; Graph creates under a parent in two requests; what a delete leaves behind on JMAP, Gmail and Graph is in the `--help` footer.
 - Added the `important` and `junk` flags to `flag add|set|remove` (RFC 8457 `$Important`, `$Junk`). Graph has no junk mark and refuses it; on Gmail `junk` is the `SPAM` label, which moves the message to Spam.
-- Added `vacation get` and `vacation set`, reading and changing the auto-reply (`{enabled, from, to, subject, text, html}`, dates in RFC 3339 UTC) on JMAP and Gmail. It resolves to the first configured backend keeping one, so an account syncing a Maildir from JMAP reaches JMAP. IMAP refuses it naming `himalaya sieve`; the MCP server lists `vacation_set` under `--allow-send` only, an auto-reply answering mail.
+- Added `vacation get` and `vacation set`, reading and changing the auto-reply (`{enabled, from, to, subject, text, html}`, dates in RFC 3339 UTC) on JMAP and Gmail. It resolves to the first configured backend keeping one, so an account syncing a Maildir from JMAP reaches JMAP. IMAP refuses it naming `mailman sieve`; the MCP server lists `vacation_set` under `--allow-send` only, an auto-reply answering mail.
 - Added `account capability`, listing what the account serves of the shared API, one row per capability: the backend it resolves to (`null` when none is configured), its level (`full`, `partial`, `server`, `none`) and the detail, under `--backend` when given. It connects nowhere; on a pimdir account the writes are read from what the store's sources declare. Frontends read it to hide what the account cannot run.
 - Added a capability table per backend, naming each shared capability in pimdir's grammar (`message.copy`, `flags.answered`, `submit`, `envelope.search.attachment`) at a level, `full`, `partial`, `server` or `none`, with a detail saying what differs or why. A shared command reaching a capability its backend declares `none`, or one no configured transport answers, is refused before connecting, under the new error code `capability-missing`, naming the account, the capability, the backend and what serves it instead.
 - Added a generated `Backends:` footer to the `--help` of every shared command, listing per capability it reaches the backends at each level and the details.
 
 - Added the `before <date>`, `cc <pattern>`, `bcc <pattern>`, `address <pattern>` (the `From`, `To`, `Cc` and `Bcc` headers at once) and `attachment` clauses to the `envelope search` query, on every backend that can answer them: IMAP refuses `attachment`, SEARCH having no key for it.
 - Added the error codes `search-invalid`, for a query that does not parse, and `search-unsupported`, for a clause the account's backend cannot search, which names the clause as written: every flag on Microsoft Graph, `flag answered` and keywords on Gmail, `attachment` on IMAP. Nothing is searched and no clause is dropped.
-- Added `himalaya mcp`, a Model Context Protocol server (revision 2025-06-18) over stdio for one account, exposing the shared API as tools named after their command (`envelope_list`, `message_read`), run over clients kept for the server's lifetime as in `himalaya repl`. A tool's input schema is generated from its command, its arguments spelled as on the command line, and an argument it does not take is refused naming those it does; a result is the command's `--json` payload as structured content, with its JSON Schema as output schema where the payload has one shape, and a failure is a tool error carrying the error object and its code. Only the reading tools are listed by default: `--allow-write` adds those changing the store and `--allow-send` those sending mail. `attachment download`, `message parse` and the composers' file arguments are not exposed, and a message given to a tool is never read from a path it spells.
-- Added `himalaya repl`, a session over stdin and stdout for one account: each line is a command without the binary name, split as a shell splits it and run over clients built the first time a command needs them and kept for the session, so a client connects once rather than once per command. `quit`, `exit` or EOF ends it; the account, `--backend` and `--json` are the session's. Piped, every line gets exactly one answer on stdout, a failure printed as the error object, and the loop goes on after a parse or command error. A command that fails drops the client it ran on, which the next command builds again. A command that would read its input from stdin inside a session is refused with the new error code `stdin-taken`, and `message compose`, `reply` and `forward` read no body from it. `repl` and `configure` are refused inside a session.
-- Added `pimdir search <QUERY>...`, searching the account's mail in the pimdir query language (pimdir SEARCH.md §8: words, phrases, `field:value` terms, `and`, `or`, `not`, parentheses) from the store's search index, which the sync engine builds and refreshes; Himalaya only reads it. `--sort date|name|relevance`, `--page`, `--page-size` and `--threads`; each hit carries its envelope, `mailboxes`, what `matched` (`body` or `summary`) and a `snippet`, and every answer a `coverage` (`bodiless`, `unindexed`, `behind`, `since`, `until`, `filling`, `complete`), printed as a line under the table when incomplete. A queued write shows in no answer.
+- Added `mailman mcp`, a Model Context Protocol server (revision 2025-06-18) over stdio for one account, exposing the shared API as tools named after their command (`envelope_list`, `message_read`), run over clients kept for the server's lifetime as in `mailman repl`. A tool's input schema is generated from its command, its arguments spelled as on the command line, and an argument it does not take is refused naming those it does; a result is the command's `--json` payload as structured content, with its JSON Schema as output schema where the payload has one shape, and a failure is a tool error carrying the error object and its code. Only the reading tools are listed by default: `--allow-write` adds those changing the store and `--allow-send` those sending mail. `attachment download`, `message parse` and the composers' file arguments are not exposed, and a message given to a tool is never read from a path it spells.
+- Added `mailman repl`, a session over stdin and stdout for one account: each line is a command without the binary name, split as a shell splits it and run over clients built the first time a command needs them and kept for the session, so a client connects once rather than once per command. `quit`, `exit` or EOF ends it; the account, `--backend` and `--json` are the session's. Piped, every line gets exactly one answer on stdout, a failure printed as the error object, and the loop goes on after a parse or command error. A command that fails drops the client it ran on, which the next command builds again. A command that would read its input from stdin inside a session is refused with the new error code `stdin-taken`, and `message compose`, `reply` and `forward` read no body from it. `repl` and `configure` are refused inside a session.
+- Added `pimdir search <QUERY>...`, searching the account's mail in the pimdir query language (pimdir SEARCH.md §8: words, phrases, `field:value` terms, `and`, `or`, `not`, parentheses) from the store's search index, which the sync engine builds and refreshes; Mailman only reads it. `--sort date|name|relevance`, `--page`, `--page-size` and `--threads`; each hit carries its envelope, `mailboxes`, what `matched` (`body` or `summary`) and a `snippet`, and every answer a `coverage` (`bodiless`, `unindexed`, `behind`, `since`, `until`, `filling`, `complete`), printed as a line under the table when incomplete. A queued write shows in no answer.
 - Added `pimdir count <QUERY>...`, counting the account's mail a query matches, with its coverage.
 - Added `pimdir thread <ID>`, listing the thread of a message from the search index, oldest first.
 - Added `pimdir tag <QUERY>... --add <FLAG> --remove <FLAG>`, queueing one flag change per mailbox holding each matched message, every change checked against the sources before the first is queued; `--dry-run` queues nothing. A message whose flags were never synced, or whose mailbox several sources or none sync, is reported and left alone.
@@ -59,16 +59,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Breaking:** changed byte outputs under `--json` to `{data, size, mime}` in base64: `message read --raw` (lossy text before), `jmap email export` (failing on non-UTF-8 before), the raw Gmail and Graph `get`s and their attachment downloads (raw bytes on a JSON stdout before).
 - **Breaking:** changed `account check` to print every backend's row, `{backend, ok, code, error}`, and exit 2 when one fails, rather than one joined error exiting 1.
 - **Breaking:** changed every `imap` command to print its completion, `status` beside what it understood (a select's state, an expunge's numbers, a store's FETCH data, `APPENDUID`, `COPYUID`), a `NO` or `BAD` printing `{status, text}` and exiting 2. `imap raw` prints untagged and continuation responses as events, then the completions split into `tag`, `status`, `code` and `text`; `sieve raw` prints data lines as events and the completion; `smtp raw` prints `{code, text}`; each exits 2 on a refusal.
-- **Breaking:** changed the shapes a concept takes to one: flags written as `{raw, iana}`, `inReplyTo` a list in the read view, `imap fetch` addresses `{name, email}`, `imap search` ids numbers, attachment rows `role` instead of `inline` and `path: null`, maildir and mbox `flag list` rows `{raw, iana}`, Himalaya's own outputs printing `null` rather than omitting a key, the failure object's `code` included.
+- **Breaking:** changed the shapes a concept takes to one: flags written as `{raw, iana}`, `inReplyTo` a list in the read view, `imap fetch` addresses `{name, email}`, `imap search` ids numbers, attachment rows `role` instead of `inline` and `path: null`, maildir and mbox `flag list` rows `{raw, iana}`, Mailman's own outputs printing `null` rather than omitting a key, the failure object's `code` included.
 - **Breaking:** changed pimdir queue rows to `row` (`queueId`, `copyQueueId`, the queue view's `id`), `pimdir flag add|set|remove` to `{messages: [{id, row}]}`, and the tag statuses and search `matched` values to kebab-case.
 - **Breaking:** changed `gmail messages list` to print `messages` rather than `ids`, and the Gmail settings lists to print the provider's key rather than `response`.
 - Changed IMAP flag writes to refuse, under `capability-missing`, a keyword the mailbox's `PERMANENTFLAGS` lists neither by name nor by `\*`, which the server would keep for the session only.
-- Changed the configuration loading to read every existing default path as a layer, each deep-merged on top of the ones before: `$XDG_CONFIG_HOME/himalaya/config.toml`, `$HOME/.config/himalaya/config.toml`, then `$HOME/.himalayarc`, which therefore overrides. Only the first one found was read, so an rc file beside a `config.toml` was silently ignored. A file named by two paths, a symlinked rc file being one, is read once; `-c` still replaces the default paths. The wizard checks the name and the default of the account it generates against every layer, not only the file it appends to.
+- Changed the configuration loading to read every existing default path as a layer, each deep-merged on top of the ones before: `$XDG_CONFIG_HOME/mailman/config.toml`, `$HOME/.config/mailman/config.toml`, then `$HOME/.mailmanrc`, which therefore overrides. Only the first one found was read, so an rc file beside a `config.toml` was silently ignored. A file named by two paths, a symlinked rc file being one, is read once; `-c` still replaces the default paths. The wizard checks the name and the default of the account it generates against every layer, not only the file it appends to.
 - Changed the default account resolution to refuse several accounts marked `default = true`, naming them, where one was picked in an order that changed from run to run. Naming an account with `-a` still works.
 - Changed the MIME parsing and composing to mime-rs (github.com/pimalaya/mime-rs, pinned by git revision until its first release), replacing mail-parser and mail-builder: `message read`, `message parse`, `attachment list|download`, the search evaluator, the Maildir, m2dir and mbox envelopes and the composers. On well-formed mail the part ids and the `--json` views stay as they were. The `text` of a `format=flowed` part, and the quote of a reply to one, is now unwrapped (RFC 3676). The plain `message read` view shows the same part types, sizes and names as the JSON view.
-- Changed the composed messages to mime-rs's layout: the same headers and parts, a `Date` and `Message-ID` written by Himalaya, charset names lowercased (`utf-8''` in an RFC 2231 file name).
+- Changed the composed messages to mime-rs's layout: the same headers and parts, a `Date` and `Message-ID` written by Mailman, charset names lowercased (`utf-8''` in an RFC 2231 file name).
 - Changed UTF-7 (RFC 2152) text to be shown as written: mime-rs reads the WHATWG charsets, which leave UTF-7 out.
-- Changed `himalaya mcp` to list only the tools the account's transports can serve (an SMTP-only account lists `message_send`, not `envelope_list`), and to end the `envelope_search` description with the clauses and sort keys the account's backend answers fully, in part and not at all.
+- Changed `mailman mcp` to list only the tools the account's transports can serve (an SMTP-only account lists `message_send`, not `envelope_list`), and to end the `envelope_search` description with the clauses and sort keys the account's backend answers fully, in part and not at all.
 - Changed `message add` on Microsoft Graph, and a save asked of a composer or of `message send --save` there, to fail before connecting with `capability-missing`, where `message add` failed with an uncoded error and a send with `--save` failed after sending.
 - Changed a JMAP send to fail with `capability-missing` before uploading anything when the server's session lacks `urn:ietf:params:jmap:submission`, rather than leave the message in the drafts mailbox.
 - Changed the shared commands to be the same in every build carrying a mail transport: a build compiling SMTP alone now parses `envelope`, `flag`, `mailbox` and `attachment` and refuses them with `capability-missing`, and the shared `json-schema` output, error codes included, no longer varies with the backends compiled in.
@@ -78,13 +78,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed a `$Important` or `$Junk` flag change on a pimdir account to be checked against the source's `mail.flags.important` or `mail.flags.junk` when it states one, rather than `mail.flags.keywords`, so a source taking these two but no other keyword (Gmail's labels, Graph's importance) accepts them (io-pimdir 908db2b, pimdir STORAGE Annex B.1).
 - Changed the confirmations of `message send`, `message add`, `message delete`, `message move`, `message copy`, `flag add|set|remove` and the composers' save and send to say the write is queued on a pimdir account (*Message queued for sending*), where the sync engine applies it later. The JSON outputs are unchanged.
 - Changed `message add`, `pimdir message add` and the composers' save on a pimdir account to refuse a message whose `Message-ID` the mailbox holds or has a creation queued under, with the code `item-duplicate`, staging nothing. The row used to be queued, reported as saved, then parked by the sync engine.
-- Changed the pimdir store refusals: a store of another draft is refused with `store-version`, saying to upgrade Himalaya when the store's sync engine is newer, else to reinstall the store as neverest's MIGRATION.md says, never to delete the store and let it resync, which loses the queued writes.
+- Changed the pimdir store refusals: a store of another draft is refused with `store-version`, saying to upgrade Mailman when the store's sync engine is newer, else to reinstall the store as neverest's MIGRATION.md says, never to delete the store and let it resync, which loses the queued writes.
 - Changed `message copy`, `message move` and `message delete` on a pimdir account to stage the ids the mailbox holds and report how many they found, an unknown id skipped, as on the other backends. They used to fail on the first unknown id after staging the ones before it.
 - Changed `pimdir queue list` to list the mailbox's parked rows, any action kind, with why the sync engine parked each (`parked` under `--json`), and `pimdir queue cancel` to take one, naming the row's action kind (`kind` under `--json`) rather than calling every row a message.
 - Bumped ctutils to 0.4.6, rustls-webpki to 0.103.16 and webpki-root-certs to 1.0.11, fixing RUSTSEC-2026-0382, RUSTSEC-2026-0383 and RUSTSEC-2026-0385.
 - **Breaking:** changed every `--json` key to camelCase, the spelling JMAP, Microsoft Graph and the Google APIs already use, so each key is reachable by dot access in jq and JavaScript: `messages-total` becomes `messagesTotal`, `next_page` becomes `nextPage`, `thread-id` becomes `threadId`, `uid_validity` becomes `uidValidity`. Values keep their spelling (error codes, flags, mailbox roles stay kebab-case or lowercase), provider passthrough keeps the provider's keys, and the TOML configuration stays kebab-case. The `json-schema` titles follow the output types, now all named `*Output` (`Envelopes` becomes `EnvelopeListOutput`).
-- Changed piped `--json` output to print one value per line, each schema of `json-schema` to carry an `$id` naming the contract version (`v2`), and added `himalaya-error`, the schema of the JSON failure object (pimalaya-cli `55b6693`).
-- Changed `imap.id.auto` to send himalaya's canned `name`, `version`, `vendor` and `support-url` when `imap.id.fields` is unset, rather than `ID NIL`, which 163.com acknowledges and then refuses with `Unsafe Login`. An explicit empty `imap.id.fields` still sends `ID NIL` ([#774]).
+- Changed piped `--json` output to print one value per line, each schema of `json-schema` to carry an `$id` naming the contract version (`v2`), and added `mailman-error`, the schema of the JSON failure object (pimalaya-cli `55b6693`).
+- Changed `imap.id.auto` to send mailman's canned `name`, `version`, `vendor` and `support-url` when `imap.id.fields` is unset, rather than `ID NIL`, which 163.com acknowledges and then refuses with `Unsafe Login`. An explicit empty `imap.id.fields` still sends `ID NIL` ([#774]).
 - Changed `envelope list` and `envelope search` on a pimdir account to read only what the page needs: newest first by keyset pages up to the end of the page, a search bounded by its date clauses and reading unread mail through the store's unread index, rather than every message of the mailbox. Output is unchanged; on 50,000 mails `envelope list -s 50` goes from 3.65 s to 28 ms.
 - **Breaking:** changed the `--json` output of `message read`, which no longer prints mail-parser's own model of the message but the view above.
 - Changed the size `attachment list` reports, and the bytes `attachment download` writes, to be the part's bytes once its transfer encoding is undone, in its own charset: a text attachment is no longer converted to UTF-8, and an attached message is written alone rather than with the whole message holding it.
@@ -108,10 +108,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed `flag add|set|remove` with `answered` or `draft` on Gmail and Microsoft Graph reporting every message flagged while changing nothing: neither has a field for them, so the command fails with `capability-missing`.
 - Fixed Gmail date clauses being off by a day: Gmail reads a bare date as midnight in PST, so `after 2026-09-08` kept that day's mail and `date 2026-09-08` spanned two days. Each bound is now sent as Unix seconds of the UTC day.
 - Fixed a JMAP search whose date clause sits under `not` or `or` checking the date as if it stood alone: `not after 2026-01-01` listed nothing, and `date 2026-01-01 or subject x` only that day's mail. Such a clause now reads the server's received date; a date clause joined to the rest by `and` alone keeps its exact sent-date check.
-- Fixed `-c/--config` being split on `:`, which cut every absolute Windows path at its drive letter: `-c C:\Users\me\config.toml` reached the loader as `C` and `\Users\me\config.toml`, neither of which exists, so the configuration was never read. The delimiter now follows `$PATH` on the platform, `;` on Windows and `:` elsewhere, and the help text says so; `HIMALAYA_CONFIG` and repeated `-c` flags take absolute paths whole. On Windows a colon-joined list is no longer split, so pass several paths with `;` or repeat `-c`.
+- Fixed `-c/--config` being split on `:`, which cut every absolute Windows path at its drive letter: `-c C:\Users\me\config.toml` reached the loader as `C` and `\Users\me\config.toml`, neither of which exists, so the configuration was never read. The delimiter now follows `$PATH` on the platform, `;` on Windows and `:` elsewhere, and the help text says so; `MAILMAN_CONFIG` and repeated `-c` flags take absolute paths whole. On Windows a colon-joined list is no longer split, so pass several paths with `;` or repeat `-c`.
 - Fixed `account check` refusing an account declaring only a pimdir block as configuring no backend: the store is opened, its mailboxes listed, and a producer probed without writing anything, so a store whose staging lock a collector holds fails the check at once with `store-busy`.
 - Fixed `account check` exiting 0 when a backend failed: it now fails with one error naming each failed backend and why.
-- Fixed `pimdir queue cancel` reshaping the store's schema to Himalaya's io-pimdir revision, which dropped the tables and columns another app's revision keeps: the store is opened as it stands, and one of another draft is refused with `store-version`.
+- Fixed `pimdir queue cancel` reshaping the store's schema to Mailman's io-pimdir revision, which dropped the tables and columns another app's revision keeps: the store is opened as it stands, and one of another draft is refused with `store-version`.
 - Fixed `pimdir queue cancel` cancelling a row of another account or app sharing the store: only a row of the account's queue is taken.
 - Fixed `pimdir queue list --json` printing `"id": ""` in a queued message's `envelope`: it prints `"id": null`, a queued message having no id until the sync engine applies it. The row id stays the row's own `id`.
 - Fixed a pimdir add or send writing the message body before taking the store's staging lock, so a collector running in between could delete the body of a queued message.
@@ -123,13 +123,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed `flag add` and `flag remove` on a pimdir account replacing every flag a message carries on the server when the sync engine never read them: they now fail saying the flags were never synced. `flag set`, which replaces the whole set by design, is unchanged.
 - Fixed `flag remove` on a pimdir account leaving a flag the store holds in another spelling than the canonical one, `\seen` or Thunderbird's `Junk`, and `flag add` adding the canonical spelling beside it: flags are now matched as flags, not as strings.
 - Fixed `flag add`, `flag set` and `flag remove` on a pimdir account staging the change on the first messages of a call and then failing on a later one: every message is now checked against the sources before the first row is queued, so a call the check refuses stages nothing, and an id the mailbox does not hold is skipped and counted out, as on the other backends.
-- Fixed Maildir mailboxes being named by their last path segment, so `Archive` and `[Gmail]/Archive` both listed as `Archive`: `mailbox list` and `maildir list` now name them by their path relative to `maildir.root`, the name `-m` takes, in both layouts ([himalaya-tui#22](https://github.com/pimalaya/himalaya-tui/issues/22)).
+- Fixed Maildir mailboxes being named by their last path segment, so `Archive` and `[Gmail]/Archive` both listed as `Archive`: `mailbox list` and `maildir list` now name them by their path relative to `maildir.root`, the name `-m` takes, in both layouts ([mailman-tui#22](https://github.com/pimalaya/mailman-tui/issues/22)).
 - Fixed the wizard reading a `secret-tool` keyring entry only by its `account` attribute: it now prompts for the attribute (default `account`), so a KeePassXC entry keyed by `Title` is found. A secret command failing silently now names its program and exit status instead of an empty `Secret command error` ([#745]).
 - Fixed the wizard creating new configuration files with permissions that could expose raw credentials. New files use exclusive creation and Unix mode 0600, and new directories use mode 0700. Existing file and directory permissions are preserved.
 - Fixed attachment downloads following dangling symlinks or overwriting existing files after filename suffixes are exhausted. Concurrent downloads now reserve filenames exclusively.
 - Fixed decoded message bodies, headers and MIME metadata emitting terminal control or bidi characters in the human-readable view. JSON and explicitly requested raw output remain unchanged.
 - Fixed control and bidi characters from messages and servers reaching the terminal through the plain output.
-- Fixed pimdir queue details leaking into the shared outputs: `envelope list` no longer reports a `queued` count, and `message send`, `message add --send` and the composers no longer print a `queueId`. `himalaya pimdir queue list` shows what is queued, and a queued send logs its row id at info level.
+- Fixed pimdir queue details leaking into the shared outputs: `envelope list` no longer reports a `queued` count, and `message send`, `message add --send` and the composers no longer print a `queueId`. `mailman pimdir queue list` shows what is queued, and a queued send logs its row id at info level.
 - Fixed `message compose`, `reply` and `forward` writing a `Message-ID` on the hostname of the machine (`<…@myhost>`), which disclosed it to every recipient. The id now sits on the domain of the `From` address; without one, or with a domain that is not a plain dot-atom, the hostname is still used.
 - Fixed `message move` on an IMAP server without MOVE whose `COPYUID` cannot be read, such as Mailo's UIDVALIDITY 0: the message was copied, left in the source and reported as not found. Mailo's `COPYUID` is now read despite its UIDVALIDITY 0, so a copy, or a move without MOVE, is counted without an extra round trip. Without a readable `COPYUID`, `message copy` and `message move` count the requested UIDs a `UID SEARCH` finds in the source, so a message that no longer exists is still reported as not found ([#781]).
 - Fixed a raw message piped on stdin (`message send`, `message add`, `smtp send`, every `save`, `import` and `insert`) being cut at its first line that is not valid UTF-8 and still reported as sent or saved, or refused as empty when that line was the first. Stdin and message files are now read whole as bytes, so a message in another 8-bit charset goes through intact. `imap raw` and `smtp raw` read stdin whole too and refuse invalid UTF-8 rather than truncating ([#786]).
@@ -163,15 +163,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - A pimdir write now shows on the next read instead of on the next sync.
 
-  A pimdir store is a replica the sync engine owns, so Himalaya appends its writes to the store's queue rather than apply them. A read used to project the committed index alone, so flagging a message lost the flag from the listing until Neverest ran.
+  A pimdir store is a replica the sync engine owns, so Mailman appends its writes to the store's queue rather than apply them. A read used to project the committed index alone, so flagging a message lost the flag from the listing until Neverest ran.
 
   Reads now overlay the pending queue, so a staged flag, edit, deletion, move or copy shows straight away. All of them address a message that already exists and keeps its public id, so nothing changed about how a message is addressed.
 
   A staged *creation* has no id until the sync engine applies it, so it can be no envelope and does not list. `envelope list` reports how many the mailbox has and where to see them, and `envelope search` reports none, a queued message never having been matched against the query.
 
-- `himalaya pimdir queue list` and `himalaya pimdir queue cancel`, for the staged creations the mailbox listing cannot show.
+- `mailman pimdir queue list` and `mailman pimdir queue cancel`, for the staged creations the mailbox listing cannot show.
 
-  The `pimdir` binary is kind-agnostic and prints ids, hashes and flags. Himalaya holds the mail conventions and the blobs, so it renders a queued message with its flags, subject, recipient and the moment it was queued.
+  The `pimdir` binary is kind-agnostic and prints ids, hashes and flags. Mailman holds the mail conventions and the blobs, so it renders a queued message with its flags, subject, recipient and the moment it was queued.
 
   `cancel` retracts one by the row id that view prints, which is the only way back for a message that does not exist yet: a staged flag or move is undone by doing the opposite.
 
@@ -183,7 +183,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added ManageSieve support behind the `sieve` cargo feature, on by default ([#739]).
 
-  An account gains an optional `[sieve]` block, and `himalaya sieve` exposes `capability`, `list`, `get`, `put`, `check`, `activate`, `deactivate`, `rename`, `delete` and `raw`.
+  An account gains an optional `[sieve]` block, and `mailman sieve` exposes `capability`, `list`, `get`, `put`, `check`, `activate`, `deactivate`, `rename`, `delete` and `raw`.
 
   The protocol lives in the new [io-managesieve](https://github.com/pimalaya/io-managesieve) library, so every SASL mechanism the other backends accept works here too, and a password or a bearer token is refused over an unencrypted connection unless `sieve.allow-cleartext-auth` says otherwise.
 
@@ -201,7 +201,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added the mbox backend, behind the `mbox` cargo feature (off by default), over the new io-mbox library ([#697]).
 
-  An `mbox` block points at a directory of mbox files and, optionally, at the spool (`$MAIL`) shown as `INBOX`. The shared commands read and write it, and `himalaya mbox` exposes the raw file operations. Any mbox file also opens by passing its absolute path as the mailbox. Writes lock the file the way MTAs and MUAs do, flags live in the `Status` and `X-Status` headers mutt and Dovecot use, and an index kept under the XDG cache directory makes a listing read only what changed.
+  An `mbox` block points at a directory of mbox files and, optionally, at the spool (`$MAIL`) shown as `INBOX`. The shared commands read and write it, and `mailman mbox` exposes the raw file operations. Any mbox file also opens by passing its absolute path as the mailbox. Writes lock the file the way MTAs and MUAs do, flags live in the `Status` and `X-Status` headers mutt and Dovecot use, and an index kept under the XDG cache directory makes a listing read only what changed.
 
 ### Changed
 
@@ -225,7 +225,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Forwarded `vendored` to io-pimdir and turned it on by default, so `cargo install` builds SQLite from source and needs none on the machine. Drop it to link the system SQLite and save about 1 MB; it also vendors OpenSSL when `native-tls` is on. The Nix builds still link the store's SQLite.
 
-- **BREAKING**: a `pimdir` store written before io-pimdir 0.4 is refused, and Himalaya reads the store's typed summaries.
+- **BREAKING**: a `pimdir` store written before io-pimdir 0.4 is refused, and Mailman reads the store's typed summaries.
 
   io-replica is retired, its sync engine folded into io-pimdir, and the store format moved with it: summaries are typed rows rather than a JSON meta column, and a store from the earlier draft is refused on open, saying to delete it and let Neverest resync. There is no migration, the draft offering none.
 
@@ -241,7 +241,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
   `-m imap/INBOX` is what `-m INBOX` used to be, and a listing shows `imap/INBOX` in both columns.
 
-  The sync engine binds a source's collections under a namespace, and Himalaya used to strip it back off, so one mailbox answered to two spellings. The store cannot be asked where that prefix ends: a collection id is opaque to it and hierarchy is a parent link rather than a separator.
+  The sync engine binds a source's collections under a namespace, and Mailman used to strip it back off, so one mailbox answered to two spellings. The store cannot be asked where that prefix ends: a collection id is opaque to it and hierarchy is a parent link rather than a separator.
 
   The stripping was therefore a guess at the sync engine's convention, needing a config key wherever it could not decide. The id is now the only spelling, as it already is for JMAP's opaque ids, and `mailbox.alias.inbox = "imap/INBOX"` is how you stop typing it.
 
@@ -257,11 +257,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Renamed the type `configure` prints from `GeneratedConfig` to `ConfigureOutput`, the shape the rest of the family uses.
 
-  What the command prints is unchanged. Only the `title` of the `himalaya-configure` JSON Schema follows the new name.
+  What the command prints is unchanged. Only the `title` of the `mailman-configure` JSON Schema follows the new name.
 
 ### Removed
 
-- Removed the `mbox` alias of the `mailbox` command: `himalaya mbox` now runs the new mbox backend command. Scripts should call the command by its name, `himalaya mailbox`, rather than by an alias.
+- Removed the `mbox` alias of the `mailbox` command: `mailman mbox` now runs the new mbox backend command. Scripts should call the command by its name, `mailman mailbox`, rather than by an alias.
 
 ### Fixed
 
@@ -305,7 +305,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
   Without MOVE, a move is now `UID COPY`, `\Deleted` and, with UIDPLUS, `UID EXPUNGE` of the copied UIDs. Without UIDPLUS the messages stay flagged `\Deleted` in the source.
 
-- Preserved message MIME payloads in `gmail threads get --json`, including full-format bodies and attachment metadata ([#750](https://github.com/pimalaya/himalaya/issues/750)).
+- Preserved message MIME payloads in `gmail threads get --json`, including full-format bodies and attachment metadata ([#750](https://github.com/pimalaya/mailman/issues/750)).
 
 - Fixed a duplicated message disappearing from the `pimdir` backend's listing.
 
@@ -317,7 +317,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Fixed `completion` writing files instead of printing the completion script to the standard output ([#736]).
 
-  The script has been documented as going to stdout since the command exists, but the directory it fell back on turned `himalaya completion bash` into a file-writing command printing a report.
+  The script has been documented as going to stdout since the command exists, but the directory it fell back on turned `mailman completion bash` into a file-writing command printing a report.
 
   That broke every packaging helper capturing stdout, Homebrew's `generate_completions_from_executable` among them. Giving `--dir` keeps writing one script per shell.
 
@@ -343,7 +343,7 @@ Tagged and released on GitHub, but never published to crates.io: the upload fail
 
 ### Added
 
-- Added the `pimdir` storage backend, Himalaya over the local store the sync engine populates.
+- Added the `pimdir` storage backend, Mailman over the local store the sync engine populates.
 
   Reads build envelopes from the stored meta and report a body that is not local as "body not fetched".
 
@@ -351,7 +351,7 @@ Tagged and released on GitHub, but never published to crates.io: the upload fail
 
   The namespace is derived unless `pimdir.namespace` names it, and `pimdir.account` picks the account in a store several share.
 
-  Himalaya reads the store read-only, which takes no lock, so a sync in flight neither blocks it nor is blocked by it.
+  Mailman reads the store read-only, which takes no lock, so a sync in flight neither blocks it nor is blocked by it.
 
   A write is staged as an action queued for the store's owner to apply and push, rather than written into the index: the owner's write path collects unreferenced objects, and running that beside a sync destroys the bodies it has streamed but not yet attached.
 
@@ -359,7 +359,7 @@ Tagged and released on GitHub, but never published to crates.io: the upload fail
 
 - Added back the `email` and `display-name` config fields, at the global and the account level ([#721]).
 
-  They fill the `From` header of `messages compose`, `reply` and `forward` when `--from` is not passed, and are also read as `from` and `from-name`, the spellings himalaya-tui writes.
+  They fill the `From` header of `messages compose`, `reply` and `forward` when `--from` is not passed, and are also read as `from` and `from-name`, the spellings mailman-tui writes.
 
 - Added back the `signature` and `signature-delim` config fields, at the global and the account level.
 
@@ -387,7 +387,7 @@ Tagged and released on GitHub, but never published to crates.io: the upload fail
 
   The first-run offer is now a hook rather than a gate: the command carries on afterwards, and nothing prompts when stdin is not a terminal or `--json` is set.
 
-- Added back the `HIMALAYA_CONFIG` environment variable, read like `-c` and taking the same `:`-delimited list.
+- Added back the `MAILMAN_CONFIG` environment variable, read like `-c` and taking the same `:`-delimited list.
 
 - Added the shared Pimalaya `--help` footer, naming the bug tracker and the sponsoring page.
 
@@ -407,11 +407,11 @@ Tagged and released on GitHub, but never published to crates.io: the upload fail
 
 - Made the wizard write the account to the configuration file rather than only print it.
 
-  The file is where `-c` or `HIMALAYA_CONFIG` pointed, or the XDG default; an existing one gets a plain text append, so comments and formatting survive.
+  The file is where `-c` or `MAILMAN_CONFIG` pointed, or the XDG default; an existing one gets a plain text append, so comments and formatting survive.
 
-- Made the first-run offer open with a welcome banner on stderr, naming the configuration file it looked for; `himalaya configure` skips it.
+- Made the first-run offer open with a welcome banner on stderr, naming the configuration file it looked for; `mailman configure` skips it.
 
-- Changed bare `himalaya --account <NAME>` to show the help instead of running the account wizard.
+- Changed bare `mailman --account <NAME>` to show the help instead of running the account wizard.
 
 - Made the wizard offer only the IMAP authentication mechanisms an unauthenticated CAPABILITY advertises, falling back to the full list on any probe failure.
 
@@ -427,7 +427,7 @@ Tagged and released on GitHub, but never published to crates.io: the upload fail
 
 ### Fixed
 
-- Fixed `configure --json` emitting a payload no schema described: `json-schema <DIR>` now writes himalaya-configure.json.
+- Fixed `configure --json` emitting a payload no schema described: `json-schema <DIR>` now writes mailman-configure.json.
 
 - Fixed `--from` carrying a display name composing a `From: <Alice <alice@example.org>>` no SMTP server accepts ([#727]).
 
@@ -451,9 +451,9 @@ Tagged and released on GitHub, but never published to crates.io: the upload fail
 
 ### Removed
 
-- Removed the assets/himalaya.desktop entry and the Nix line installing it.
+- Removed the assets/mailman.desktop entry and the Nix line installing it.
 
-  Every functional line of it had stopped working, `Exec=himalaya %U` answering a mailto: link with `unrecognized subcommand`; handling mailto: is left to a wrapper of your own, as MIGRATION.md describes.
+  Every functional line of it had stopped working, `Exec=mailman %U` answering a mailto: link with `unrecognized subcommand`; handling mailto: is left to a wrapper of your own, as MIGRATION.md describes.
 
 ## [2.0.0] - 2026-07-26
 
@@ -485,7 +485,7 @@ Tagged and released on GitHub, but never published to crates.io: the upload fail
 
   Describes each `--json` payload for downstream tooling; only compiled-in backends are emitted.
 
-- Added a system DNS resolver fallback to discovery, making the chain `HIMALAYA_DNS_RESOLVER` then system then `1.1.1.1`.
+- Added a system DNS resolver fallback to discovery, making the chain `MAILMAN_DNS_RESOLVER` then system then `1.1.1.1`.
 
   This keeps the email domain off a third-party resolver and works around networks blocking the default.
 
@@ -501,7 +501,7 @@ Tagged and released on GitHub, but never published to crates.io: the upload fail
 
 - Split `Account` out of every client wrapper: subcommands now receive `account` and `client` as sibling arguments.
 
-- **Breaking:** changed bare `himalaya` to run the account wizard instead of listing the default account's envelopes.
+- **Breaking:** changed bare `mailman` to run the account wizard instead of listing the default account's envelopes.
 
 - Changed the wizard to print the generated account as a ready-to-save TOML document on stdout instead of writing it to disk.
 
@@ -529,7 +529,7 @@ Tagged and released on GitHub, but never published to crates.io: the upload fail
 
   The "stdout = MIME draft" contract broke composers spawning an interactive editor; chain a standalone tool such as [mml](https://github.com/pimalaya/mml) into `messages send` / `add` instead.
 
-- Dropped `HIMALAYA_CONFIG` environment-variable support, `-c/--config` still taking one or more `:`-separated paths.
+- Dropped `MAILMAN_CONFIG` environment-variable support, `-c/--config` still taking one or more `:`-separated paths.
 
 - Removed the `account configure` command (alias `account edit`) and its per-field edit wizard, leaving `account list` and `account check` for inspection.
 
@@ -539,7 +539,7 @@ Tagged and released on GitHub, but never published to crates.io: the upload fail
 
 - Added `--quiet` flag ([#545]).
 - Added support for custom TLS certificate.
-- Added support for multiple config files via `HIMALAYA_CONFIG=path1:path2:…` ([#612]).
+- Added support for multiple config files via `MAILMAN_CONFIG=path1:path2:…` ([#612]).
 - Added `-d|--downloads-dir` argument to `attachment download` command ([#559]).
 - Added `View` and `View MIME` post edit choices ([#486]).
 - Made `message send` and `template send` return id ([#627]).
@@ -578,14 +578,14 @@ Tagged and released on GitHub, but never published to crates.io: the upload fail
 
 ## [1.0.0] - 2024-12-09
 
-The Himalaya CLI scope has changed. It does not include anymore the synchronization, nor the envelope watching. These scopes have moved to dedicated projects:
+The Mailman CLI scope has changed. It does not include anymore the synchronization, nor the envelope watching. These scopes have moved to dedicated projects:
 
 - [Neverest CLI](https://github.com/pimalaya/neverest), CLI to synchronize, backup and restore emails
 - [Mirador CLI](https://github.com/pimalaya/mirador), CLI to watch mailbox changes
 
-Due to the long time difference with the previous `v1.0.0-beta.4` release, this changelog may be incomplete. The simplest way to upgrade is to reconfigure Himalaya CLI from scratch, using the wizard or the [`config.sample.toml`](./config.sample.toml).
+Due to the long time difference with the previous `v1.0.0-beta.4` release, this changelog may be incomplete. The simplest way to upgrade is to reconfigure Mailman CLI from scratch, using the wizard or the [`config.sample.toml`](./config.sample.toml).
 
-Himalaya CLI will now try to adopt the [conventional commits specification](https://github.com/conventional-commits/conventionalcommits.org). Tools like [`git-cliff`](https://git-cliff.org/) may help us generating more accurate changelogs in the future.
+Mailman CLI will now try to adopt the [conventional commits specification](https://github.com/conventional-commits/conventionalcommits.org). Tools like [`git-cliff`](https://git-cliff.org/) may help us generating more accurate changelogs in the future.
 
 ### Added
 
@@ -697,7 +697,7 @@ Himalaya CLI will now try to adopt the [conventional commits specification](http
 
 ### Removed
 
-- Removed systemd service from `assets/` folder, as Himalaya CLI scope does not include synchronization nor watching anymore.
+- Removed systemd service from `assets/` folder, as Mailman CLI scope does not include synchronization nor watching anymore.
 
 ## [1.0.0-beta.4] - 2024-04-16
 
@@ -711,7 +711,7 @@ Himalaya CLI will now try to adopt the [conventional commits specification](http
 
 ### Changed
 
-- **Added back the search feature**: you can now give an optional filter and sort query at the end of the `envelope list` command. See `envelope list --help` or [pimalaya.org](https://pimalaya.org/himalaya/cli/master/usage/advanced/envelope/list.html#query) for more detail on the search API.
+- **Added back the search feature**: you can now give an optional filter and sort query at the end of the `envelope list` command. See `envelope list --help` or [pimalaya.org](https://pimalaya.org/mailman/cli/master/usage/advanced/envelope/list.html#query) for more detail on the search API.
 - Changed the `envelope list` folder argument due to the search query: it became a flag `--folder|-f`.
 - Made the global `--config|-c` option repeatable: the first option is considered the path to the main config, and successive options are considered partial override ([#184]).
 - Refactored error management: error should be more clear, colored and can now contain spantrace and backtrace.
@@ -744,7 +744,7 @@ Himalaya CLI will now try to adopt the [conventional commits specification](http
 
   Cargo features kept: `imap`, `maildir`, `notmuch`, `smtp`, `sendmail`, `account-sync`, `account-discovery`, `pgp-gpg`, `pgp-commands` and `pgp-native`.
 - Moved `sync.strategy` to `folder.sync.filter`.
-- Changed location of the synchronization data from `$XDG_DATA_HOME/himalaya/<account-name>` to `$XDG_DATA_HOME/pimalaya/email/sync/<account-name>-cache`.
+- Changed location of the synchronization data from `$XDG_DATA_HOME/mailman/<account-name>` to `$XDG_DATA_HOME/pimalaya/email/sync/<account-name>-cache`.
 - Changed location of the synchronization cache from `sync.dir` to `$XDG_CACHE_HOME/pimalaya/email/sync/<hash>/`.
 - Replaced id mapping database `SQLite` by `sled`, a pure key-val store written in Rust to improve portability of the tool. **Therefore, id aliases are reset**.
 - Improved pre and post edit choices interactio ([#58]).
@@ -787,7 +787,7 @@ Himalaya CLI will now try to adopt the [conventional commits specification](http
 
 ### Fixed
 
-- Fixed default command: running `himalaya` without argument lists envelopes, as it used to be in previous versions.
+- Fixed default command: running `mailman` without argument lists envelopes, as it used to be in previous versions.
 - Fixed bug when listing envelopes with `backend = "imap"`, `sync.enable = true` and `envelope.watch.backend = "imap"` led to unwanted IMAP connection creation (which slowed down the listing).
 - Fixed builds related to enabled cargo features.
 
@@ -815,7 +815,7 @@ Few major concepts changed:
   - `message.write.backend`: override the backend used for adding flags (`maildir`, `imap` or `notmuch`)
   - `message.copy.backend`: override the backend used for copying messages (`maildir`, `imap` or `notmuch`)
   - `message.move.backend`: override the backend used for moving messages (`maildir`, `imap` or `notmuch`)
-- The CLI API changed: every command is now prefixed by its domain following the format `himalaya <domain> <action>`. List of domain available by running `himalaya -h` and list of actions for a domain by running `himalaya <domain> -h`.
+- The CLI API changed: every command is now prefixed by its domain following the format `mailman <domain> <action>`. List of domain available by running `mailman -h` and list of actions for a domain by running `mailman <domain> -h`.
 - TOML configuration file options use now the dot notation rather than the dash notation. For example, `folder-listing-page-size` became `folder.list.page-size`. See the [changed](#changed) section below for more details.
 
 ### Added
@@ -930,7 +930,7 @@ Few major concepts changed:
 
 ### Added
 
-- Added keyring support, which means Himalaya can now use your system's global keyring to get/set sensitive data like passwords or tokens.
+- Added keyring support, which means Mailman can now use your system's global keyring to get/set sensitive data like passwords or tokens.
 - Added required IMAP option `imap-auth` and SMTP option `smtp-auth`. Possible values: `passwd`, `oauth2`.
 - Added OAuth 2.0 support for IMAP and SMTP.
 - Added passwords and OAuth 2.0 configuration via the wizard.
@@ -1002,7 +1002,7 @@ Few major concepts changed:
 
 - Made global options truly global, which means they can be used everywhere (not only *before* commands but also *after* ([#60]).
 - Replaced reply all `-a` argument with `-A` because it conflicted with the global option `-a|--account`.
-- Replaced `himalaya-lib` by `pimalaya-email`.
+- Replaced `mailman-lib` by `pimalaya-email`.
 - Renamed feature `vendored` to `native-tls-vendored`.
 - Removed the `develop` branch, all the development is now done on the `master` branch.
 
@@ -1019,7 +1019,7 @@ Few major concepts changed:
   
 ### Changed
 
-- Changed the location of the [documentation](https://pimalaya.org/himalaya/).
+- Changed the location of the [documentation](https://pimalaya.org/mailman/).
 
 ### Fixed
 
@@ -1038,7 +1038,7 @@ Few major concepts changed:
 - Added the flag `--disable-cache` to not use the local Maildir backend.
 - Added the email composer (from its own [repository](https://git.sr.ht/~soywod/mime-msg-builder)).
 - Added Musl builds to releases.
-- Added `himalaya man` command to generate man page.
+- Added `mailman man` command to generate man page.
 
 ### Changed
 
@@ -1053,7 +1053,7 @@ Few major concepts changed:
 
 - Removed the `-a|--attachment` argument from `write`, `reply` and `forward` commands. Instead you can attach documents directly from the template using the syntax `<#part filename=/path/to/you/document.ext>`.
 - Removed the `-e|--encrypt` flag from `write`, `reply` and `forward` commands. Instead you can encrypt and sign parts directly from the template using the syntax `<#part type=text/plain encrypt=command sign=command>Hello!<#/part>`.
-- Removed the `-l|--log-level` option, use instead the `RUST_LOG` environment variable (see the [wiki](https://github.com/soywod/himalaya/wiki/Tips:debug-and-logs))
+- Removed the `-l|--log-level` option, use instead the `RUST_LOG` environment variable (see the [wiki](https://github.com/soywod/mailman/wiki/Tips:debug-and-logs))
 
 ## [0.6.1] - 2022-10-12
 
@@ -1080,8 +1080,8 @@ Few major concepts changed:
 
   The source code has been split into subrepositories:
 
-  - The email logic has been extracted from the CLI and placed in a lib on [SourceHut](https://git.sr.ht/~soywod/himalaya-lib)	
-  - The vim plugin is now in a dedicated repository on [SourceHut](https://git.sr.ht/~soywod/himalaya-vim) as well
+  - The email logic has been extracted from the CLI and placed in a lib on [SourceHut](https://git.sr.ht/~soywod/mailman-lib)	
+  - The vim plugin is now in a dedicated repository on [SourceHut](https://git.sr.ht/~soywod/mailman-vim) as well
   - This repository only contains the CLI source code (it was not possible to move it to SourceHut because of cross platform builds)
 
 - [**BREAKING**] Renamed `-m|--mailbox` to `-f|--folder`
@@ -1188,7 +1188,7 @@ Few major concepts changed:
 
 ### Added
 
-- [Contributing guide](https://github.com/soywod/himalaya/blob/master/CONTRIBUTING.md)
+- [Contributing guide](https://github.com/soywod/mailman/blob/master/CONTRIBUTING.md)
 - Notify query config option
 - End-to-end encryption
 
@@ -1273,7 +1273,7 @@ Few major concepts changed:
 ### Added
 
 - Add ability to change account in with the Vim plugin
-- Add possibility to make Himalaya default email app
+- Add possibility to make Mailman default email app
 
 ### Changed
 
@@ -1471,112 +1471,112 @@ Few major concepts changed:
 - Password from command
 - Set up README
 
-[#264]: https://github.com/pimalaya/himalaya/issues/264
-[#469]: https://github.com/pimalaya/himalaya/issues/469
-[#486]: https://github.com/pimalaya/himalaya/issues/486
-[#492]: https://github.com/pimalaya/himalaya/issues/492
-[#496]: https://github.com/pimalaya/himalaya/issues/496
-[#508]: https://github.com/pimalaya/himalaya/issues/508
-[#510]: https://github.com/pimalaya/himalaya/issues/510
-[#515]: https://github.com/pimalaya/himalaya/issues/515
-[#518]: https://github.com/pimalaya/himalaya/issues/518
-[#522]: https://github.com/pimalaya/himalaya/issues/522
-[#523]: https://github.com/pimalaya/himalaya/issues/523
-[#525]: https://github.com/pimalaya/himalaya/issues/525
-[#535]: https://github.com/pimalaya/himalaya/issues/535
-[#536]: https://github.com/pimalaya/himalaya/issues/536
-[#538]: https://github.com/pimalaya/himalaya/issues/538
-[#545]: https://github.com/pimalaya/himalaya/issues/545
-[#547]: https://github.com/pimalaya/himalaya/issues/547
-[#552]: https://github.com/pimalaya/himalaya/issues/552
-[#559]: https://github.com/pimalaya/himalaya/issues/559
-[#593]: https://github.com/pimalaya/himalaya/issues/593
-[#611]: https://github.com/pimalaya/himalaya/issues/611
-[#612]: https://github.com/pimalaya/himalaya/issues/612
-[#627]: https://github.com/pimalaya/himalaya/issues/627
-[#632]: https://github.com/pimalaya/himalaya/issues/632
-[#634]: https://github.com/pimalaya/himalaya/issues/634
-[#637]: https://github.com/pimalaya/himalaya/issues/637
-[#697]: https://github.com/pimalaya/himalaya/issues/697
-[#721]: https://github.com/pimalaya/himalaya/issues/721
-[#723]: https://github.com/pimalaya/himalaya/issues/723
-[#727]: https://github.com/pimalaya/himalaya/issues/727
-[#729]: https://github.com/pimalaya/himalaya/issues/729
-[#730]: https://github.com/pimalaya/himalaya/issues/730
-[#731]: https://github.com/pimalaya/himalaya/issues/731
-[#732]: https://github.com/pimalaya/himalaya/issues/732
-[#734]: https://github.com/pimalaya/himalaya/issues/734
-[#736]: https://github.com/pimalaya/himalaya/issues/736
-[#738]: https://github.com/pimalaya/himalaya/issues/738
-[#739]: https://github.com/pimalaya/himalaya/issues/739
-[#740]: https://github.com/pimalaya/himalaya/issues/740
-[#742]: https://github.com/pimalaya/himalaya/issues/742
-[#743]: https://github.com/pimalaya/himalaya/issues/743
-[#745]: https://github.com/pimalaya/himalaya/issues/745
-[#759]: https://github.com/pimalaya/himalaya/issues/759
-[#762]: https://github.com/pimalaya/himalaya/issues/762
-[#764]: https://github.com/pimalaya/himalaya/issues/764
-[#769]: https://github.com/pimalaya/himalaya/issues/769
-[#772]: https://github.com/pimalaya/himalaya/issues/772
-[#774]: https://github.com/pimalaya/himalaya/pull/774
-[#775]: https://github.com/pimalaya/himalaya/issues/775
-[#777]: https://github.com/pimalaya/himalaya/issues/777
-[#778]: https://github.com/pimalaya/himalaya/issues/778
-[#779]: https://github.com/pimalaya/himalaya/issues/779
-[#780]: https://github.com/pimalaya/himalaya/issues/780
-[#787]: https://github.com/pimalaya/himalaya/issues/787
-[#781]: https://github.com/pimalaya/himalaya/issues/781
-[#786]: https://github.com/pimalaya/himalaya/issues/786
-[#790]: https://github.com/pimalaya/himalaya/issues/790
+[#264]: https://github.com/pimalaya/mailman/issues/264
+[#469]: https://github.com/pimalaya/mailman/issues/469
+[#486]: https://github.com/pimalaya/mailman/issues/486
+[#492]: https://github.com/pimalaya/mailman/issues/492
+[#496]: https://github.com/pimalaya/mailman/issues/496
+[#508]: https://github.com/pimalaya/mailman/issues/508
+[#510]: https://github.com/pimalaya/mailman/issues/510
+[#515]: https://github.com/pimalaya/mailman/issues/515
+[#518]: https://github.com/pimalaya/mailman/issues/518
+[#522]: https://github.com/pimalaya/mailman/issues/522
+[#523]: https://github.com/pimalaya/mailman/issues/523
+[#525]: https://github.com/pimalaya/mailman/issues/525
+[#535]: https://github.com/pimalaya/mailman/issues/535
+[#536]: https://github.com/pimalaya/mailman/issues/536
+[#538]: https://github.com/pimalaya/mailman/issues/538
+[#545]: https://github.com/pimalaya/mailman/issues/545
+[#547]: https://github.com/pimalaya/mailman/issues/547
+[#552]: https://github.com/pimalaya/mailman/issues/552
+[#559]: https://github.com/pimalaya/mailman/issues/559
+[#593]: https://github.com/pimalaya/mailman/issues/593
+[#611]: https://github.com/pimalaya/mailman/issues/611
+[#612]: https://github.com/pimalaya/mailman/issues/612
+[#627]: https://github.com/pimalaya/mailman/issues/627
+[#632]: https://github.com/pimalaya/mailman/issues/632
+[#634]: https://github.com/pimalaya/mailman/issues/634
+[#637]: https://github.com/pimalaya/mailman/issues/637
+[#697]: https://github.com/pimalaya/mailman/issues/697
+[#721]: https://github.com/pimalaya/mailman/issues/721
+[#723]: https://github.com/pimalaya/mailman/issues/723
+[#727]: https://github.com/pimalaya/mailman/issues/727
+[#729]: https://github.com/pimalaya/mailman/issues/729
+[#730]: https://github.com/pimalaya/mailman/issues/730
+[#731]: https://github.com/pimalaya/mailman/issues/731
+[#732]: https://github.com/pimalaya/mailman/issues/732
+[#734]: https://github.com/pimalaya/mailman/issues/734
+[#736]: https://github.com/pimalaya/mailman/issues/736
+[#738]: https://github.com/pimalaya/mailman/issues/738
+[#739]: https://github.com/pimalaya/mailman/issues/739
+[#740]: https://github.com/pimalaya/mailman/issues/740
+[#742]: https://github.com/pimalaya/mailman/issues/742
+[#743]: https://github.com/pimalaya/mailman/issues/743
+[#745]: https://github.com/pimalaya/mailman/issues/745
+[#759]: https://github.com/pimalaya/mailman/issues/759
+[#762]: https://github.com/pimalaya/mailman/issues/762
+[#764]: https://github.com/pimalaya/mailman/issues/764
+[#769]: https://github.com/pimalaya/mailman/issues/769
+[#772]: https://github.com/pimalaya/mailman/issues/772
+[#774]: https://github.com/pimalaya/mailman/pull/774
+[#775]: https://github.com/pimalaya/mailman/issues/775
+[#777]: https://github.com/pimalaya/mailman/issues/777
+[#778]: https://github.com/pimalaya/mailman/issues/778
+[#779]: https://github.com/pimalaya/mailman/issues/779
+[#780]: https://github.com/pimalaya/mailman/issues/780
+[#787]: https://github.com/pimalaya/mailman/issues/787
+[#781]: https://github.com/pimalaya/mailman/issues/781
+[#786]: https://github.com/pimalaya/mailman/issues/786
+[#790]: https://github.com/pimalaya/mailman/issues/790
 
 [core#1]: https://github.com/pimalaya/core/issues/1
 [core#10]: https://github.com/pimalaya/core/issues/10
 
-[unreleased]: https://github.com/pimalaya/himalaya/compare/v2.2.1...HEAD
-[2.2.1]: https://github.com/pimalaya/himalaya/compare/v2.1.0...v2.2.1
-[2.2.0]: https://github.com/pimalaya/himalaya/compare/v2.1.0...v2.2.0
-[2.1.0]: https://github.com/pimalaya/himalaya/compare/v2.0.0...v2.1.0
-[2.0.0]: https://github.com/pimalaya/himalaya/compare/v1.2.0...v2.0.0
-[1.2.0]: https://github.com/pimalaya/himalaya/compare/v1.1.0...v1.2.0
-[1.1.0]: https://github.com/pimalaya/himalaya/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/pimalaya/himalaya/compare/v1.0.0-beta.4...v1.0.0
-[1.0.0-beta.4]: https://github.com/pimalaya/himalaya/compare/v1.0.0-beta.3...v1.0.0-beta.4
-[1.0.0-beta.3]: https://github.com/pimalaya/himalaya/compare/v1.0.0-beta.2...v1.0.0-beta.3
-[1.0.0-beta.2]: https://github.com/pimalaya/himalaya/compare/v1.0.0-beta...v1.0.0-beta.2
-[1.0.0-beta]: https://github.com/pimalaya/himalaya/compare/v0.9.0...v1.0.0-beta
-[0.9.0]: https://github.com/pimalaya/himalaya/compare/v0.8.4...v0.9.0
-[0.8.4]: https://github.com/pimalaya/himalaya/compare/v0.8.3...v0.8.4
-[0.8.3]: https://github.com/pimalaya/himalaya/compare/v0.8.2...v0.8.3
-[0.8.2]: https://github.com/pimalaya/himalaya/compare/v0.8.1...v0.8.2
-[0.8.1]: https://github.com/pimalaya/himalaya/compare/v0.8.0...v0.8.1
-[0.8.0]: https://github.com/pimalaya/himalaya/compare/v0.7.3...v0.8.0
-[0.7.3]: https://github.com/pimalaya/himalaya/compare/v0.7.2...v0.7.3
-[0.7.2]: https://github.com/pimalaya/himalaya/compare/v0.7.1...v0.7.2
-[0.7.1]: https://github.com/pimalaya/himalaya/compare/v0.7.0...v0.7.1
-[0.7.0]: https://github.com/pimalaya/himalaya/compare/v0.6.1...v0.7.0
-[0.6.1]: https://github.com/pimalaya/himalaya/compare/v0.6.0...v0.6.1
-[0.6.0]: https://github.com/pimalaya/himalaya/compare/v0.5.10...v0.6.0
-[0.5.10]: https://github.com/pimalaya/himalaya/compare/v0.5.9...v0.5.10
-[0.5.9]: https://github.com/pimalaya/himalaya/compare/v0.5.8...v0.5.9
-[0.5.8]: https://github.com/pimalaya/himalaya/compare/v0.5.7...v0.5.8
-[0.5.7]: https://github.com/pimalaya/himalaya/compare/v0.5.6...v0.5.7
-[0.5.6]: https://github.com/pimalaya/himalaya/compare/v0.5.5...v0.5.6
-[0.5.5]: https://github.com/pimalaya/himalaya/compare/v0.5.4...v0.5.5
-[0.5.4]: https://github.com/pimalaya/himalaya/compare/v0.5.3...v0.5.4
-[0.5.3]: https://github.com/pimalaya/himalaya/compare/v0.5.2...v0.5.3
-[0.5.2]: https://github.com/pimalaya/himalaya/compare/v0.5.1...v0.5.2
-[0.5.1]: https://github.com/pimalaya/himalaya/compare/v0.5.0...v0.5.1
-[0.5.0]: https://github.com/pimalaya/himalaya/compare/v0.4.0...v0.5.0
-[0.4.0]: https://github.com/pimalaya/himalaya/compare/v0.3.2...v0.4.0
-[0.3.2]: https://github.com/pimalaya/himalaya/compare/v0.3.1...v0.3.2
-[0.3.1]: https://github.com/pimalaya/himalaya/compare/v0.3.0...v0.3.1
-[0.3.0]: https://github.com/pimalaya/himalaya/compare/v0.2.7...v0.3.0
-[0.2.7]: https://github.com/pimalaya/himalaya/compare/v0.2.6...v0.2.7
-[0.2.6]: https://github.com/pimalaya/himalaya/compare/v0.2.5...v0.2.6
-[0.2.5]: https://github.com/pimalaya/himalaya/compare/v0.2.4...v0.2.5
-[0.2.4]: https://github.com/pimalaya/himalaya/compare/v0.2.3...v0.2.4
-[0.2.3]: https://github.com/pimalaya/himalaya/compare/v0.2.2...v0.2.3
-[0.2.2]: https://github.com/pimalaya/himalaya/compare/v0.2.1...v0.2.2
-[0.2.1]: https://github.com/pimalaya/himalaya/compare/v0.2.0...v0.2.1
-[0.2.0]: https://github.com/pimalaya/himalaya/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/pimalaya/himalaya/releases/tag/v0.1.0
+[unreleased]: https://github.com/pimalaya/mailman/compare/v2.2.1...HEAD
+[2.2.1]: https://github.com/pimalaya/mailman/compare/v2.1.0...v2.2.1
+[2.2.0]: https://github.com/pimalaya/mailman/compare/v2.1.0...v2.2.0
+[2.1.0]: https://github.com/pimalaya/mailman/compare/v2.0.0...v2.1.0
+[2.0.0]: https://github.com/pimalaya/mailman/compare/v1.2.0...v2.0.0
+[1.2.0]: https://github.com/pimalaya/mailman/compare/v1.1.0...v1.2.0
+[1.1.0]: https://github.com/pimalaya/mailman/compare/v1.0.0...v1.1.0
+[1.0.0]: https://github.com/pimalaya/mailman/compare/v1.0.0-beta.4...v1.0.0
+[1.0.0-beta.4]: https://github.com/pimalaya/mailman/compare/v1.0.0-beta.3...v1.0.0-beta.4
+[1.0.0-beta.3]: https://github.com/pimalaya/mailman/compare/v1.0.0-beta.2...v1.0.0-beta.3
+[1.0.0-beta.2]: https://github.com/pimalaya/mailman/compare/v1.0.0-beta...v1.0.0-beta.2
+[1.0.0-beta]: https://github.com/pimalaya/mailman/compare/v0.9.0...v1.0.0-beta
+[0.9.0]: https://github.com/pimalaya/mailman/compare/v0.8.4...v0.9.0
+[0.8.4]: https://github.com/pimalaya/mailman/compare/v0.8.3...v0.8.4
+[0.8.3]: https://github.com/pimalaya/mailman/compare/v0.8.2...v0.8.3
+[0.8.2]: https://github.com/pimalaya/mailman/compare/v0.8.1...v0.8.2
+[0.8.1]: https://github.com/pimalaya/mailman/compare/v0.8.0...v0.8.1
+[0.8.0]: https://github.com/pimalaya/mailman/compare/v0.7.3...v0.8.0
+[0.7.3]: https://github.com/pimalaya/mailman/compare/v0.7.2...v0.7.3
+[0.7.2]: https://github.com/pimalaya/mailman/compare/v0.7.1...v0.7.2
+[0.7.1]: https://github.com/pimalaya/mailman/compare/v0.7.0...v0.7.1
+[0.7.0]: https://github.com/pimalaya/mailman/compare/v0.6.1...v0.7.0
+[0.6.1]: https://github.com/pimalaya/mailman/compare/v0.6.0...v0.6.1
+[0.6.0]: https://github.com/pimalaya/mailman/compare/v0.5.10...v0.6.0
+[0.5.10]: https://github.com/pimalaya/mailman/compare/v0.5.9...v0.5.10
+[0.5.9]: https://github.com/pimalaya/mailman/compare/v0.5.8...v0.5.9
+[0.5.8]: https://github.com/pimalaya/mailman/compare/v0.5.7...v0.5.8
+[0.5.7]: https://github.com/pimalaya/mailman/compare/v0.5.6...v0.5.7
+[0.5.6]: https://github.com/pimalaya/mailman/compare/v0.5.5...v0.5.6
+[0.5.5]: https://github.com/pimalaya/mailman/compare/v0.5.4...v0.5.5
+[0.5.4]: https://github.com/pimalaya/mailman/compare/v0.5.3...v0.5.4
+[0.5.3]: https://github.com/pimalaya/mailman/compare/v0.5.2...v0.5.3
+[0.5.2]: https://github.com/pimalaya/mailman/compare/v0.5.1...v0.5.2
+[0.5.1]: https://github.com/pimalaya/mailman/compare/v0.5.0...v0.5.1
+[0.5.0]: https://github.com/pimalaya/mailman/compare/v0.4.0...v0.5.0
+[0.4.0]: https://github.com/pimalaya/mailman/compare/v0.3.2...v0.4.0
+[0.3.2]: https://github.com/pimalaya/mailman/compare/v0.3.1...v0.3.2
+[0.3.1]: https://github.com/pimalaya/mailman/compare/v0.3.0...v0.3.1
+[0.3.0]: https://github.com/pimalaya/mailman/compare/v0.2.7...v0.3.0
+[0.2.7]: https://github.com/pimalaya/mailman/compare/v0.2.6...v0.2.7
+[0.2.6]: https://github.com/pimalaya/mailman/compare/v0.2.5...v0.2.6
+[0.2.5]: https://github.com/pimalaya/mailman/compare/v0.2.4...v0.2.5
+[0.2.4]: https://github.com/pimalaya/mailman/compare/v0.2.3...v0.2.4
+[0.2.3]: https://github.com/pimalaya/mailman/compare/v0.2.2...v0.2.3
+[0.2.2]: https://github.com/pimalaya/mailman/compare/v0.2.1...v0.2.2
+[0.2.1]: https://github.com/pimalaya/mailman/compare/v0.2.0...v0.2.1
+[0.2.0]: https://github.com/pimalaya/mailman/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/pimalaya/mailman/releases/tag/v0.1.0

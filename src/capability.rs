@@ -4,7 +4,7 @@
 //! transport answers each shared verb for an account.
 //!
 //! The names and levels follow pimdir STORAGE Annex B without its domain
-//! word: himalaya's `message.move` is pimdir's `mail.message.move`. A
+//! word: mailman's `message.move` is pimdir's `mail.message.move`. A
 //! backend declares a capability only when it gives the result every
 //! other declarer gives; a different result stays protocol-specific.
 //!
@@ -562,7 +562,7 @@ const IMAP: &[Row] = storage_rows![
     (
         C::Vacation,
         Not(
-            "IMAP holds no auto-reply; `himalaya sieve` writes a vacation script (RFC 5230), which has no date window"
+            "IMAP holds no auto-reply; `mailman sieve` writes a vacation script (RFC 5230), which has no date window"
         )
     ),
     (C::MessageAdd, Full),
@@ -852,7 +852,7 @@ const SMTP: &[Row] = &[
     (C::Submit, Full),
     (
         C::SubmitCopy,
-        Partial("himalaya files the copy into the storage backend after the send, two operations"),
+        Partial("mailman files the copy into the storage backend after the send, two operations"),
     ),
 ];
 
@@ -1125,7 +1125,7 @@ mod resolution_tests {
         let imap = Resolution::of("a", &account(IMAP_BLOCK), Backend::Auto);
         assert_eq!(imap.transport(C::Vacation), Some(Backend::Imap));
         let refused = imap.require(&[C::Vacation]).unwrap_err().to_string();
-        assert!(refused.contains("himalaya sieve"), "{refused}");
+        assert!(refused.contains("mailman sieve"), "{refused}");
     }
 
     #[test]

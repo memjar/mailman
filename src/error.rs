@@ -6,7 +6,7 @@
 //! The message stays for humans and may be reworded at any time; the
 //! code is the contract. A failure with no code prints as before, with
 //! no `code` field. The mechanism (`CodedError`, `code_of`, the report)
-//! lives in `pimalaya_cli::error`; only the vocabulary is Himalaya's.
+//! lives in `pimalaya_cli::error`; only the vocabulary is Mailman's.
 //!
 //! A pimdir store failure takes the code io-pimdir gives it
 //! (`PimdirError::code`), spelled the same, so a caller reading every
@@ -22,7 +22,7 @@ use serde::Serialize;
 /// The stable codes, each serialised in kebab-case.
 ///
 /// Declared in every build, the pimdir ones included, so the
-/// `himalaya-error` schema a caller reads does not change with the
+/// `mailman-error` schema a caller reads does not change with the
 /// backends compiled in.
 #[cfg_attr(not(feature = "pimdir"), allow(dead_code))]
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, JsonSchema)]
@@ -47,8 +47,8 @@ pub enum ErrorCode {
     /// it asked for: nothing was done. The message names the capability
     /// and what serves it instead.
     CapabilityMissing,
-    /// The pimdir store is of another draft of the format than Himalaya's:
-    /// upgrade Himalaya, or reinstall the store as its sync engine says.
+    /// The pimdir store is of another draft of the format than Mailman's:
+    /// upgrade Mailman, or reinstall the store as its sync engine says.
     StoreVersion,
     /// The pimdir store has no schema yet: its sync engine creates it.
     StoreUncreated,
@@ -61,7 +61,7 @@ pub enum ErrorCode {
     /// The pimdir store holds no schema yet, and the verb creates none:
     /// its sync engine creates it.
     StoreNotCurrent,
-    /// The pimdir store names its bodies with a hash Himalaya does not
+    /// The pimdir store names its bodies with a hash Mailman does not
     /// compute.
     StoreHashAlgo,
     /// The pimdir store's sync state was written by another version of
@@ -108,7 +108,7 @@ pub enum ErrorCode {
     /// The zone the pimdir search index reads floating times in is not
     /// an IANA zone.
     IndexZoneUnknown,
-    /// The SQLite Himalaya links lacks what the pimdir search index
+    /// The SQLite Mailman links lacks what the pimdir search index
     /// needs (FTS5, 3.43 or later).
     IndexFts5Missing,
     /// The pimdir search query is malformed or names an unknown field or
@@ -122,7 +122,7 @@ pub enum ErrorCode {
     TagRefused,
 }
 
-/// The pimdir codes Himalaya relays, by io-pimdir's spelling, which
+/// The pimdir codes Mailman relays, by io-pimdir's spelling, which
 /// serialises each.
 #[cfg(feature = "pimdir")]
 const PIMDIR_CODES: &[(&str, ErrorCode)] = &[
@@ -181,7 +181,7 @@ pub fn pimdir_error(err: PimdirError) -> anyhow::Error {
         Some(code @ ErrorCode::StoreVersion) => CodedError::new(
             code,
             format!(
-                "{err}; upgrade Himalaya if the store's sync engine is newer, \
+                "{err}; upgrade Mailman if the store's sync engine is newer, \
                  else reinstall the store as neverest's MIGRATION.md says"
             ),
         )

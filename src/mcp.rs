@@ -358,7 +358,7 @@ impl McpToolSpec {
             // NOTE: MCP wants an object root, which a tagged or untagged
             // enum payload would not have.
             let output_schema = schemas
-                .get(&format!("himalaya-{}-{}", tool.group, tool.leaf))
+                .get(&format!("mailman-{}-{}", tool.group, tool.leaf))
                 .filter(|schema| tool.typed && schema["type"] == "object");
 
             if let Some(schema) = output_schema {
@@ -506,7 +506,7 @@ impl McpServer<'_, '_> {
             "initialize" => Ok(json!({
                 "protocolVersion": PROTOCOL_VERSION,
                 "capabilities": { "tools": { "listChanged": false } },
-                "serverInfo": { "name": "himalaya", "version": env!("CARGO_PKG_VERSION") },
+                "serverInfo": { "name": "mailman", "version": env!("CARGO_PKG_VERSION") },
             })),
             "ping" => Ok(json!({})),
             "tools/list" => {

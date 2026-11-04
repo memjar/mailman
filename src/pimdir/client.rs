@@ -3,7 +3,7 @@
 //! The wrapper around io-pimdir's store, blob reader and producer.
 //!
 //! The store belongs to the sync engine. Reads take the lockless reader
-//! role, so a sync in flight neither blocks Himalaya nor is blocked by
+//! role, so a sync in flight neither blocks Mailman nor is blocked by
 //! it, and writes take the shared lock for one enqueue.
 //!
 //! The reader overlays the queue, so an action this process staged shows
@@ -33,7 +33,7 @@ use crate::{
 
 /// The producer name recorded on every action this client enqueues, so the
 /// owner's queue says which process staged a row.
-const PRODUCER: &str = "himalaya";
+const PRODUCER: &str = "mailman";
 
 /// Live pimdir client: an overlaying reader, a blob reader over the same
 /// directory, and the account its collections are grouped under.
@@ -50,7 +50,7 @@ pub struct PimdirClient {
 impl PimdirClient {
     /// Opens the pimdir store at the configured root, read-only.
     ///
-    /// The store has to exist: Himalaya reads a replica a sync populated, so
+    /// The store has to exist: Mailman reads a replica a sync populated, so
     /// creating one here would answer a mistyped root with an empty mailbox
     /// list rather than say the path is wrong.
     pub fn new(config: PimdirConfig) -> Result<Self> {
@@ -120,7 +120,7 @@ impl PimdirClient {
     ///
     /// Cancelling is an owner write, and the only retraction a queued
     /// creation has. The role is entered and released inside this call, so
-    /// Himalaya never holds a handle that could drain the queue or collect
+    /// Mailman never holds a handle that could drain the queue or collect
     /// the store. The row is read first, and one anchored on another
     /// account's collection is refused before the role is taken.
     ///
@@ -176,7 +176,7 @@ impl PimdirClient {
     /// [`undeclared_performer`](Self::undeclared_performer) names.
     ///
     /// Several candidates and no recorded choice is the user's to settle:
-    /// Himalaya never picks one.
+    /// Mailman never picks one.
     pub(crate) fn performer(
         &self,
         producer: &PimdirProducer,
@@ -203,7 +203,7 @@ impl PimdirClient {
                 ErrorCode::AmbiguousPerformer,
                 format!(
                     "Several sources can perform {capability} for this account ({}): \
-                     choose one with `himalaya pimdir performer {capability} <SOURCE>`",
+                     choose one with `mailman pimdir performer {capability} <SOURCE>`",
                     candidates.join(", "),
                 ),
             )

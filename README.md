@@ -1,6 +1,6 @@
 <div align="center">
   <img src="./logo.svg" alt="Logo" width="128" height="128" />
-  <h1>📫 Himalaya</h1>
+  <h1>📫 Mailman</h1>
   <p>CLI to manage emails</p>
   <p>
     <a href="https://matrix.to/#/#pimalaya:matrix.org"><img alt="Matrix" src="https://img.shields.io/badge/chat-%23pimalaya-blue?style=flat&logo=matrix&logoColor=white"/></a>
@@ -45,11 +45,11 @@
 - **SOCKS5**, **HTTP** proxy support, per account or via `$ALL_PROXY` and `$HTTPS_PROXY`
 - **TOML configuration** with multi-account support
 - **JSON** output via `--json`
-- **REPL** via `himalaya repl`, running commands over connections kept for the session
-- **MCP server** via `himalaya mcp`, the shared API as tools, read-only by default
+- **REPL** via `mailman repl`, running commands over connections kept for the session
+- **MCP server** via `mailman mcp`, the shared API as tools, read-only by default
 
 > [!TIP]
-> Himalaya is written in [Rust](https://www.rust-lang.org/) and uses [cargo features](https://doc.rust-lang.org/cargo/reference/features.html) to gate backend support. The default feature set is declared in [Cargo.toml](./Cargo.toml).
+> Mailman is written in [Rust](https://www.rust-lang.org/) and uses [cargo features](https://doc.rust-lang.org/cargo/reference/features.html) to gate backend support. The default feature set is declared in [Cargo.toml](./Cargo.toml).
 >
 > The default `wizard` feature brings the interactive `configure`; leave it out of a scripted or embedded build that never prompts.
 >
@@ -59,23 +59,23 @@
 
 ### Pre-built binary
 
-Himalaya can be installed with the installer:
+Mailman can be installed with the installer:
 
 *As root:*
 
 ```
-curl -sSL https://raw.githubusercontent.com/pimalaya/himalaya/master/install.sh | sudo sh
+curl -sSL https://raw.githubusercontent.com/pimalaya/mailman/master/install.sh | sudo sh
 ```
 
 *As a regular user:*
 
 ```
-curl -sSL https://raw.githubusercontent.com/pimalaya/himalaya/master/install.sh | PREFIX=~/.local sh
+curl -sSL https://raw.githubusercontent.com/pimalaya/mailman/master/install.sh | PREFIX=~/.local sh
 ```
 
-These commands install the latest binary from the GitHub [releases](https://github.com/pimalaya/himalaya/releases) section.
+These commands install the latest binary from the GitHub [releases](https://github.com/pimalaya/mailman/releases) section.
 
-For a more up-to-date version than the latest release, check out the [releases](https://github.com/pimalaya/himalaya/actions/workflows/releases.yml) GitHub workflow and look for the *Artifacts* section. These pre-built binaries are built from the `master` branch.
+For a more up-to-date version than the latest release, check out the [releases](https://github.com/pimalaya/mailman/actions/workflows/releases.yml) GitHub workflow and look for the *Artifacts* section. These pre-built binaries are built from the `master` branch.
 
 > [!NOTE]
 > Such binaries are built with the default cargo features. If you need specific features, please use another installation method.
@@ -83,13 +83,13 @@ For a more up-to-date version than the latest release, check out the [releases](
 ### Cargo
 
 ```
-cargo install --locked --git https://github.com/pimalaya/himalaya.git
+cargo install --locked --git https://github.com/pimalaya/mailman.git
 ```
 
 With only IMAP+SMTP support:
 
 ```
-cargo install --locked --git https://github.com/pimalaya/himalaya.git \
+cargo install --locked --git https://github.com/pimalaya/mailman.git \
   --no-default-features \
   --features imap,smtp,rustls-ring
 ```
@@ -99,27 +99,27 @@ cargo install --locked --git https://github.com/pimalaya/himalaya.git \
 From the community repository:
 
 ```
-pacman -S himalaya
+pacman -S mailman
 ```
 
 Or the [user repository](https://aur.archlinux.org/):
 
 ```
-git clone https://aur.archlinux.org/himalaya-git.git
-cd himalaya-git
+git clone https://aur.archlinux.org/mailman-git.git
+cd mailman-git
 makepkg -isc
 ```
 
 Or with [yay](https://github.com/Jguer/yay):
 
 ```
-yay -S himalaya-git
+yay -S mailman-git
 ```
 
 ### Homebrew
 
 ```
-brew install himalaya
+brew install mailman
 ```
 
 > [!NOTE]
@@ -128,16 +128,16 @@ brew install himalaya
 ### Scoop
 
 ```
-scoop install himalaya
+scoop install mailman
 ```
 
 ### Fedora Linux/CentOS/RHEL
 
-From the [COPR](https://copr.fedorainfracloud.org/coprs/atim/himalaya/) repo:
+From the [COPR](https://copr.fedorainfracloud.org/coprs/atim/mailman/) repo:
 
 ```
-dnf copr enable atim/himalaya
-dnf install himalaya
+dnf copr enable atim/mailman
+dnf install mailman
 ```
 
 ### Nix
@@ -145,13 +145,13 @@ dnf install himalaya
 If you have the [Flakes](https://nixos.wiki/wiki/Flakes) feature enabled:
 
 ```
-nix profile install github:pimalaya/himalaya
+nix profile install github:pimalaya/mailman
 ```
 
 Or run without installing:
 
 ```
-nix run github:pimalaya/himalaya
+nix run github:pimalaya/mailman
 ```
 
 ### Sources
@@ -159,32 +159,32 @@ nix run github:pimalaya/himalaya
 Requires [Rust](https://www.rust-lang.org/tools/install) 1.89 or later:
 
 ```
-git clone https://github.com/pimalaya/himalaya
-cd himalaya
+git clone https://github.com/pimalaya/mailman
+cd mailman
 cargo build --release --locked
 ```
 
-The binary lands at `target/release/himalaya`.
+The binary lands at `target/release/mailman`.
 
 ## Configuration
 
-Run `himalaya`. With no configuration file on disk, the wizard asks for an email address and discovers the services reachable from it, probing PACC, Thunderbird Autoconfiguration, RFC 6186 SRV and RFC 8620 JMAP resolution in parallel.
+Run `mailman`. With no configuration file on disk, the wizard asks for an email address and discovers the services reachable from it, probing PACC, Thunderbird Autoconfiguration, RFC 6186 SRV and RFC 8620 JMAP resolution in parallel.
 
 Picking one prompts the authentication it advertises, tests the connection, then writes the account to disk.
 
-A persistent configuration is loaded from every existing path among the following, each one deep-merged on top of the ones before, so `$HOME/.himalayarc` overrides the others (a path naming a file already loaded, such as a symlinked rc file, is skipped):
+A persistent configuration is loaded from every existing path among the following, each one deep-merged on top of the ones before, so `$HOME/.mailmanrc` overrides the others (a path naming a file already loaded, such as a symlinked rc file, is skipped):
 
-- `$XDG_CONFIG_HOME/himalaya/config.toml`
-- `$HOME/.config/himalaya/config.toml`
-- `$HOME/.himalayarc`
+- `$XDG_CONFIG_HOME/mailman/config.toml`
+- `$HOME/.config/mailman/config.toml`
+- `$HOME/.mailmanrc`
 
 At most one account may be marked `default = true` across them: an rc file moving the default sets `default = false` on the account the other file marks.
 
-These are the same paths the [himalaya-tui](https://github.com/pimalaya/himalaya-tui) TUI looks at: one TOML file backs both binaries. CLI-only fields and TUI-only sections coexist without errors. See [config.sample.toml](./config.sample.toml) for a documented template.
+These are the same paths the [mailman-tui](https://github.com/pimalaya/mailman-tui) TUI looks at: one TOML file backs both binaries. CLI-only fields and TUI-only sections coexist without errors. See [config.sample.toml](./config.sample.toml) for a documented template.
 
 Override those paths with `-c <PATH>`; multiple paths can be passed at once, separated by `;` on Windows and `:` elsewhere, as `$PATH` separates them, or by repeating `-c`. The first one is the base and the rest are deep-merged on top.
 
-To add or reconfigure an account, run the bare `himalaya` wizard again and redirect its printed TOML into (or merge it with) your config file. There is no in-place edit subcommand; `himalaya account list` and `himalaya account check` inspect and validate the accounts already declared.
+To add or reconfigure an account, run the bare `mailman` wizard again and redirect its printed TOML into (or merge it with) your config file. There is no in-place edit subcommand; `mailman account list` and `mailman account check` inspect and validate the accounts already declared.
 
 ### Proton Mail
 
@@ -259,7 +259,7 @@ mailbox.alias.archive = "[Gmail]/All Mail"
 
 Every Gmail label shows up as a top-level IMAP mailbox, and the special ones live under the `[Gmail]/` prefix, so quote them in the shell or reach them through an alias.
 
-`[Gmail]/All Mail` is the archive holding every message, so aliasing it puts "search everything" one flag away: `himalaya envelope search -m archive ...`.
+`[Gmail]/All Mail` is the archive holding every message, so aliasing it puts "search everything" one flag away: `mailman envelope search -m archive ...`.
 
 To use Gmail's native REST API instead of IMAP/SMTP, replace the blocks above with a single OAuth 2.0 bearer token from a helper such as [ortie](https://github.com/pimalaya/ortie):
 
@@ -267,7 +267,7 @@ To use Gmail's native REST API instead of IMAP/SMTP, replace the blocks above wi
 gmail.auth.token.command = ["ortie", "token", "show", "-a", "gmail"]
 ```
 
-Labels become mailboxes here too, but they carry the API's opaque label ids; address them by name (`-m Himalaya-Test`) and himalaya resolves the id.
+Labels become mailboxes here too, but they carry the API's opaque label ids; address them by name (`-m Mailman-Test`) and mailman resolves the id.
 
 ### Outlook
 
@@ -292,7 +292,7 @@ To use the native Microsoft Graph API instead of IMAP/SMTP, replace the blocks a
 msgraph.auth.token.command = ["ortie", "token", "show", "-a", "msgraph"]
 ```
 
-Mail folders carry Graph's opaque folder ids; address them by name (`-m Archive`) or by a well-known name (`-m inbox`) and himalaya resolves the id.
+Mail folders carry Graph's opaque folder ids; address them by name (`-m Archive`) or by a well-known name (`-m inbox`) and mailman resolves the id.
 
 ### Posteo
 
@@ -340,32 +340,32 @@ Every command carries its own `--help`, the source of truth for its flags and sy
 Backend-agnostic commands run on the account's first configured backend, or the one picked with `-b/--backend`. `-m/--mailbox` takes a mailbox id, name, alias or role (`inbox`, `sent`, `drafts`, `trash`...), and defaults to the inbox.
 
 ```sh
-himalaya mailbox list
-himalaya envelope list --page 2
-himalaya envelope search from alice and after 2026-01-01 order by date desc
-himalaya flag add --flag seen 1 2 3 5
-himalaya message read 42
-himalaya message copy --from INBOX --to Archives 42
-himalaya attachment download 42
+mailman mailbox list
+mailman envelope list --page 2
+mailman envelope search from alice and after 2026-01-01 order by date desc
+mailman flag add --flag seen 1 2 3 5
+mailman message read 42
+mailman message copy --from INBOX --to Archives 42
+mailman attachment download 42
 ```
 
-`envelope search` uses himalaya's own cross-backend query DSL: `date`, `after`, `before`, `from`, `to`, `cc`, `bcc`, `address` (any of the four), `subject`, `body`, `flag` and `attachment` clauses, joined with `and`, `or` and `not`, grouped with parentheses, then `order by`. `-h` lists the clauses and `himalaya envelope search --help` gives the grammar and how each backend matches text. A clause a backend cannot search is refused with the code `search-unsupported` rather than dropped (every flag on Microsoft Graph, `flag answered` and keywords on Gmail, `attachment` on IMAP).
+`envelope search` uses mailman's own cross-backend query DSL: `date`, `after`, `before`, `from`, `to`, `cc`, `bcc`, `address` (any of the four), `subject`, `body`, `flag` and `attachment` clauses, joined with `and`, `or` and `not`, grouped with parentheses, then `order by`. `-h` lists the clauses and `mailman envelope search --help` gives the grammar and how each backend matches text. A clause a backend cannot search is refused with the code `search-unsupported` rather than dropped (every flag on Microsoft Graph, `flag answered` and keywords on Gmail, `attachment` on IMAP).
 
 ### Protocol-specific APIs
 
 Each backend also exposes its full native API under its own subgroup, always against that backend (`-b/--backend` is ignored here):
 
 ```sh
-himalaya imap raw 'a1 SEARCH FROM "alice@example.com"\r\n'
-himalaya jmap mailbox query --role drafts
-himalaya gmail messages list -q "from:alice is:unread"
-himalaya msgraph mail-folders list
-himalaya smtp send -f me@example.com -t you@example.com < message.eml
-himalaya sieve list
-himalaya sieve check --script-file filters.sieve
-himalaya sieve put main --script-file filters.sieve
-himalaya sieve activate main
-himalaya pimdir search from:alice@example.com has:attachment date:2026-01..2026-03
+mailman imap raw 'a1 SEARCH FROM "alice@example.com"\r\n'
+mailman jmap mailbox query --role drafts
+mailman gmail messages list -q "from:alice is:unread"
+mailman msgraph mail-folders list
+mailman smtp send -f me@example.com -t you@example.com < message.eml
+mailman sieve list
+mailman sieve check --script-file filters.sieve
+mailman sieve put main --script-file filters.sieve
+mailman sieve activate main
+mailman pimdir search from:alice@example.com has:attachment date:2026-01..2026-03
 ```
 
 ManageSieve uses the optional `sieve` account block. RFC 5804 registers one port, 4190, and reaches TLS on it through STARTTLS, so a bare server address takes `sieve://` with the upgrade on where the IMAP and SMTP ones take their implicit-TLS scheme.
@@ -374,52 +374,52 @@ ManageSieve uses the optional `sieve` account block. RFC 5804 registers one port
 
 `capability`, `list`, `get`, `put`, `check`, `activate`, `deactivate`, `rename`, `delete` and `raw` are available, and `put` and `check` accept a script file, inline text or stdin.
 
-On a pimdir account, `pimdir search`, `pimdir count`, `pimdir thread` and `pimdir tag` ask the store's search index in the [pimdir query language](https://github.com/pimalaya/pimdir/blob/master/SEARCH.md): words, phrases, `field:value` terms, `and`, `or`, `not` and parentheses, over the account's mail. The store's sync engine builds the index and refreshes it after each run; Himalaya only reads it, so a message shows once it is synced and indexed, and a line under the results says what they could not see (bodies not downloaded, mail older than what the store holds, the index lagging the store). `pimdir tag` queues one flag change per matched message for the sync engine to apply.
+On a pimdir account, `pimdir search`, `pimdir count`, `pimdir thread` and `pimdir tag` ask the store's search index in the [pimdir query language](https://github.com/pimalaya/pimdir/blob/master/SEARCH.md): words, phrases, `field:value` terms, `and`, `or`, `not` and parentheses, over the account's mail. The store's sync engine builds the index and refreshes it after each run; Mailman only reads it, so a message shows once it is synced and indexed, and a line under the results says what they could not see (bodies not downloaded, mail older than what the store holds, the index lagging the store). `pimdir tag` queues one flag change per matched message for the sync engine to apply.
 
 ### Composing messages
 
 `message compose` / `reply` / `forward` cover simple cases through flags. For rich MIME (MML directives, signing, encryption, an editor-driven flow), chain a composer such as [mml](https://github.com/pimalaya/mml) into `message send` / `message add`, or stage a prepared file as a draft:
 
 ```sh
-himalaya message compose --to you@example.org --subject Hello --body Hi --send
-mml compose >(himalaya message send)
-himalaya message add -m drafts --flag draft < message.eml
+mailman message compose --to you@example.org --subject Hello --body Hi --send
+mml compose >(mailman message send)
+mailman message add -m drafts --flag draft < message.eml
 ```
 
-See `himalaya message send --help` and the [mml](https://github.com/pimalaya/mml) docs for the composer chaining.
+See `mailman message send --help` and the [mml](https://github.com/pimalaya/mml) docs for the composer chaining.
 
 ### Re-using sessions
 
 Each invocation opens a fresh TCP+TLS+SASL session. To amortize the handshake, there are two options:
 
-- `himalaya repl` keeps one process alive for one account: each stdin line is a command without the binary name (`envelope list`, `message read 42`), run over clients that connect the first time a command needs them and stay connected for the session. Quote arguments as in a shell; `quit`, `exit` or EOF ends it. The account, `--backend` and `--json` are given once, on the `repl` command. Piped, every line gets one answer on stdout (one JSON value per line under `--json`, a failure being the error object), so a program can drive it. Stdin carries the commands, so a command takes its input as an argument or a file path, never from stdin. SMTP still connects per send, a server dropping an idle SMTP connection after a few minutes, and a command that fails drops its client so the next one connects again.
-- [sirup](https://github.com/pimalaya/sirup) serves a pre-authenticated IMAP/SMTP session over a Unix socket that `imap.server` / `smtp.server` can point at, shared by every process: the choice for many short invocations, or several tools at once. Do not point a `himalaya repl` at a sirup socket yet: sirup serves one client at a time and keeps the upstream alive only while none is attached.
+- `mailman repl` keeps one process alive for one account: each stdin line is a command without the binary name (`envelope list`, `message read 42`), run over clients that connect the first time a command needs them and stay connected for the session. Quote arguments as in a shell; `quit`, `exit` or EOF ends it. The account, `--backend` and `--json` are given once, on the `repl` command. Piped, every line gets one answer on stdout (one JSON value per line under `--json`, a failure being the error object), so a program can drive it. Stdin carries the commands, so a command takes its input as an argument or a file path, never from stdin. SMTP still connects per send, a server dropping an idle SMTP connection after a few minutes, and a command that fails drops its client so the next one connects again.
+- [sirup](https://github.com/pimalaya/sirup) serves a pre-authenticated IMAP/SMTP session over a Unix socket that `imap.server` / `smtp.server` can point at, shared by every process: the choice for many short invocations, or several tools at once. Do not point a `mailman repl` at a sirup socket yet: sirup serves one client at a time and keeps the upstream alive only while none is attached.
 
 ### MCP server
 
-`himalaya mcp` runs a [Model Context Protocol](https://modelcontextprotocol.io) server over stdio for one account, exposing the shared API as tools (`mailbox_list`, `envelope_list`, `envelope_search`, `message_read`, `attachment_list`, the composers, and so on). Each tool takes the arguments of its command, spelled as on the command line (`mailbox`, `page-size`, `message-ids`), and answers the same JSON as `--json`; an argument a tool does not take is refused, never ignored. Clients connect once for the server's lifetime, as in `himalaya repl`.
+`mailman mcp` runs a [Model Context Protocol](https://modelcontextprotocol.io) server over stdio for one account, exposing the shared API as tools (`mailbox_list`, `envelope_list`, `envelope_search`, `message_read`, `attachment_list`, the composers, and so on). Each tool takes the arguments of its command, spelled as on the command line (`mailbox`, `page-size`, `message-ids`), and answers the same JSON as `--json`; an argument a tool does not take is refused, never ignored. Clients connect once for the server's lifetime, as in `mailman repl`.
 
 Only the tools that read are listed by default. `--allow-write` adds the ones that change the store (flags, add, copy, move, delete, saving a composed message, marking a read one seen), and `--allow-send` the ones that send mail. An agent reading mail can be told by a message to send mail, so think twice before giving it both. Tools never read nor write local files: `attachment download`, `message parse` and the file arguments of the composers are left out, and a message given to `message_add` or `message_send` is taken as the message itself, even when it spells a path.
 
 ```json
 {
   "mcpServers": {
-    "himalaya": { "command": "himalaya", "args": ["mcp", "--account", "work"] }
+    "mailman": { "command": "mailman", "args": ["mcp", "--account", "work"] }
   }
 }
 ```
 
 ## Interfaces
 
-Himalaya CLI is one of several front-ends to the Pimalaya libraries:
+Mailman CLI is one of several front-ends to the Pimalaya libraries:
 
-- [pimalaya/himalaya-tui](https://github.com/pimalaya/himalaya-tui): official TUI (in active development)
-- [pimalaya/himalaya-vim](https://github.com/pimalaya/himalaya-vim): Vim plugin
-- [dantecatalfamo/himalaya-emacs](https://github.com/dantecatalfamo/himalaya-emacs): Emacs plugin
-- [jns/himalaya](https://www.raycast.com/jns/himalaya): Raycast extension
-- [openclaw/openclaw](https://github.com/openclaw/openclaw/blob/main/skills/himalaya/SKILL.md): OpenClaw SKILL
+- [pimalaya/mailman-tui](https://github.com/pimalaya/mailman-tui): official TUI (in active development)
+- [pimalaya/mailman-vim](https://github.com/pimalaya/mailman-vim): Vim plugin
+- [dantecatalfamo/mailman-emacs](https://github.com/dantecatalfamo/mailman-emacs): Emacs plugin
+- [jns/mailman](https://www.raycast.com/jns/mailman): Raycast extension
+- [openclaw/openclaw](https://github.com/openclaw/openclaw/blob/main/skills/mailman/SKILL.md): OpenClaw SKILL
 - [parisni/dfzf](https://github.com/parisni/dfzf): dfzf integration
-- [kezhenxu94/himalaya-fzf](https://github.com/kezhenxu94/himalaya-fzf): interactive fzf front-end
+- [kezhenxu94/mailman-fzf](https://github.com/kezhenxu94/mailman-fzf): interactive fzf front-end
 
 ## FAQ
 
@@ -428,9 +428,9 @@ Himalaya CLI is one of several front-ends to the Pimalaya libraries:
 
   Aerc, mutt and alpine can be categorized as Terminal User Interfaces (TUI). When the program is executed, your terminal is locked into an event loop and you interact with your emails using keybinds.
 
-  Himalaya is a Command-Line Interface (CLI). There is no event loop: you interact with your emails using shell commands, in a stateless way.
+  Mailman is a Command-Line Interface (CLI). There is no event loop: you interact with your emails using shell commands, in a stateless way.
 
-  A dedicated TUI ([himalaya-tui](https://github.com/pimalaya/himalaya-tui)) is in active development on top of the same Pimalaya libraries, and is definitely closer to aerc, mutt and alpine.
+  A dedicated TUI ([mailman-tui](https://github.com/pimalaya/mailman-tui)) is in active development on top of the same Pimalaya libraries, and is definitely closer to aerc, mutt and alpine.
 </details>
 
 <details>
@@ -469,12 +469,12 @@ Himalaya CLI is one of several front-ends to the Pimalaya libraries:
 </details>
 
 <details>
-  <summary>How to debug Himalaya?</summary>
+  <summary>How to debug Mailman?</summary>
 
   Use `--log-level <level>` (alias `--log`) where `<level>` is one of `off`, `error`, `warn`, `info`, `debug`, `trace`:
 
   ```
-  himalaya --log trace mailbox list
+  mailman --log trace mailbox list
   ```
 
   The `RUST_LOG` environment variable is consulted when `--log` is not passed, and supports per-target filters (see the [`env_logger` documentation](https://docs.rs/env_logger/latest/env_logger/#enabling-logging)). `RUST_BACKTRACE=1` enables full error backtraces.
@@ -482,13 +482,13 @@ Himalaya CLI is one of several front-ends to the Pimalaya libraries:
   Logs are written to `stderr`, so they can be redirected easily to a file:
 
   ```
-  himalaya --log trace mailbox list 2>/tmp/himalaya.log
+  mailman --log trace mailbox list 2>/tmp/mailman.log
   ```
 
   You can also send logs straight to a file via `--log-file <path>`:
 
   ```
-  himalaya --log trace --log-file /tmp/himalaya.log mailbox list
+  mailman --log trace --log-file /tmp/mailman.log mailbox list
   ```
 </details>
 
@@ -517,7 +517,7 @@ This project is licensed under either of:
 
 Special thanks to the [NLnet foundation](https://nlnet.nl/) and the [European Commission](https://www.ngi.eu/) that have been financially supporting the project for years:
 
-- 2022 → 2023: [NGI Assure](https://nlnet.nl/project/Himalaya/)
+- 2022 → 2023: [NGI Assure](https://nlnet.nl/project/Mailman/)
 - 2023 → 2024: [NGI Zero Entrust](https://nlnet.nl/project/Pimalaya/)
 - 2024 → 2026: [NGI Zero Core](https://nlnet.nl/project/Pimalaya-PIM/)
 - 2026 → 2027: [NGI Zero Commons Fund](https://nlnet.nl/project/Pimalaya-pimdir/)

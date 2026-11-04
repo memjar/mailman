@@ -36,7 +36,7 @@ jobs:
     uses: pimalaya/nix/.github/workflows/release-on-demand.yml@master
     secrets: inherit
     with:
-      project: himalaya
+      project: mailman
       os: ${{ inputs.os }}
       target: ${{ inputs.target }}
       features: ${{ inputs.features }}

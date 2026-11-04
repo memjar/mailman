@@ -5,7 +5,7 @@
 //! SEARCH query language, scoped to the account's mail.
 //!
 //! The index belongs to the store's owner: its sync engine builds it and
-//! folds the store's changes in after each run. Himalaya opens it
+//! folds the store's changes in after each run. Mailman opens it
 //! read-only and never builds, rebuilds nor refreshes it, so an answer is
 //! the store as of the owner's last refresh, with no queued write in it.
 //! An index absent or built by another version is a coded error saying
@@ -234,7 +234,7 @@ impl PimdirClient {
             .with_context(|| format!("Open the pimdir search index of `{}`", self.root.display()))
     }
 
-    /// Reads `query` as Himalaya asks it: its conjuncts, `kind:mail`, and
+    /// Reads `query` as Mailman asks it: its conjuncts, `kind:mail`, and
     /// `account:` naming the account when the store groups it under a
     /// name. The conjuncts stay at the top, where the index reads the date
     /// range and the scope its coverage is computed over.
@@ -258,7 +258,7 @@ impl PimdirClient {
         PimdirQuery::And(conjuncts)
     }
 
-    /// A hit as Himalaya lists it: the envelope of its first placement,
+    /// A hit as Mailman lists it: the envelope of its first placement,
     /// read from the store as it stands, and the mailboxes holding it.
     fn mail_hit(&self, index: &PimdirIndex, hit: PimdirSearchHit) -> Result<PimdirMailHit> {
         let Some(first) = hit.placements.first() else {
@@ -293,7 +293,7 @@ impl PimdirClient {
         })
     }
 
-    /// A thread of the index as Himalaya lists it.
+    /// A thread of the index as Mailman lists it.
     fn mail_thread_of(
         &self,
         index: &PimdirIndex,

@@ -9,16 +9,16 @@ die() {
 
 DESTDIR="${DESTDIR:-}"
 PREFIX="${PREFIX:-"$DESTDIR/usr/local"}"
-RELEASES_URL="https://github.com/pimalaya/himalaya/releases"
+RELEASES_URL="https://github.com/pimalaya/mailman/releases"
 
-binary=himalaya
+binary=mailman
 system=$(uname -s | tr [:upper:] [:lower:])
 machine=$(uname -m | tr [:upper:] [:lower:])
 
 case $system in
     msys*|mingw*|cygwin*|win*)
 	target=x86_64-windows
-	binary=himalaya.exe;;
+	binary=mailman.exe;;
 
     linux|freebsd)
 	case $machine in
@@ -45,11 +45,11 @@ tmpdir=$(mktemp -d) || die "Cannot create temporary directory"
 trap "rm -rf $tmpdir" EXIT
 
 echo "Downloading latest $system release…"
-curl -sLo "$tmpdir/himalaya.tgz" \
-     "$RELEASES_URL/latest/download/himalaya.$target.tgz"
+curl -sLo "$tmpdir/mailman.tgz" \
+     "$RELEASES_URL/latest/download/mailman.$target.tgz"
 
 echo "Installing binary…"
-tar -xzf "$tmpdir/himalaya.tgz" -C "$tmpdir"
+tar -xzf "$tmpdir/mailman.tgz" -C "$tmpdir"
 
 mkdir -p "$PREFIX/bin"
 cp -f -- "$tmpdir/$binary" "$PREFIX/bin/$binary"

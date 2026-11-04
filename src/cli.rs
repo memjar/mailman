@@ -77,8 +77,8 @@ use crate::{
 #[command(author, version, about)]
 #[command(long_about = concat!(
     "CLI to manage emails.\n\n",
-    "First time here? Run `himalaya` with no command: it offers to generate an ",
-    "account discovered from your email address, which `himalaya configure` does ",
+    "First time here? Run `mailman` with no command: it offers to generate an ",
+    "account discovered from your email address, which `mailman configure` does ",
     "again later. Everything discovery does not cover is written by hand.",
 ))]
 #[command(long_version = long_version!())]
@@ -87,7 +87,7 @@ use crate::{
 pub struct Cli {
     /// The subcommand to run.
     ///
-    /// Omitted, a bare `himalaya` offers to generate a configuration when
+    /// Omitted, a bare `mailman` offers to generate a configuration when
     /// it finds none, and shows this help otherwise.
     #[command(subcommand)]
     pub cmd: Option<Command>,
@@ -200,7 +200,7 @@ pub struct ConfigPathsArg {
     /// at once, delimited like `$PATH` (`;` on Windows, `:` elsewhere). The
     /// first is the base and the rest are merged on top, which is how a public
     /// configuration stays separate from the private ones.
-    #[arg(long = "config", short = 'c', global = true, env = "HIMALAYA_CONFIG")]
+    #[arg(long = "config", short = 'c', global = true, env = "MAILMAN_CONFIG")]
     #[arg(name = "config_paths", value_name = "PATH", value_parser = path_parser, value_delimiter = CONFIG_PATH_DELIMITER)]
     pub paths: Vec<PathBuf>,
 }
@@ -522,11 +522,11 @@ mod tests {
     /// A directory that is never created, so the paths below it keep the
     /// spelling they were given instead of being canonicalized.
     fn absent_dir() -> PathBuf {
-        env::temp_dir().join(format!("himalaya-config-paths-{}", process::id()))
+        env::temp_dir().join(format!("mailman-config-paths-{}", process::id()))
     }
 
     fn paths(args: &[&str]) -> Vec<PathBuf> {
-        Cli::try_parse_from([&["himalaya"], args].concat())
+        Cli::try_parse_from([&["mailman"], args].concat())
             .expect("parse")
             .config
             .paths

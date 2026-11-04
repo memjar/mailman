@@ -15,7 +15,7 @@ use crate::email::{
 ///
 /// They join with `not`, `and` and `or`, in that order of precedence, and
 /// group with parentheses. A pattern is quoted, or unquoted with its
-/// spaces backslash-escaped. `himalaya envelope search --help` is the
+/// spaces backslash-escaped. `mailman envelope search --help` is the
 /// grammar reference a user reads.
 pub fn query<'a>() -> impl Parser<'a, &'a str, SearchEmailsFilterQuery, ParserError<'a>> + Clone {
     recursive(|filter| {

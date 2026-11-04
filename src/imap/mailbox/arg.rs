@@ -45,7 +45,7 @@ impl Default for MailboxNameOptionalFlag {
 pub struct MailboxNoSelectFlag {
     /// Do not select the mailbox before acting on it.
     ///
-    /// Useful over a stateful IMAP session, `himalaya repl` or a Sirup
+    /// Useful over a stateful IMAP session, `mailman repl` or a Sirup
     /// proxy for instance, where the mailbox is already selected.
     #[arg(long = "no-select", default_value_t)]
     #[arg(name = "mailbox_no_select")]

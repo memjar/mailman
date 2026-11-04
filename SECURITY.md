@@ -10,4 +10,4 @@
 
 ## Reporting a Vulnerability
 
-https://github.com/pimalaya/himalaya/issues
+https://github.com/pimalaya/mailman/issues

@@ -28,7 +28,7 @@ use io_pim_discovery::{
 use pimalaya_stream::tls::{Rustls, Tls};
 use url::Url;
 
-/// DNS-over-TCP resolver backing discovery when `HIMALAYA_DNS_RESOLVER`
+/// DNS-over-TCP resolver backing discovery when `MAILMAN_DNS_RESOLVER`
 /// is unset and no system resolver is found: Cloudflare's `1.1.1.1`.
 const DEFAULT_RESOLVER: &str = "tcp://1.1.1.1:53";
 
@@ -83,7 +83,7 @@ pub struct TcpEndpoint {
 /// It drives the per-service prompt: which mechanisms or schemes to offer,
 /// and whether the OAuth brokers appear.
 ///
-/// Himalaya reads a token an external manager issues and runs no grant
+/// Mailman reads a token an external manager issues and runs no grant
 /// itself, so OAuth is no method of its own here: it unlocks the brokers
 /// behind the API token flow and nothing more.
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
@@ -309,14 +309,14 @@ fn tcp_endpoint(config: &DiscoveryServiceConfig) -> Option<TcpEndpoint> {
     }
 }
 
-/// The resolver discovery queries: the `HIMALAYA_DNS_RESOLVER` override,
+/// The resolver discovery queries: the `MAILMAN_DNS_RESOLVER` override,
 /// then the system one, then the Cloudflare default.
 ///
 /// Preferring the system resolver keeps the email domain from leaking to a
 /// third party, and the override works around a network blocking the
 /// default.
 pub fn discovery_resolver() -> Url {
-    if let Ok(resolver) = env::var("HIMALAYA_DNS_RESOLVER")
+    if let Ok(resolver) = env::var("MAILMAN_DNS_RESOLVER")
         && let Ok(url) = resolver.parse()
     {
         return url;

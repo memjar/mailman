@@ -4,7 +4,7 @@
 //! io-mbox client [`MboxClient`] wraps.
 //!
 //! A mailbox is one mbox file and a message is addressed by its io-mbox
-//! content id, which a flag write, by Himalaya or any other client, does
+//! content id, which a flag write, by Mailman or any other client, does
 //! not change. Every operation first syncs the file's index through the
 //! [`crate::mbox::cache`], and a listing parses only the messages it has
 //! not seen before.

@@ -48,7 +48,7 @@ fn filter_to_kql(filter: &SearchEmailsFilterQuery) -> Result<String> {
         SearchEmailsFilterQuery::Flag(_) => {
             return Err(unsupported(
                 filter,
-                "Microsoft Graph search has no flag property; use `himalaya msgraph messages list --filter`",
+                "Microsoft Graph search has no flag property; use `mailman msgraph messages list --filter`",
             ));
         }
     })

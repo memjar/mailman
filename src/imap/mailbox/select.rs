@@ -19,7 +19,7 @@ use crate::imap::{client::ImapClient, mailbox::arg::MailboxNameArg, outcome};
 ///
 /// Opens it for read-write access and returns its status. The selection
 /// only outlives the command over a stateful IMAP session such as
-/// `himalaya repl` or a Sirup proxy.
+/// `mailman repl` or a Sirup proxy.
 #[derive(Debug, Parser)]
 pub struct ImapMailboxSelectCommand {
     #[command(flatten)]

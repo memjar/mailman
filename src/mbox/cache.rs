@@ -1,6 +1,6 @@
 //! # mbox cache
 //!
-//! What Himalaya keeps between runs about an mbox file, so a listing does
+//! What Mailman keeps between runs about an mbox file, so a listing does
 //! not read the whole file again: the io-mbox scan index, and the
 //! envelope of every message already read.
 //!
@@ -98,7 +98,7 @@ mod tests {
 
     /// A fresh directory under the system temporary one.
     fn tempdir(name: &str) -> PathBuf {
-        let dir = env::temp_dir().join(format!("himalaya-mbox-cache-{}-{name}", process::id()));
+        let dir = env::temp_dir().join(format!("mailman-mbox-cache-{}-{name}", process::id()));
         let _ = fs::remove_dir_all(&dir);
         fs::create_dir_all(&dir).unwrap();
         dir

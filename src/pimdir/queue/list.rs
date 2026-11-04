@@ -214,7 +214,7 @@ impl PimdirQueueListOutput {
         writeln!(f, "{table}")?;
         writeln!(
             f,
-            "Queued until the next sync. Cancel one with `himalaya pimdir queue cancel <ROW>`"
+            "Queued until the next sync. Cancel one with `mailman pimdir queue cancel <ROW>`"
         )
     }
 
@@ -244,7 +244,7 @@ impl PimdirQueueListOutput {
         writeln!(
             f,
             "Parked by the sync engine, which will not retry them. Cancel one with \
-             `himalaya pimdir queue cancel <ROW>`"
+             `mailman pimdir queue cancel <ROW>`"
         )
     }
 }

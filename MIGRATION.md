@@ -9,7 +9,7 @@ v3 changes no configuration key: a v2 configuration loads as it is. What changes
 - **Keys are camelCase.** `messages-total` is `messagesTotal`, `next_page` is `nextPage`, `thread-id` is `threadId`. Values keep their spelling: error codes, flags and mailbox roles stay kebab-case or lowercase, provider passthrough keeps the provider's keys.
 - **`message read --json` is a designed view**, the same on every backend (`headers`, `text`, `html`, `parts`), no longer mail-parser's model of the message. `message parse` prints the same view.
 - **Piped `--json` prints one value per line**, and every schema `json-schema` writes carries an `$id` naming the contract version.
-- **A failure carries a stable `code`** when a caller is expected to act on it (`body-pending`, `search-unsupported`, `capability-missing`, the pimdir store codes), described by the `himalaya-error` schema, and `null` otherwise. Match on the code, never on the message, which may be reworded.
+- **A failure carries a stable `code`** when a caller is expected to act on it (`body-pending`, `search-unsupported`, `capability-missing`, the pimdir store codes), described by the `mailman-error` schema, and `null` otherwise. Match on the code, never on the message, which may be reworded.
 - **No output is a sentence any more.** The `{"message": "..."}` confirmations are gone: every write prints what it acted on. `message copy|move` print `{count, queued}`; `message send` and a composer's `--save`/`--send` print `{id, saved, sent, queued}`; a protocol write prints `{id}` or `{ids}` (a Gmail label's id, the UIDs of an IMAP append or copy, a Sieve script's name). A shared write's `queued` is `true` when a sync engine applies it later (pimdir).
 - **Bytes never reach a JSON stdout raw.** `message read --raw`, `jmap email export`, the raw Gmail and Graph `get`s and their attachment downloads print `{data, size, mime}`, `data` in base64.
 - **Absent values are `null`**, every key printed.
@@ -34,8 +34,8 @@ v3 changes no configuration key: a v2 configuration loads as it is. What changes
 
 ### New
 
-- `himalaya repl` runs commands over connections kept for the session, and `himalaya mcp` serves the shared API to MCP clients, read-only unless `--allow-write` or `--allow-send` is given.
-- Shared verbs that used to be protocol-only: `mailbox create|rename|delete`, the `important` and `junk` flags, and `vacation get|set`, which reads the auto-reply from JMAP or Gmail whatever backend stores the mail. `himalaya jmap`, `gmail` and the other namespaces keep their own commands.
+- `mailman repl` runs commands over connections kept for the session, and `mailman mcp` serves the shared API to MCP clients, read-only unless `--allow-write` or `--allow-send` is given.
+- Shared verbs that used to be protocol-only: `mailbox create|rename|delete`, the `important` and `junk` flags, and `vacation get|set`, which reads the auto-reply from JMAP or Gmail whatever backend stores the mail. `mailman jmap`, `gmail` and the other namespaces keep their own commands.
 
 ## From v1 to v2
 
@@ -54,7 +54,7 @@ v3 changes no configuration key: a v2 configuration loads as it is. What changes
 
 - **Deep refactor on top of the I/O-free pattern.** No async in the CLI, no backend abstraction. Both the binary and the underlying libraries are simpler.
 - **Thinner shared API.** Just enough surface for interfaces (TUI, plugins) to drive any backend, kept deliberately small so it does not break on every release.
-- **Protocol-specific commands** (`himalaya imap/jmap/maildir/smtp …`) expose the full native capability of each protocol.
+- **Protocol-specific commands** (`mailman imap/jmap/maildir/smtp …`) expose the full native capability of each protocol.
 - **OAuth moved out** to [pimalaya/ortie](https://github.com/pimalaya/ortie).
 - **Keyring moved out** to any password manager exposed as a shell command (`pass`, `secret-tool`, `gopass`, `security`, …).
 - **Composition and reading moved out** to [pimalaya/mml](https://github.com/pimalaya/mml).
@@ -64,7 +64,7 @@ A direct consequence: the v2 binary is about three times smaller than v1!
 
 ### Foundations: I/O-free
 
-Pimalaya has been working for the past year on an adaptation of the [Sans I/O](https://sans-io.readthedocs.io/) pattern for its libraries. The pattern decouples the protocol state machine from any specific I/O runtime: sync vs async, tokio vs async-std vs smol, rustls vs native-tls. The concept has been validated in [pimalaya/ortie](https://github.com/pimalaya/ortie), [pimalaya/cardamum](https://github.com/pimalaya/cardamum) and [pimalaya/calendula](https://github.com/pimalaya/calendula), and is now wired into Himalaya CLI v2.
+Pimalaya has been working for the past year on an adaptation of the [Sans I/O](https://sans-io.readthedocs.io/) pattern for its libraries. The pattern decouples the protocol state machine from any specific I/O runtime: sync vs async, tokio vs async-std vs smol, rustls vs native-tls. The concept has been validated in [pimalaya/ortie](https://github.com/pimalaya/ortie), [pimalaya/cardamum](https://github.com/pimalaya/cardamum) and [pimalaya/calendula](https://github.com/pimalaya/calendula), and is now wired into Mailman CLI v2.
 
 As a direct consequence, TLS is selectable at build time between `native-tls` and `rustls` (with `aws-lc` or `ring` as the crypto provider).
 
@@ -83,7 +83,7 @@ New in v2: `-b`, `--backend` (force a specific backend for shared commands) and 
 #### Folders
 
 - Renamed `folders` to `mailboxes`.
-- Removed `add`, `expunge`, `purge`, `delete`: these are rarely useful at the interface level (Emacs, Vim plugin, TUI). Use the protocol-specific subcommands instead (`himalaya imap create`, `himalaya imap expunge`, `himalaya imap delete`).
+- Removed `add`, `expunge`, `purge`, `delete`: these are rarely useful at the interface level (Emacs, Vim plugin, TUI). Use the protocol-specific subcommands instead (`mailman imap create`, `mailman imap expunge`, `mailman imap delete`).
 - Added `--counts` to `list` to populate per-mailbox message counts.
 
 #### Envelopes
@@ -106,9 +106,9 @@ New in v2: `-b`, `--backend` (force a specific backend for shared commands) and 
 - `save --folder` (optional) becomes `add --mailbox` (mandatory).
 - The old `save --file <PATH>` / positional split is gone: `add` now takes a single `MessageArg` (a positional file path, an inline raw value, or piped stdin).
 - Added `add --flag` to attach flags at insertion time, and `add --send` (alias `save --send`) to push the message through the account's send path after the append.
-- `write` renamed `compose` (kept as an alias). `compose`, `reply`, `forward` are no longer interactive. They build the message from CLI flags through the built-in flag composer. Interactive composition is delegated to standalone tools chained into `messages send` / `messages add` via a tempfile or shell process substitution. No `*-with` subcommands or `[message.composer.*]` table remain on the himalaya side.
+- `write` renamed `compose` (kept as an alias). `compose`, `reply`, `forward` are no longer interactive. They build the message from CLI flags through the built-in flag composer. Interactive composition is delegated to standalone tools chained into `messages send` / `messages add` via a tempfile or shell process substitution. No `*-with` subcommands or `[message.composer.*]` table remain on the mailman side.
 - `read` no longer renders human-readable text. The v2 `read` prints message-level info. For custom rendering, pipe `read --raw` into a standalone interpreter.
-- `mailto:` URI handling is no longer a himalaya subcommand. Register a small shell wrapper (e.g. `mml mailto "$1" --output /tmp/draft.eml && himalaya messages send /tmp/draft.eml`) as your desktop mailto handler.
+- `mailto:` URI handling is no longer a mailman subcommand. Register a small shell wrapper (e.g. `mml mailto "$1" --output /tmp/draft.eml && mailman messages send /tmp/draft.eml`) as your desktop mailto handler.
 - `messages send` and `messages add` read the raw message from a positional path, an inline raw value, or stdin (the unified `MessageArg`).
 - `export` and `edit` are removed.
 
@@ -132,7 +132,7 @@ The full configuration schema is documented in [config.sample.toml](./config.sam
 #### Global and per-account options
 
 - `display-name`, `signature`, `signature-delim` and `downloads-dir` keep their v1 meaning, except that `signature` is the signature text only: a v1 file path is no longer read, pass `--signature-file` instead.
-- The `template` and `pgp` top-level entries are removed. Rendering and PGP happen outside himalaya now (see the README for the recommended shell-pipeline shapes).
+- The `template` and `pgp` top-level entries are removed. Rendering and PGP happen outside mailman now (see the README for the recommended shell-pipeline shapes).
 - The `message` table only reads `message.send.save-copy`, `message.reply.posting-style` and `message.forward.posting-style`; the rest of a v1 `[message]` table is ignored rather than rejected.
 - Rename `template.reply.posting-style` → `message.reply.posting-style` and `template.forward.posting-style` → `message.forward.posting-style`, taking `top`, `bottom` or `none`. v1's `interleaved` is gone: use `none` and write the reply inside the quoted block yourself. v1's forward `attached` has no v2 equivalent.
 
@@ -179,7 +179,7 @@ imap.starttls = false
 # skip authentication entirely.
 
 # SASL ANONYMOUS
-imap.sasl.anonymous.message = "himalaya"
+imap.sasl.anonymous.message = "mailman"
 
 # SASL PLAIN
 imap.sasl.plain.authcid = "user@example.com"
@@ -283,8 +283,8 @@ Both backends are removed. Notmuch may come back in a future release.
 
 ### Suggested migration steps
 
-1. Copy [config.sample.toml](./config.sample.toml) to a side-by-side path (for example ~/.config/himalaya/config.v2.toml) and edit it against your previous configuration.
-2. Run `himalaya -c ~/.config/himalaya/config.v2.toml account check` to validate the connection for each declared backend.
+1. Copy [config.sample.toml](./config.sample.toml) to a side-by-side path (for example ~/.config/mailman/config.v2.toml) and edit it against your previous configuration.
+2. Run `mailman -c ~/.config/mailman/config.v2.toml account check` to validate the connection for each declared backend.
 3. Once the new file passes the check, replace the v1 config.toml with it.
 4. If you relied on keyring / OAuth, wire a password-manager CLI (`pass`, `secret-tool`, …) and/or [pimalaya/ortie](https://github.com/pimalaya/ortie) as `command = …` secrets.
-5. If you relied on the interactive `write` / `reply` / `forward`, install [pimalaya/mml](https://github.com/pimalaya/mml) and chain it into `himalaya messages send` / `messages add` via a tempfile or `>(...)` process substitution (see the README for ready-made `bash`/`zsh` snippets).
+5. If you relied on the interactive `write` / `reply` / `forward`, install [pimalaya/mml](https://github.com/pimalaya/mml) and chain it into `mailman messages send` / `messages add` via a tempfile or `>(...)` process substitution (see the README for ready-made `bash`/`zsh` snippets).

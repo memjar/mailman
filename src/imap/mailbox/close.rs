@@ -16,7 +16,7 @@ use crate::imap::{
 ///
 /// Expunges the messages flagged `\Deleted` and returns to the
 /// authenticated state. A mailbox has to be selected, so this wants a
-/// stateful IMAP session such as `himalaya repl` or a Sirup proxy.
+/// stateful IMAP session such as `mailman repl` or a Sirup proxy.
 #[derive(Debug, Parser)]
 pub struct ImapMailboxCloseCommand;
 

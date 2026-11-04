@@ -5,7 +5,7 @@
 }@args:
 
 let
-  himalaya = import ./default.nix (
+  mailman = import ./default.nix (
     removeAttrs args [
       "crossPkgs"
       "isStatic"
@@ -48,10 +48,10 @@ pimalaya.mkDefault (
           && !builtins.elem "vendored" buildFeatures;
 
       in
-      (pkgs.callPackage "${nixpkgs}/pkgs/by-name/hi/himalaya/package.nix" {
+      (pkgs.callPackage "${nixpkgs}/pkgs/by-name/hi/mailman/package.nix" {
         inherit lib rustPlatform buildFeatures;
         buildPackages = buildPackages // {
-          inherit himalaya;
+          inherit mailman;
         };
         installShellCompletions = false;
         installManPages = false;
@@ -70,9 +70,9 @@ pimalaya.mkDefault (
               inherit (pkgs) stdenv;
               exe =
                 if stdenv.buildPlatform.canExecute stdenv.hostPlatform then
-                  "$out/bin/himalaya"
+                  "$out/bin/mailman"
                 else
-                  lib.getExe himalaya;
+                  lib.getExe mailman;
             in
             ''
               mkdir -p $out/share/{completions,man,schemas}

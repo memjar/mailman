@@ -1,6 +1,6 @@
 # Contributing guide
 
-Thank you for investing your time in contributing to Himalaya CLI.
+Thank you for investing your time in contributing to Mailman CLI.
 
 Whether you are a human or an AI agent, read these in order before touching the code:
 
@@ -13,7 +13,7 @@ Everything below documents only what differs from the Pimalaya standards.
 
 ## Where changes belong
 
-Himalaya is the CLI front-end of the Pimalaya email stack, a thin shell driving the sans-I/O io- libraries. Triage before patching, since protocol and storage fixes usually belong upstream:
+Mailman is the CLI front-end of the Pimalaya email stack, a thin shell driving the sans-I/O io- libraries. Triage before patching, since protocol and storage fixes usually belong upstream:
 
 - IMAP, JMAP, Gmail, Microsoft Graph and SMTP wire semantics belong in [io-imap](https://github.com/pimalaya/io-imap), [io-jmap](https://github.com/pimalaya/io-jmap), [io-gmail](https://github.com/pimalaya/io-gmail), [io-msgraph](https://github.com/pimalaya/io-msgraph) and [io-smtp](https://github.com/pimalaya/io-smtp);
 - local storage semantics belong in [io-maildir](https://github.com/pimalaya/io-maildir), [io-m2dir](https://github.com/pimalaya/io-m2dir) and [io-mbox](https://github.com/pimalaya/io-mbox);
@@ -24,7 +24,7 @@ The clap, printer, prompt and spinner primitives come from [pimalaya/cli](https:
 
 ## Feature matrix
 
-Himalaya is a binary, not a layered library, so it has no coroutine/client split. Its cargo features gate the backends (`imap`, `smtp`, `jmap`, `gmail`, `msgraph` and `maildir` on by default, `m2dir`, `mbox` and `pimdir` off), the ManageSieve service protocol (`sieve`), the setup `wizard`, and the TLS provider (`rustls-ring` default, `rustls-aws`, `native-tls`). Build a reduced set to check the feature gates still hold when touching them:
+Mailman is a binary, not a layered library, so it has no coroutine/client split. Its cargo features gate the backends (`imap`, `smtp`, `jmap`, `gmail`, `msgraph` and `maildir` on by default, `m2dir`, `mbox` and `pimdir` off), the ManageSieve service protocol (`sieve`), the setup `wizard`, and the TLS provider (`rustls-ring` default, `rustls-aws`, `native-tls`). Build a reduced set to check the feature gates still hold when touching them:
 
 ```sh
 cargo build --no-default-features --features imap,smtp,rustls-ring

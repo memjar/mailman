@@ -19,7 +19,7 @@ use crate::{
 ///
 /// An account is a named group of backend settings. These subcommands
 /// inspect them and validate their connection; creating one is bare
-/// `himalaya`.
+/// `mailman`.
 #[derive(Debug, Subcommand)]
 pub enum AccountCommand {
     #[command(visible_alias = "ls")]

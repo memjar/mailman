@@ -17,7 +17,7 @@
 //! nothing, it stops and points at the sample rather than prompt for a
 //! hand-written configuration.
 //!
-//! Himalaya runs no OAuth 2.0 grant of its own. A grant unlocks the
+//! Mailman runs no OAuth 2.0 grant of its own. A grant unlocks the
 //! external token brokers behind the API token prompt, and that is all.
 
 use std::path::Path;

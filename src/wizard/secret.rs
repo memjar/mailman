@@ -7,7 +7,7 @@
 //! both also taking a custom command or a raw value. A known provider or
 //! broker yields an argv command, a custom one a shell string.
 //!
-//! Himalaya only reads a secret, never stores one, so a value that is not
+//! Mailman only reads a secret, never stores one, so a value that is not
 //! there yet surfaces when the account is tested right after.
 
 use anyhow::{Result, bail};

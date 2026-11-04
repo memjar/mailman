@@ -62,7 +62,7 @@ impl MboxClient {
             stale_secs: None,
         };
 
-        let cache_dir = dirs::cache_dir().map(|dir| dir.join("himalaya").join("mbox"));
+        let cache_dir = dirs::cache_dir().map(|dir| dir.join("mailman").join("mbox"));
 
         Self { inner, cache_dir }
     }

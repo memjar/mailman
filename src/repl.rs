@@ -66,7 +66,7 @@ impl ReplCommand {
 
         loop {
             if interactive {
-                eprint!("himalaya> ");
+                eprint!("mailman> ");
                 io::stderr().flush()?;
             }
 
@@ -95,7 +95,7 @@ impl ReplCommand {
                 Some(Ok(ReplLine {
                     cmd: Command::Configure(_),
                 })) => Err(anyhow!(
-                    "Cannot run the wizard inside a session, run `himalaya configure` instead"
+                    "Cannot run the wizard inside a session, run `mailman configure` instead"
                 )),
                 Some(Ok(ReplLine { cmd })) => cmd.execute(printer, session),
                 // NOTE: help and version are not failures, clap prints

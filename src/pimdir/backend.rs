@@ -7,7 +7,7 @@
 //! so an item whose body is not local still lists and reads as not
 //! fetched rather than as an error.
 //!
-//! Writes enqueue actions for the store's owner to apply. Himalaya is a
+//! Writes enqueue actions for the store's owner to apply. Mailman is a
 //! producer, never the owner: it mutates no index and collects nothing,
 //! so a staged flag change cannot race a sync mid-hydration.
 //!
@@ -764,7 +764,7 @@ impl PimdirClient {
             warn!("{partial}");
         }
         let id = enqueued.id;
-        info!("message queued for sending as action {id}, see `himalaya pimdir queue list`");
+        info!("message queued for sending as action {id}, see `mailman pimdir queue list`");
         Ok(PimdirSubmitted {
             staged: PimdirStaged {
                 queue_id: id,
@@ -1908,7 +1908,7 @@ mod tests {
         let queued = PimdirPendingAction {
             id: 7,
             created_at: "2026-08-27T10:00:00Z".into(),
-            producer: "himalaya".into(),
+            producer: "mailman".into(),
             collection: "INBOX".into(),
             action: PimdirAction::Add {
                 link_id: Some(PimdirLinkId("draft@x.org".into())),
@@ -1941,7 +1941,7 @@ mod tests {
         let queued = PimdirPendingAction {
             id: 8,
             created_at: "2026-08-27T10:00:00Z".into(),
-            producer: "himalaya".into(),
+            producer: "mailman".into(),
             collection: "INBOX".into(),
             action: PimdirAction::Remove { seq: 42 },
             attempts: 0,
@@ -2460,7 +2460,7 @@ mod tests {
             );
             let err = format!("{err:#}");
             assert!(err.contains(version), "{err}");
-            assert!(err.contains("upgrade Himalaya"), "{err}");
+            assert!(err.contains("upgrade Mailman"), "{err}");
             assert!(err.contains("neverest's MIGRATION.md"), "{err}");
             assert!(!err.contains("delete"), "{err}");
         }

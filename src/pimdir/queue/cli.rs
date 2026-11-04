@@ -17,7 +17,7 @@ use crate::{
     },
 };
 
-/// Read and retract the writes Himalaya staged.
+/// Read and retract the writes Mailman staged.
 ///
 /// A pimdir store is a replica the sync engine owns, so a write is appended
 /// to the store's queue and applied on the engine's next run.

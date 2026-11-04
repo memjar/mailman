@@ -1,6 +1,6 @@
 //! # pimdir queue
 //!
-//! The `pimdir queue` command family, over the writes Himalaya staged for
+//! The `pimdir queue` command family, over the writes Mailman staged for
 //! the store owner to apply.
 
 pub mod cancel;

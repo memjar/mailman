@@ -67,17 +67,17 @@ use crate::backend::Backend;
 /// pointed at when no configuration is found.
 #[cfg(feature = "wizard")]
 pub const CONFIG_SAMPLE_URL: &str =
-    "https://github.com/pimalaya/himalaya/blob/master/config.sample.toml";
+    "https://github.com/pimalaya/mailman/blob/master/config.sample.toml";
 
 /// How to get a configuration, for the errors meeting none.
 #[cfg(feature = "wizard")]
-pub const NO_CONFIG_HINT: &str = "run bare `himalaya` to launch the wizard, or write one by hand: \
-     https://github.com/pimalaya/himalaya/blob/master/config.sample.toml";
+pub const NO_CONFIG_HINT: &str = "run bare `mailman` to launch the wizard, or write one by hand: \
+     https://github.com/pimalaya/mailman/blob/master/config.sample.toml";
 
 /// How to get a configuration, for the errors meeting none.
 #[cfg(not(feature = "wizard"))]
 pub const NO_CONFIG_HINT: &str = "write one by hand: \
-     https://github.com/pimalaya/himalaya/blob/master/config.sample.toml";
+     https://github.com/pimalaya/mailman/blob/master/config.sample.toml";
 
 /// Skips a field equal to its type's default, so a wizard-generated
 /// configuration omits defaulted scalars.
@@ -130,7 +130,7 @@ fn is_default_msgraph_alpn(alpn: &[String]) -> bool {
 /// The whole TOML configuration file.
 ///
 /// `deny_unknown_fields` is omitted so one file can be shared with
-/// himalaya-tui, whose own top-level fields are ignored here.
+/// mailman-tui, whose own top-level fields are ignored here.
 #[derive(Debug, Default, Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct Config {
@@ -374,7 +374,7 @@ impl AccountConfig {
 ///
 /// `deny_unknown_fields` is omitted so a block written for one binary
 /// loads in the other: the CLI-only sub-blocks have to be tolerated by
-/// himalaya-tui, which models the rest.
+/// mailman-tui, which models the rest.
 #[derive(Debug, Default, Deserialize, Serialize)]
 #[serde(rename_all = "kebab-case")]
 pub struct AccountConfig {
@@ -384,7 +384,7 @@ pub struct AccountConfig {
     /// Address this account sends as, absent `--from`.
     ///
     /// Neither validated nor required, an account that never composes
-    /// having no use for it. Aliased to `from`, the spelling himalaya-tui
+    /// having no use for it. Aliased to `from`, the spelling mailman-tui
     /// writes, the two binaries sharing one file.
     #[serde(alias = "from")]
     pub email: Option<String>,
@@ -392,7 +392,7 @@ pub struct AccountConfig {
     ///
     /// Quoting and encoding are the MIME builder's business, so write the
     /// name as it should read. Aliased to `from-name`, the spelling
-    /// himalaya-tui writes.
+    /// mailman-tui writes.
     #[serde(alias = "from-name")]
     pub display_name: Option<String>,
     /// Signature appended to a composed message, falling back to the
@@ -846,7 +846,7 @@ pub struct ImapIdConfig {
     pub auto: bool,
     /// Parameters sent with the auto-`ID` command.
     ///
-    /// Unset sends himalaya's canned value for every well-known key
+    /// Unset sends mailman's canned value for every well-known key
     /// (`name`, `version`, `vendor`, `support-url`), and an empty map
     /// sends `ID NIL`. `true` substitutes the canned value for a
     /// well-known key and `NIL` otherwise, `false` always sends `NIL`,
@@ -1414,17 +1414,17 @@ pub struct JmapConfig {
     /// Authentication configuration.
     pub auth: JmapAuthConfig,
     /// Identity id `message send` submits under, required for JMAP send
-    /// alone and discoverable with `himalaya jmap identity get`.
+    /// alone and discoverable with `mailman jmap identity get`.
     pub identity_id: Option<String>,
     /// Mailbox id `message send` stages a message in before submitting it.
     ///
-    /// Required for JMAP send alone, and discoverable with `himalaya jmap
+    /// Required for JMAP send alone, and discoverable with `mailman jmap
     /// mailbox query --role drafts`.
     pub drafts_mailbox_id: Option<String>,
     /// Mailbox id a sent message is moved to once submitted, defaulting
     /// to the `sent`-role mailbox.
     ///
-    /// Discoverable with `himalaya jmap mailbox query --role sent`.
+    /// Discoverable with `mailman jmap mailbox query --role sent`.
     pub sent_mailbox_id: Option<String>,
 }
 
@@ -1719,7 +1719,7 @@ mod tests {
         assert!(err.to_string().contains("Invalid server scheme `ftp`"));
     }
 
-    /// himalaya-tui spells the identity `from` and `from-name`, and one
+    /// mailman-tui spells the identity `from` and `from-name`, and one
     /// file backs both binaries, so a config it wrote must reach the same
     /// fields the composers read.
     #[test]
@@ -1735,7 +1735,7 @@ mod tests {
             signature-delim = "~~~\n"
             "#,
         )
-        .expect("the himalaya-tui spelling must deserialize");
+        .expect("the mailman-tui spelling must deserialize");
 
         let account = config.accounts.get("example").expect("the example account");
 

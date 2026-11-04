@@ -16,7 +16,7 @@ use crate::pimdir::client::PimdirClient;
 /// Show or choose the source performing an intent for this account.
 ///
 /// An intent such as sending a message is performed by one source. When
-/// several of the account's sources can, Himalaya refuses to pick and
+/// several of the account's sources can, Mailman refuses to pick and
 /// this records the choice, applied on the sync engine's next run.
 #[derive(Debug, Parser)]
 pub struct PimdirPerformerCommand {

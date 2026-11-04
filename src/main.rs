@@ -1,4 +1,4 @@
-//! # Himalaya
+//! # Mailman
 //!
 //! A CLI to manage emails, and the crate architecture (header-001): the
 //! behavioural contract lives in cairn/spec/, the manual provider test
@@ -85,7 +85,7 @@
 //! ([`config`]) is multi-account: a top-level block plus named account
 //! blocks carrying optional per-backend sub-blocks.
 //!
-//! Bare `himalaya` runs the interactive [`wizard`], which discovers an
+//! Bare `mailman` runs the interactive [`wizard`], which discovers an
 //! account and offers to save it, or prints it on stdout when redirected;
 //! it is also proposed when a command finds no config. A config that
 //! exists but lacks the requested account is a hard error.
@@ -93,7 +93,7 @@
 //! Output follows the Pimalaya rule: data and errors go to stdout through
 //! the printer, `--json` switching every command to JSON, and stderr
 //! carries logs only. Each command's doc comment is its `--help`, so
-//! `himalaya <command> --help` is the canonical usage reference.
+//! `mailman <command> --help` is the canonical usage reference.
 
 mod account;
 mod backend;
@@ -176,7 +176,7 @@ fn execute(cli: Cli, printer: &mut StdoutPrinter) -> Result<()> {
     cmd.execute(printer, &mut session)
 }
 
-/// Meets a bare `himalaya`, which is where a newcomer lands.
+/// Meets a bare `mailman`, which is where a newcomer lands.
 ///
 /// A missing configuration raises the offer; anything else gets the help.
 /// A broken file counts as a configuration, so the offer never writes over
