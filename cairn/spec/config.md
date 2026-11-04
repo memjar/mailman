@@ -6,7 +6,7 @@ status: current
 
 # Config
 
-Himalaya is configured through TOML: a top-level block plus named account blocks, one table per account under `[accounts.<name>]`, each carrying optional per-backend sub-blocks. The config schema is a set of pure DTOs (`*Config` types) mirroring the nested TOML shape; the selected account is flattened into a runtime `Account` view that commands consume. Config files stay user-owned: Himalaya never writes them.
+Mailman is configured through TOML: a top-level block plus named account blocks, one table per account under `[accounts.<name>]`, each carrying optional per-backend sub-blocks. The config schema is a set of pure DTOs (`*Config` types) mirroring the nested TOML shape; the selected account is flattened into a runtime `Account` view that commands consume. Config files stay user-owned: Mailman never writes them.
 
 ### Requirement: Multi-account schema
 The config SHALL be multi-account: a top-level block holding shared defaults, plus `[accounts.<name>]` blocks. Each account carries at most one storage backend sub-block (`imap`, `jmap`, `gmail`, `msgraph`, `maildir`, `m2dir`, `mbox`, `pimdir`) and optional service sub-blocks for `smtp` and `sieve`.
@@ -18,7 +18,7 @@ A bare authority SHALL resolve to `sieve://`, where the `imap` and `smtp` blocks
 A mechanism disclosing a reusable credential SHALL be refused over a cleartext connection unless `sieve.allow-cleartext-auth` is set, which is the configuration RFC 5804 section 5 asks for.
 
 ### Requirement: Config loading and merge
-Without `-c/--config`, the config SHALL load every existing canonical path as a layer, in this order: `$XDG_CONFIG_HOME/himalaya/config.toml`, `$HOME/.config/himalaya/config.toml`, `$HOME/.himalayarc`. Each layer SHALL be deep-merged on top of the ones before, so `$HOME/.himalayarc` overrides. Paths naming the same file SHALL be read once.
+Without `-c/--config`, the config SHALL load every existing canonical path as a layer, in this order: `$XDG_CONFIG_HOME/mailman/config.toml`, `$HOME/.config/mailman/config.toml`, `$HOME/.mailmanrc`. Each layer SHALL be deep-merged on top of the ones before, so `$HOME/.mailmanrc` overrides. Paths naming the same file SHALL be read once.
 
 `-c/--config` SHALL replace the canonical paths entirely. Multiple `-c` paths MAY be passed, delimited like `$PATH` (`;` on Windows, `:` elsewhere) or repeated as flags: the first is the base and the rest are deep-merged on top.
 
@@ -33,7 +33,7 @@ The wizard SHALL check the name and the default of the account it generates agai
 ### Requirement: Account identity
 An account MAY declare the address it sends as, `email`, and the name that address carries, `display-name`. `display-name` MAY also be declared at the top level, where it applies to every account that does not override it. Neither is required, and neither is validated as an addr-spec: an account that never composes has no use for them.
 
-Both keys SHALL also be accepted under the spellings himalaya-tui writes, `from` and `from-name`, and himalaya-tui SHALL accept `email` and `display-name` in turn, the two binaries sharing one configuration file.
+Both keys SHALL also be accepted under the spellings mailman-tui writes, `from` and `from-name`, and mailman-tui SHALL accept `email` and `display-name` in turn, the two binaries sharing one configuration file.
 
 ### Requirement: Account signature
 An account MAY declare a `signature` and the `signature-delim` introducing it, and both MAY also be declared at the top level, where they apply to every account that does not override them.
@@ -44,7 +44,7 @@ An account MAY declare a `signature` and the `signature-delim` introducing it, a
 An account MAY map friendly mailbox names to backend-native ids under `[accounts.<name>.mailbox.alias]`. Alias names are case-insensitive on lookup and on storage. `-m/--mailbox` resolves an alias first, then a mailbox role, then passes the value verbatim; a role matching several mailboxes is an error. A shared command that omits `-m/--mailbox` resolves the `inbox` alias, else the `inbox` role. Account-level entries override same-named global entries, and ids are stored verbatim.
 
 ### Requirement: Config never written
-Himalaya SHALL NOT persist config itself. The wizard prints a ready-to-save fragment on stdout; the user redirects it into their config file.
+Mailman SHALL NOT persist config itself. The wizard prints a ready-to-save fragment on stdout; the user redirects it into their config file.
 
 ### Requirement: The mbox block
 An `mbox` block SHALL name `root`, the directory of mbox files, and MAY name `inbox` (the spool), `format` (`mboxo`, `mboxrd` by default, `mboxcl`, `mboxcl2`, which also decides whether `Content-Length` is trusted on read), `thunderbird` (the `.sbd` layout, off by default) and `lock.dotlock`, `lock.fcntl` (both on by default) and `lock.timeout`.
@@ -69,7 +69,7 @@ An account's `proxy` SHALL apply to every network backend of that account (IMAP,
 `proxy.url` SHALL take `socks5://`, `socks5h://` or `http://`. `proxy.username` and `proxy.password` SHALL override the URL's user info, the password being a secret like any credential; a password without a username SHALL be rejected.
 
 ### Requirement: A v1 account layout is named, not silently ignored
-Unknown keys SHALL stay tolerated, the file being shared with himalaya-tui. When no configured backend matches `--backend`, the error SHALL name the account and, under `auto`, the backends the command supports in this build; under a named backend, the missing block, or that the backend is unsupported. An account carrying the v1 `backend` table, which no v2 binary reads, SHALL load as if the table were absent, and that error SHALL name the table and point at MIGRATION.md.
+Unknown keys SHALL stay tolerated, the file being shared with mailman-tui. When no configured backend matches `--backend`, the error SHALL name the account and, under `auto`, the backends the command supports in this build; under a named backend, the missing block, or that the backend is unsupported. An account carrying the v1 `backend` table, which no v2 binary reads, SHALL load as if the table were absent, and that error SHALL name the table and point at MIGRATION.md.
 
 ### Requirement: Envelope dates MAY render relative to today
 `envelope.list.datetime-relative`, settable globally and per account, SHALL render the DATE column of `envelope list` and `envelope search` relative to today in the local timezone: the time of day (`%R`) for today, `yesterday` for the day before, the weekday (`%A`) for the five days before that, and `datetime-fmt` for anything older or dated in the future. It SHALL default to `false`, and SHALL NOT change the `--json` output, which keeps the exact date.

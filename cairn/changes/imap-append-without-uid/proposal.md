@@ -9,7 +9,7 @@ created: 2026-09-22
 
 ## Why
 
-RFC 4315 makes `APPENDUID` a SHOULD, so a server can acknowledge `APPEND` without it, even after advertising UIDPLUS. Himalaya then searches the submitted `Message-ID`, but QQ Exmail rewrites that header and the search finds nothing. The message is saved, yet Himalaya reports a failure and the send half of `message send --save` never runs.
+RFC 4315 makes `APPENDUID` a SHOULD, so a server can acknowledge `APPEND` without it, even after advertising UIDPLUS. Mailman then searches the submitted `Message-ID`, but QQ Exmail rewrites that header and the search finds nothing. The message is saved, yet Mailman reports a failure and the send half of `message send --save` never runs.
 
 ## What
 

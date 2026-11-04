@@ -9,7 +9,7 @@ created: 2026-10-05
 
 ## Why
 
-v2 dropped v1's `template.reply.posting-style`, leaving only `--posting-style`, which defaults to `top`. A bottom-poster has to pass the flag on every reply ([#772](https://github.com/pimalaya/himalaya/issues/772)).
+v2 dropped v1's `template.reply.posting-style`, leaving only `--posting-style`, which defaults to `top`. A bottom-poster has to pass the flag on every reply ([#772](https://github.com/pimalaya/mailman/issues/772)).
 
 ## What
 

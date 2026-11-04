@@ -9,7 +9,7 @@ created: 2026-10-01
 
 ## Why
 
-v2 dropped v1's `message.send.save-copy`, so a message sent over SMTP is kept nowhere unless every call passes `--save`. Each front-end (himalaya-emacs, himalaya-vim, himalaya-tui) would otherwise grow its own option, none of them knowing which backend an account sends through, while the need is per account: Gmail and Microsoft Graph file the sent message themselves, SMTP does not.
+v2 dropped v1's `message.send.save-copy`, so a message sent over SMTP is kept nowhere unless every call passes `--save`. Each front-end (mailman-emacs, mailman-vim, mailman-tui) would otherwise grow its own option, none of them knowing which backend an account sends through, while the need is per account: Gmail and Microsoft Graph file the sent message themselves, SMTP does not.
 
 `--save` also appends before sending, so a send that fails leaves a copy of a message that never left.
 

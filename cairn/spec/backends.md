@@ -56,7 +56,7 @@ Maildir, m2dir and pimdir SHALL adapt io-maildir, io-m2dir and io-pimdir. Maildi
 The mbox backend SHALL adapt io-mbox over the full shared operation set. A mailbox is one mbox file: `mbox.root` is walked recursively, the mailbox `a/b` being the file `a/b` below it (`a.sbd/b` with `mbox.thunderbird`), and `mbox.inbox`, when set, is the spool shown as `INBOX` and marked with the inbox role. An absolute path passed as a mailbox SHALL open that file, so any mbox reads without configuring it. The raw `mbox` command SHALL expose create, rename, delete and list of mbox files, message save, copy and move, and the six flag letters of the `Status` and `X-Status` headers.
 
 ### Requirement: An mbox message is its content id
-The mbox backend SHALL address a message by its io-mbox content id, a hash of the message with the flag and metadata fields left out, so a flag write by Himalaya or any other client keeps it. An id the index no longer holds SHALL fail naming the mailbox. An append SHALL report the id the synced index gives the new message, numbered like any duplicate.
+The mbox backend SHALL address a message by its io-mbox content id, a hash of the message with the flag and metadata fields left out, so a flag write by Mailman or any other client keeps it. An id the index no longer holds SHALL fail naming the mailbox. An append SHALL report the id the synced index gives the new message, numbered like any duplicate.
 
 ### Requirement: mbox flags interoperate
 Shared flags SHALL map onto `Status: R` (seen), `X-Status: A`, `F`, `T` and `D` (answered, flagged, draft, deleted), any other flag going to `X-Keywords`. A message marked seen SHALL be marked old (`O`) too, as mutt writes it, since GNU mail lists a `Status: R` alone as new. A shared `flag set` SHALL keep the `O` a message carries, no shared flag naming it.
@@ -65,7 +65,7 @@ Shared flags SHALL map onto `Status: R` (seen), `X-Status: A`, `F`, `T` and `D` 
 Every mbox write SHALL go through io-mbox under the dotlock and the fcntl lock, each one skippable through `mbox.lock.dotlock` and `mbox.lock.fcntl`, waiting `mbox.lock.timeout` seconds for a busy one. Flag changes and removals SHALL rewrite the file in place, the whole set of messages a command names in one rewrite. A move SHALL copy then remove, so an interruption leaves the messages in both files.
 
 ### Requirement: mbox reads go through a cache
-The mbox backend SHALL keep, per file, the io-mbox scan index and the envelope of every message already parsed, under `<XDG cache>/himalaya/mbox/`. Every operation SHALL sync the index first, so an unchanged file is not scanned and a delivery is scanned alone, and a listing SHALL parse only the messages the cache lacks. The cache SHALL be disposable: a missing, stale or unreadable one is rebuilt, failing to write one is not an error, and a read finding its entry stale SHALL rebuild the index and retry once.
+The mbox backend SHALL keep, per file, the io-mbox scan index and the envelope of every message already parsed, under `<XDG cache>/mailman/mbox/`. Every operation SHALL sync the index first, so an unchanged file is not scanned and a delivery is scanned alone, and a listing SHALL parse only the messages the cache lacks. The cache SHALL be disposable: a missing, stale or unreadable one is rebuilt, failing to write one is not an error, and a read finding its entry stale SHALL rebuild the index and retry once.
 
 ### Requirement: A Maildir is named relative to the root
 A Maildir mailbox SHALL be named, in `mailbox list` and `maildir list`, by its path relative to `maildir.root` (`[Gmail]/Archive`), the name `-m` takes, so nested Maildirs sharing a last segment stay apart. The root itself keeps its folder name.
@@ -116,7 +116,7 @@ The pimdir backend SHALL show the collections of one account (pimdir STORAGE §9
 ### Requirement: pimdir is a reader and a producer, never the owner
 The pimdir backend SHALL treat the store as a possibly-partial cache owned by the sync engine. `get_message` on an item whose body is not local (`level < Full`, no stored object, or a stored object whose blob file is gone, pimdir GUIDE §14) SHALL fail with the code `body-pending` (commands, "A JSON error carries a stable code"), the cue to sync, not a data-loss error; the item still lists.
 
-Reads SHALL go through `PimdirReader`, the role that takes no lock (pimdir STORAGE §8) and carries no write at all, so a sync in flight neither blocks Himalaya nor is blocked by it, and the backend cannot drain the queue or sweep the store even by mistake.
+Reads SHALL go through `PimdirReader`, the role that takes no lock (pimdir STORAGE §8) and carries no write at all, so a sync in flight neither blocks Mailman nor is blocked by it, and the backend cannot drain the queue or sweep the store even by mistake.
 
 The store's search index (index.db) SHALL be opened read-only, never created, rebuilt nor refreshed: the sync engine owning the store builds and refreshes it (search, "pimdir searches through the store's index").
 
@@ -132,12 +132,12 @@ An added message SHALL derive its link id through io-pimdir's mail derivation (`
 
 #### Scenario: An add on flags never synced is refused
 - GIVEN a pimdir message whose flags the sync engine never read
-- WHEN `himalaya flag add -m imap/INBOX -f flagged 42` runs
+- WHEN `mailman flag add -m imap/INBOX -f flagged 42` runs
 - THEN the command fails saying the flags of `42` were never synced, and nothing is queued
 
 #### Scenario: A flag the message carries already
 - GIVEN a pimdir message showing `\Seen`
-- WHEN `himalaya flag add -m imap/INBOX -f seen 6` runs
+- WHEN `mailman flag add -m imap/INBOX -f seen 6` runs
 - THEN no row is queued, and the command reports one message found
 
 #### Scenario: A body purged under a held item
@@ -159,14 +159,14 @@ A pimdir write carrying a body (`add_message`, `send_message`) SHALL hand the bo
 - THEN the add fails with `item-duplicate` and its body is not in the blob tree
 
 ### Requirement: A pimdir store failure carries its code
-A failure io-pimdir reports SHALL keep io-pimdir's message as a cause and carry, under `--json`, the code `PimdirError::code()` gives it, spelled the same, when it is one a caller acts on: `store-version`, `store-uncreated`, `store-foreign`, `store-corrupt`, `store-not-current`, `store-hash-algo`, `sync-version`, `store-busy`, `store-owned`, `store-staging`, `store-in-flight`, `store-exposed`, `item-duplicate`, `flag-invalid`, `action-malformed`, `conflict-unread`, `unsupported`, `no-performer` and `ambiguous-performer`. An SQL, I/O or JSON failure carries none. Himalaya SHALL NOT derive a code from a message, and SHALL NOT advise deleting the store.
+A failure io-pimdir reports SHALL keep io-pimdir's message as a cause and carry, under `--json`, the code `PimdirError::code()` gives it, spelled the same, when it is one a caller acts on: `store-version`, `store-uncreated`, `store-foreign`, `store-corrupt`, `store-not-current`, `store-hash-algo`, `sync-version`, `store-busy`, `store-owned`, `store-staging`, `store-in-flight`, `store-exposed`, `item-duplicate`, `flag-invalid`, `action-malformed`, `conflict-unread`, `unsupported`, `no-performer` and `ambiguous-performer`. An SQL, I/O or JSON failure carries none. Mailman SHALL NOT derive a code from a message, and SHALL NOT advise deleting the store.
 
-A store of another draft of the format (pimdir STORAGE §4.2), earlier or later, or one naming no format version, is `store-version`: drafts are exact, so it opens under no other draft and nothing reconciles or migrates it. Its message SHALL say to upgrade Himalaya when the store's sync engine is newer, else to reinstall the store as neverest's MIGRATION.md says, which syncs out the writes still queued in it before moving it aside. A store whose directory or pimdir.db another user can read or write, or a link where a lock file belongs, is `store-exposed`, refused before anything in it is read, its message saying to restrict it.
+A store of another draft of the format (pimdir STORAGE §4.2), earlier or later, or one naming no format version, is `store-version`: drafts are exact, so it opens under no other draft and nothing reconciles or migrates it. Its message SHALL say to upgrade Mailman when the store's sync engine is newer, else to reinstall the store as neverest's MIGRATION.md says, which syncs out the writes still queued in it before moving it aside. A store whose directory or pimdir.db another user can read or write, or a link where a lock file belongs, is `store-exposed`, refused before anything in it is read, its message saying to restrict it.
 
 #### Scenario: A store another draft wrote
-- GIVEN a pimdir store whose `store_meta.format_version` names another draft than Himalaya's io-pimdir follows
+- GIVEN a pimdir store whose `store_meta.format_version` names another draft than Mailman's io-pimdir follows
 - WHEN any pimdir command opens it
-- THEN the command fails with the code `store-version`, naming the draft, saying to upgrade Himalaya or reinstall the store as neverest's MIGRATION.md says, and never to delete it
+- THEN the command fails with the code `store-version`, naming the draft, saying to upgrade Mailman or reinstall the store as neverest's MIGRATION.md says, and never to delete it
 
 #### Scenario: A store others can read
 - GIVEN a pimdir store whose directory is mode `0755`
@@ -175,14 +175,14 @@ A store of another draft of the format (pimdir STORAGE §4.2), earlier or later,
 
 #### Scenario: A draft the mailbox holds already
 - GIVEN a pimdir mailbox holding a message whose `Message-ID` is `d1@x.org`
-- WHEN `himalaya message add -m imap/Drafts` stages a message with that `Message-ID`
+- WHEN `mailman message add -m imap/Drafts` stages a message with that `Message-ID`
 - THEN the command fails with the code `item-duplicate`, and nothing is queued
 
 ### Requirement: A queued creation is reported, not listed
-A queued creation has no public id until the store's owner applies it, so the pimdir backend SHALL NOT project one as an envelope, and SHALL NOT put a placeholder in `Envelope.id`. `add_message` returns the link id it staged, which identifies the creation across the window. `himalaya pimdir queue list` is where queued creations show.
+A queued creation has no public id until the store's owner applies it, so the pimdir backend SHALL NOT project one as an envelope, and SHALL NOT put a placeholder in `Envelope.id`. `add_message` returns the link id it staged, which identifies the creation across the window. `mailman pimdir queue list` is where queued creations show.
 
 ### Requirement: The pimdir subcommand reads and retracts the queue
-Himalaya SHALL carry a `pimdir` subcommand for what the operator CLI cannot do without knowing mail. `queue list` SHALL render a queued creation as a message (flags, subject, recipient, and when it was queued, from the row's `created_at`) where the kind-agnostic `pimdir` binary can only print ids and hashes. The queued action carries no summary, so the row SHALL be derived from the body the action pins, through the same derivation the owner applies; an action pinning no body renders with its flags alone.
+Mailman SHALL carry a `pimdir` subcommand for what the operator CLI cannot do without knowing mail. `queue list` SHALL render a queued creation as a message (flags, subject, recipient, and when it was queued, from the row's `created_at`) where the kind-agnostic `pimdir` binary can only print ids and hashes. The queued action carries no summary, so the row SHALL be derived from the body the action pins, through the same derivation the owner applies; an action pinning no body renders with its flags alone.
 
 Under `--json` the message SHALL be printed as an `envelope` with the shared envelope's keys and `"id": null`, a queued message having no id until the owner applies its action. No placeholder SHALL stand in for it (no `""`, `0` nor row id): the row id is the row's own `id`, shown under ROW.
 
@@ -197,12 +197,12 @@ Taking the owner role briefly is what cancelling costs (pimdir STORAGE §15.5); 
 
 #### Scenario: A cancel on a store of another draft
 - GIVEN a store whose `store_meta.format_version` names another draft
-- WHEN `himalaya pimdir queue cancel` runs on one of its rows
+- WHEN `mailman pimdir queue cancel` runs on one of its rows
 - THEN the command fails with the code `store-version`, pointing at neverest's MIGRATION.md, and neither the store's stamp nor the row changes
 
 #### Scenario: Another account's row
 - GIVEN a store shared by two accounts and a row queued on the other account's collection
-- WHEN `himalaya pimdir queue cancel` runs on that row
+- WHEN `mailman pimdir queue cancel` runs on that row
 - THEN the command fails saying the row is not in the account's queue, and the row stays queued
 
 ### Requirement: pimdir writes name their queue row
@@ -214,7 +214,7 @@ The plain output of every `pimdir` subcommand SHALL end with a newline.
 
 #### Scenario: A staged draft is followed by its row
 - GIVEN a pimdir account
-- WHEN `himalaya --json pimdir message add -m imap/Drafts` stages a message
+- WHEN `mailman --json pimdir message add -m imap/Drafts` stages a message
 - THEN it prints `{"row":12,"messageId":"d1@x.org"}`, and `pimdir queue show 12` prints `"state":"pending"` until the sync engine applies the row, then `"state":"applied"` with the `seq` the message is read by
 
 ### Requirement: A pimdir refile or delete stages the ids it found
@@ -226,11 +226,11 @@ The plain output of every `pimdir` subcommand SHALL end with a newline.
 - THEN one `copy` row is queued for 3, and the command succeeds reporting one message
 
 ### Requirement: The pimdir queue view shows parked rows
-`himalaya pimdir queue list` SHALL list the mailbox's parked rows, any action kind, beside its queued creations and sends: the row id, the action kind, when it was queued, and the error that parked it, as `parked` under `--json`. `queue cancel` SHALL take a parked row as it takes a pending one.
+`mailman pimdir queue list` SHALL list the mailbox's parked rows, any action kind, beside its queued creations and sends: the row id, the action kind, when it was queued, and the error that parked it, as `parked` under `--json`. `queue cancel` SHALL take a parked row as it takes a pending one.
 
 #### Scenario: A duplicate draft parks
 - GIVEN a staged `add` the sync engine parked because the source listed the same `Message-ID` before applying it
-- WHEN `himalaya pimdir queue list -m imap/Drafts` runs
+- WHEN `mailman pimdir queue list -m imap/Drafts` runs
 - THEN the row is listed as parked with its error, and `pimdir queue cancel` on its id removes it
 
 ### Requirement: pimdir creates a mailbox by queueing an intent
@@ -240,7 +240,7 @@ The row SHALL be anchored on `parent`, which must be a mailbox of the account, e
 
 #### Scenario: A folder is created through the sync engine
 - GIVEN a pimdir account whose `imap` source declares `collection.create`
-- WHEN `himalaya --json pimdir mailbox create Projets` runs
+- WHEN `mailman --json pimdir mailbox create Projets` runs
 - THEN one `collection-create` row is queued with `{"v":1,"source":"imap","name":"Projets"}`, and the command prints its `row` and `"source":"imap"`
 
 ### Requirement: pimdir renames or deletes a mailbox by queueing an intent
@@ -252,16 +252,16 @@ A rename keeps the mailbox's parent, `name` being one level of the hierarchy. Th
 
 #### Scenario: A folder is renamed through the sync engine
 - GIVEN a pimdir account whose `imap` source declares `collection.rename`
-- WHEN `himalaya --json pimdir mailbox rename imap/Projets Archives` runs
+- WHEN `mailman --json pimdir mailbox rename imap/Projets Archives` runs
 - THEN one `collection-rename` row is queued on `imap/Projets` with `{"v":1,"source":"imap","name":"Archives"}`, and the command prints its `row`, `"mailbox":"imap/Projets"` and `"source":"imap"`
 
 #### Scenario: A folder holding another is not deleted
 - GIVEN a pimdir account whose `imap` source declares `collection.delete`, and a server mailbox `Projets` holding `Projets/2025`
-- WHEN `himalaya pimdir mailbox delete imap/Projets` runs and the sync engine performs the row
+- WHEN `mailman pimdir mailbox delete imap/Projets` runs and the sync engine performs the row
 - THEN the server deletes nothing, the row parks naming `Projets/2025`, and `pimdir queue show` prints it as `parked` with that error
 
 ### Requirement: pimdir stages flags by their raw spelling
-`himalaya pimdir flag list|add|set|remove` SHALL read and stage the flags of a pimdir message by their raw spelling, verbatim. A value naming an IANA flag SHALL be accepted only in its canonical spelling, compared without case and staged in the canonical case, a bare `seen` or `$seen` being refused naming `\Seen`; `\Deleted` and `\Recent` SHALL be refused. A backslash names a system flag, so one in front of any other word SHALL be refused, as SHALL a character IMAP forbids in a flag (`(`, `)`, `{`, `%`, `*`, `"`, `]`, `\`). A value the store cannot hold (pimdir STORAGE §13), empty or holding whitespace, a control character or a character outside ASCII, SHALL be refused with the code `flag-invalid`, the code io-pimdir's enqueue gives a flag set holding one, and nothing staged. Any other value is a keyword.
+`mailman pimdir flag list|add|set|remove` SHALL read and stage the flags of a pimdir message by their raw spelling, verbatim. A value naming an IANA flag SHALL be accepted only in its canonical spelling, compared without case and staged in the canonical case, a bare `seen` or `$seen` being refused naming `\Seen`; `\Deleted` and `\Recent` SHALL be refused. A backslash names a system flag, so one in front of any other word SHALL be refused, as SHALL a character IMAP forbids in a flag (`(`, `)`, `{`, `%`, `*`, `"`, `]`, `\`). A value the store cannot hold (pimdir STORAGE §13), empty or holding whitespace, a control character or a character outside ASCII, SHALL be refused with the code `flag-invalid`, the code io-pimdir's enqueue gives a flag set holding one, and nothing staged. Any other value is a keyword.
 
 `add`, `set` and `remove` SHALL fail when no message is named or none of the named ones exists, and SHALL stage one `SetFlags` per message through the backend's `stage_flags`, checked against the sources' declarations (pimdir STORAGE §15.6): a source declaring `mail.flags.keywords` as `none` SHALL refuse a keyword change with its detail, and one declaring it in part SHALL queue it with the declaration's warning as it is. A change on `$Important` or `$Junk` SHALL be gated by `mail.flags.important` or `mail.flags.junk` from a source stating that row, `none` included, and by `mail.flags.keywords` from one stating none (pimdir STORAGE Annex B.1), io-pimdir's gate deciding which. `list` SHALL print the flags a message carries as the overlaying reader shows them, and `null` under `--json` for a message whose flags the sync engine never read.
 
@@ -269,26 +269,26 @@ An add or a remove SHALL match the flags a message carries as flags, not as spel
 
 #### Scenario: A keyword is staged and read back
 - GIVEN a pimdir account whose `imap` source declares `mail.flags.keywords`
-- WHEN `himalaya --json pimdir flag add -m imap/INBOX -f act 42` runs
+- WHEN `mailman --json pimdir flag add -m imap/INBOX -f act 42` runs
 - THEN it prints `{"messages":[{"id":"42","row":7}]}`, and `pimdir flag list -m imap/INBOX 42` lists `act` before the next sync
 
 #### Scenario: A source without keywords refuses one
 - GIVEN a pimdir account whose `msgraph` source declares `mail.flags.keywords` as `none`
-- WHEN `himalaya pimdir flag add -m msgraph/Inbox -f act 42` runs
+- WHEN `mailman pimdir flag add -m msgraph/Inbox -f act 42` runs
 - THEN the command fails naming `mail.flags.keywords`, the `msgraph` source and its detail, and nothing is queued
 
 #### Scenario: A flag held in another spelling is removed
 - GIVEN a pimdir message carrying `\seen` and `Junk`
-- WHEN `himalaya pimdir flag remove -m imap/INBOX -f '\Seen' -f '$Junk' 42` runs
+- WHEN `mailman pimdir flag remove -m imap/INBOX -f '\Seen' -f '$Junk' 42` runs
 - THEN the staged set holds neither
 
 #### Scenario: A bare IANA name is refused
-- WHEN `himalaya pimdir flag add -m imap/INBOX -f seen 42` runs
+- WHEN `mailman pimdir flag add -m imap/INBOX -f seen 42` runs
 - THEN the command fails naming `\Seen`, and nothing is queued
 
 #### Scenario: A flag the store cannot hold
 - GIVEN any pimdir account
-- WHEN `himalaya --json pimdir flag add -m imap/INBOX -f 'to do' 42` runs
+- WHEN `mailman --json pimdir flag add -m imap/INBOX -f 'to do' 42` runs
 - THEN the command exits 1 with the code `flag-invalid`, and nothing is queued
 
 ### Requirement: pimdir stages a flag change on every message or none
@@ -296,7 +296,7 @@ An add or a remove SHALL match the flags a message carries as flags, not as spel
 
 #### Scenario: A refusal part-way stages nothing
 - GIVEN a pimdir account whose `msgraph` source declares `mail.flags.keywords` as `none`, and message 41 of `msgraph/Inbox` carries the keyword `act`
-- WHEN `himalaya flag set -m msgraph/Inbox -f seen 40 41 42` runs, the set dropping `act` from 41 only
+- WHEN `mailman flag set -m msgraph/Inbox -f seen 40 41 42` runs, the set dropping `act` from 41 only
 - THEN the command fails naming `mail.flags.keywords` for message 41, and no row is queued for 40, 41 or 42
 
 ### Requirement: pimdir lists each mailbox with its coverage
@@ -304,7 +304,7 @@ An add or a remove SHALL match the flags a message carries as flags, not as spel
 
 #### Scenario: A mailbox synced from a date
 - GIVEN a pimdir account whose `imap` source closed a round on `imap/INBOX` over the mail since 2026-09-07
-- WHEN `himalaya --json pimdir mailbox list` runs
+- WHEN `mailman --json pimdir mailbox list` runs
 - THEN `imap/INBOX` carries `"coverage":{"since":"2026-09-07T00:00:00Z","until":null,"at":…}`, and a mailbox no round closed on carries `"coverage":null`
 
 ### Requirement: pimdir reads only the page an envelope listing needs
@@ -314,7 +314,7 @@ An add or a remove SHALL match the flags a message carries as flags, not as spel
 
 #### Scenario: The first page of a large mailbox
 - GIVEN a pimdir mailbox holding 50,000 mails
-- WHEN `himalaya envelope list -s 50` runs
+- WHEN `mailman envelope list -s 50` runs
 - THEN the store reads the 50 newest items, and one more per queued removal, rather than the 50,000
 
 ### Requirement: pimdir lists the account's attachments
@@ -326,12 +326,12 @@ A page SHALL hold `--page-size` files (else `envelope.list.page-size`, else 25).
 
 #### Scenario: A page of files and the next one
 - GIVEN a pimdir account whose stored messages attach four files
-- WHEN `himalaya --json pimdir attachment list -s 3` runs
+- WHEN `mailman --json pimdir attachment list -s 3` runs
 - THEN it prints the three files of the newest messages and a `nextPage` token, and `pimdir attachment list -s 3 --page-token <TOKEN>` prints the fourth with `"nextPage":null`
 
 #### Scenario: Invoices from one sender
 - GIVEN a pimdir account where `billing@shop.test` sent `Facture-Octobre.pdf` and another sender `plage.jpg`
-- WHEN `himalaya --json pimdir attachment search facture billing` runs
+- WHEN `mailman --json pimdir attachment search facture billing` runs
 - THEN it prints `Facture-Octobre.pdf` only
 
 ### Requirement: pimdir sends by queueing a submit intent
@@ -364,7 +364,7 @@ The command SHALL NOT report the queue row id in its output; the pimdir backend 
 - THEN the command fails with the code `no-performer`, and nothing is queued
 
 ### Requirement: The queue view shows queued sends
-`himalaya pimdir queue list` SHALL render a queued `submit` as a message, derived from the body it pins as a create is, marked as a send, beside the queued creates of the same mailbox.
+`mailman pimdir queue list` SHALL render a queued `submit` as a message, derived from the body it pins as a create is, marked as a send, beside the queued creates of the same mailbox.
 
 ### Requirement: Append gap
 Graph SHALL NOT implement `add_message`: a MIME message it creates stays a draft, so it declares `message.add` `none`, and a `message add`, or a save asked of a composer or of `message send`, is refused before connecting. Gmail SHALL implement it through `messages.insert`, the mailbox and the flags becoming labels and the `Date:` header dating the message, without sending it or running filters. Every backend implements `search_envelopes` (see the search capability).

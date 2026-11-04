@@ -10,7 +10,7 @@ A Windows absolute path carries a colon of its own. `ConfigPathsArg` declared
 `value_delimiter = ':'`, so clap split every `-c` value at the drive letter:
 `-c C:\Users\me\config.toml` reached the loader as `C` and
 `\Users\me\config.toml`, neither of which exists, and the configuration was
-never read even though the file was right there. `HIMALAYA_CONFIG` feeds the
+never read even though the file was right there. `MAILMAN_CONFIG` feeds the
 same argument and failed the same way, and so did repeated `-c` flags with
 absolute paths. A relative path worked, which is why it stayed hidden.
 

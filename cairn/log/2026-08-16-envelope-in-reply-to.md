@@ -6,7 +6,7 @@ landed: 2026-08-16
 
 # Carry In-Reply-To on the shared envelope
 
-[Issue 734](https://github.com/pimalaya/himalaya/issues/734) pointed at data being thrown away: the IMAP `ENVELOPE` carries `In-Reply-To` as its 9th element (RFC 3501 §7.4.2), the FETCH a listing already issues returns it, and `envelope_from` dropped it because the shared `Envelope` had nowhere to put it. Learning a message's parent meant `get_message` and a parse, a body read per row.
+[Issue 734](https://github.com/pimalaya/mailman/issues/734) pointed at data being thrown away: the IMAP `ENVELOPE` carries `In-Reply-To` as its 9th element (RFC 3501 §7.4.2), the FETCH a listing already issues returns it, and `envelope_from` dropped it because the shared `Envelope` had nowhere to put it. Learning a message's parent meant `get_message` and a parse, a body read per row.
 
 ## What landed
 

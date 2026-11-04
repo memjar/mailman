@@ -21,7 +21,7 @@ store's `distinct_sources()` and, for a store synced as a single source (the
 local-sync case), writes as that one source — no configuration. It falls back to
 `local` only when the store has no or several sources.
 
-Verified: with no `pimdir.source`, a flag edited in Himalaya against a one-side
+Verified: with no `pimdir.source`, a flag edited in Mailman against a one-side
 neverest store propagates to the remote on the next sync.
 
 ## Scope / non-goals

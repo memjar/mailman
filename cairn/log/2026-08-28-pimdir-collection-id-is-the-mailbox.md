@@ -8,7 +8,7 @@ change: pimdir-collection-id-is-the-mailbox
 
 The pimdir backend named a mailbox by stripping a `<namespace>/` prefix off its collection id, so `imap/INBOX` showed and resolved as `INBOX`, and both spellings addressed it. That mixed an addressing key with a display convenience over a convention the store cannot be asked about: `collections.id` is an opaque `TEXT PRIMARY KEY`, io-pimdir splits it nowhere, pimdir SPEC 9.2 says the store neither parses nor validates it, and hierarchy is modelled by the `parent` foreign key rather than by a separator. The `/` belongs to Neverest, whose own spec calls the namespace internal and non-configurable.
 
-The guessing showed in the code: the derivation only worked because it filtered to `message/rfc822` first, it needed `pimdir.namespace` for the store it could not decide, and it needed an ambiguity error for two collections stripping to one name. Himalaya already had the answer in another backend: JMAP mailbox ids are opaque server strings carried verbatim, and `[mailbox.alias]` is how a user avoids typing one.
+The guessing showed in the code: the derivation only worked because it filtered to `message/rfc822` first, it needed `pimdir.namespace` for the store it could not decide, and it needed an ambiguity error for two collections stripping to one name. Mailman already had the answer in another backend: JMAP mailbox ids are opaque server strings carried verbatim, and `[mailbox.alias]` is how a user avoids typing one.
 
 ## What landed
 
@@ -32,4 +32,4 @@ No unit test was added for `hub_id`: it is a membership check whose two outcomes
 
 ## Not done
 
-Whether Neverest should write a short display name into `collections.name` is a question about the producer, left open. This change reads whatever is there, so either answer lands without touching Himalaya again.
+Whether Neverest should write a short display name into `collections.name` is a question about the producer, left open. This change reads whatever is there, so either answer lands without touching Mailman again.

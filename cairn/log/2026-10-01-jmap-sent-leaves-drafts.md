@@ -10,7 +10,7 @@ A JMAP send used to leave every sent message in the drafts mailbox, still carryi
 
 `resolve_send_mailbox_ids` replaces `resolve_drafts_mailbox_id`, reading both roles in one `Mailbox/get` when either id is not configured. `jmap.sent-mailbox-id` is new; without it and without a `sent` role, the email only loses `$draft`.
 
-io-jmap gained `JmapEmailSubmissionSetArgs` (`onSuccessUpdateEmail`, `onSuccessDestroyEmail`), additive: `new` and `email_submission_set` take it or the create map alone. Himalaya builds against it once io-jmap 0.4.1 is published.
+io-jmap gained `JmapEmailSubmissionSetArgs` (`onSuccessUpdateEmail`, `onSuccessDestroyEmail`), additive: `new` and `email_submission_set` take it or the create map alone. Mailman builds against it once io-jmap 0.4.1 is published.
 
 Capability moved: **backends** (a JMAP send files the message as sent).
 

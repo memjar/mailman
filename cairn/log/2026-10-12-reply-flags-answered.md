@@ -16,4 +16,4 @@ Verified against Gmail over IMAP: the source kept its flags after a `reply` and 
 
 Capabilities moved: **commands** (A sent reply or forward flags its source).
 
-[#778]: https://github.com/pimalaya/himalaya/issues/778
+[#778]: https://github.com/pimalaya/mailman/issues/778

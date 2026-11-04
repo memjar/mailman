@@ -6,7 +6,7 @@ landed: 2026-11-02
 
 # Extend the shared search query
 
-The `envelope search` query keeps himalaya's own chumsky grammar (pimdir SEARCH §8 was considered and set aside, as were filter flags beside the query) and grows five clauses: `before` (strict, as `after`), `cc`, `bcc`, `address` over the `From`, `To`, `Cc` and `Bcc` headers, and a valueless `attachment`. The AST (`SearchEmailsFilterQuery`) gained the five variants and a `Display` that writes a filter back in the language, round-tripped by a test.
+The `envelope search` query keeps mailman's own chumsky grammar (pimdir SEARCH §8 was considered and set aside, as were filter flags beside the query) and grows five clauses: `before` (strict, as `after`), `cc`, `bcc`, `address` over the `From`, `To`, `Cc` and `Bcc` headers, and a valueless `attachment`. The AST (`SearchEmailsFilterQuery`) gained the five variants and a `Display` that writes a filter back in the language, round-tripped by a test.
 
 Each backend compiles them: IMAP to `SENTBEFORE`, `CC`, `BCC` and an `OR` of the four for `address`, refusing `attachment`, SEARCH having no key for it; JMAP to its `cc`, `bcc` and `hasAttachment` conditions; Gmail to `before:`, `cc:`, `bcc:`, a brace group and `has:attachment`; Graph to `sent<`, `cc:`, `bcc:`, `participants:` and `hasAttachments:true` (property names checked against the Graph `$search` documentation). The shared evaluator takes the copy recipients as `EnvelopeCopies`: pimdir passes its summary's, the local backends none, the evaluator then reading the `Cc:` and `Bcc:` headers off the raw message only when a clause needs them. `attachment` reads the envelope's mark, else the raw message's parts.
 

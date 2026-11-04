@@ -14,4 +14,4 @@ Covered by the scripted IMAP server in `src/imap/backend.rs` (UIDVALIDITY 0 now 
 
 - [backends](../spec/backends.md): *IMAP copy and move counts* counts a `COPYUID` with UIDVALIDITY 0.
 
-[#781]: https://github.com/pimalaya/himalaya/issues/781
+[#781]: https://github.com/pimalaya/mailman/issues/781

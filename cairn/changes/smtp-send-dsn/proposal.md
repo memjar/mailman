@@ -19,4 +19,4 @@ created: 2026-10-09
 - The shared `message send` stays out: Gmail and Graph have no DSN.
 - Needs io-smtp 0.6 (`SmtpMessageSendOptions::{mail_parameters, rcpt_parameters}`).
 
-[#775]: https://github.com/pimalaya/himalaya/issues/775
+[#775]: https://github.com/pimalaya/mailman/issues/775

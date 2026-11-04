@@ -17,11 +17,11 @@ Taking it is a breaking bump across the whole graph, which is what this change i
 
 ## What
 
-Every crate in himalaya's graph that opens a socket moves to the new API: io-imap, io-smtp, io-http, io-gmail, io-jmap, io-msgraph and io-pim-discovery.
+Every crate in mailman's graph that opens a socket moves to the new API: io-imap, io-smtp, io-http, io-gmail, io-jmap, io-msgraph and io-pim-discovery.
 
 io-imap loses the retry layer it grew first, while that fix was still living at the protocol level: `ImapStream::read_some` / `read_response` / `write_bytes`, `ImapClientStd::timeout`, `ImapClientError::Timeout` and their backoff constants all go, leaving one policy in the tree instead of two stacked budgets. What stays is the empty-read guard, a real fix of its own: a peer hanging up mid-response used to resume the coroutine with an empty slice forever, and now fails with `UnexpectedEof`. io-imap gains `ImapStream::stop_retrying`, which the mailbox watch worker calls: it arms a read timeout precisely to be woken up, and a retrying stream would absorb the wakeup and leave the shutdown flag unchecked.
 
-himalaya itself needs no code change. Its patch table points at the local checkouts, and `io-pim-discovery` moves from `0.5` to `0.6`, the local version.
+mailman itself needs no code change. Its patch table points at the local checkouts, and `io-pim-discovery` moves from `0.5` to `0.6`, the local version.
 
 ## Scope / non-goals
 
@@ -29,7 +29,7 @@ No crate version is bumped and nothing is released, as in the 0.2 migration. The
 
 The `imap.timeout` config option is not part of this. A caller-facing budget is worth having, but the default minute is the fix for both reports, and a config field that only shortens it can come later.
 
-io-oauth, mirador, neverest and the other consumers outside himalaya's graph are left alone.
+io-oauth, mirador, neverest and the other consumers outside mailman's graph are left alone.
 
-[#731]: https://github.com/pimalaya/himalaya/issues/731
-[#732]: https://github.com/pimalaya/himalaya/issues/732
+[#731]: https://github.com/pimalaya/mailman/issues/731
+[#732]: https://github.com/pimalaya/mailman/issues/732

@@ -1,9 +1,9 @@
 # Gmail *specific* API on Google — test report
 
 Companion to [gmail.md](gmail.md) (shared commands). Exercises
-`himalaya gmail …` — the raw Gmail REST v1 surface.
+`mailman gmail …` — the raw Gmail REST v1 surface.
 
-- himalaya: `v2.0.0-alpha.1 +gmail +rustls-ring` (working tree)
+- mailman: `v2.0.0-alpha.1 +gmail +rustls-ring` (working tree)
 - account: `gmail` (Gmail REST, OAuth via ortie)
 - date: 2026-07-17
 - method: every `gmail` subcommand, inside a fake label, per
@@ -47,7 +47,7 @@ Companion to [gmail.md](gmail.md) (shared commands). Exercises
   `#[serde(default)]` but can't accept a top-level `null`). It now
   normalises to `{}` — `GmailNoResponse` (deletes) still ignores it, and
   list structs fall back to their defaults. Verified: both lists now
-  render empty (`--json` → `{"filter":[]}`). himalaya bumped to io-gmail
+  render empty (`--json` → `{"filter":[]}`). mailman bumped to io-gmail
   0.2 + path-patch until an io-gmail release ships this.
 
 - **G5 — settings *writes* need the settings OAuth scope.** Every write
@@ -57,7 +57,7 @@ Companion to [gmail.md](gmail.md) (shared commands). Exercises
   `https://mail.google.com/`. Gmail settings mutations require
   `https://www.googleapis.com/auth/gmail.settings.basic` (and
   `.settings.sharing` for delegates / external forwarding), which
-  `mail.google.com` does not include. Not a himalaya bug — the raw 403
+  `mail.google.com` does not include. Not a mailman bug — the raw 403
   is surfaced verbatim — but the scope must be added and re-authorised to
   use the write commands. Settings **reads** work with `mail.google.com`.
 

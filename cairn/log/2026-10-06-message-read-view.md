@@ -14,7 +14,7 @@ date: 2026-10-06
 - src/shared/message/read.rs: `MessageReadOutput` (`headers`, `text`, `html`, `parts`) with `MessageHeaders`, `MailAddress` and `MessagePartView`, all with a real JSON Schema; the text output is unchanged and walks the shared leaves.
 - src/shared/attachment/list.rs: rows built from the shared walk, with `contentId`; sizes are the bytes of `part::bytes`.
 - src/shared/attachment/download.rs: `--stdout` (exactly one id, any leaf part, conflicting with `--dir`; raw bytes, or `PartBytes` under `--json`); files written with the same bytes; `AttachmentDownloadOutput` for the schema.
-- src/json_schema.rs: `himalaya-message-read` and `himalaya-attachment-download` registered with the new types.
+- src/json_schema.rs: `mailman-message-read` and `mailman-attachment-download` registered with the new types.
 - Cargo.toml: `base64` no longer optional, the `--stdout --json` output using it on every backend.
 - Unit tests: encoded words (B and Q, adjacent), RFC 2231 file names (continuation, charset) and an RFC 2047 one, ISO-8859-1 and Windows-1252 bodies, quoted-printable and base64, nested `multipart/alternative` in `multipart/mixed`, an attached `message/rfc822`, an inline image by `Content-ID`, a `text/calendar` method, address groups and invalid addresses, dates and their offsets, ids, list headers, the three bounds and their code, ids shared between `parts` and `attachment list`, `--stdout` bytes identical to the decoded part.
 

@@ -16,6 +16,6 @@ Landed alongside two items of the family CLI alignment: comfy-table is now reach
 
 A `pimdir`-only build was also fixed: the client-side search evaluation the backend calls was gated on the `maildir` and `m2dir` features alone, so `--no-default-features --features pimdir` did not compile.
 
-Verified against the twelve-account `~/.himalayarc`, `account list` and `account check` read-only.
+Verified against the twelve-account `~/.mailmanrc`, `account list` and `account check` read-only.
 
 Spec updated: `config` (ADDED "Path keys expand as the configuration is read"), `backends` (REMOVED "pimdir store path is shell-expanded", subsumed).

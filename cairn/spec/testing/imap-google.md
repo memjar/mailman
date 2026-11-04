@@ -8,7 +8,7 @@ provider-agnostic IMAP surface in
 [imap-smtp-specific-fastmail.md](imap-smtp-specific-fastmail.md). Method:
 [provider-test-plan.md](provider-test-plan.md).
 
-- himalaya: `v2.0.0-alpha.1 +imap +rustls-ring` (working tree)
+- mailman: `v2.0.0-alpha.1 +imap +rustls-ring` (working tree)
 - account: `google` — IMAP-only (`imaps://imap.gmail.com`, SASL PLAIN
   with an app password); **no `[smtp]` block**, so `message send` bails
   by design
@@ -18,8 +18,8 @@ provider-agnostic IMAP surface in
   `IMAP4rev1 UIDPLUS MOVE CONDSTORE IDLE SPECIAL-USE X-GM-EXT-1`
 
 > Test account (`pimalaya.org@gmail.com`), but the golden rule was still
-> applied: all work happened in throwaway labels `Himalaya-Test` /
-> `Himalaya-Test2`. Cleanup accounts for Gmail's model (a message
+> applied: all work happened in throwaway labels `Mailman-Test` /
+> `Mailman-Test2`. Cleanup accounts for Gmail's model (a message
 > survives label removal in `All Mail`): the test messages were moved to
 > `[Gmail]/Trash`, flagged `\Deleted` and expunged, then the labels
 > deleted. Final state verified: no test residue in INBOX / All Mail /
@@ -47,7 +47,7 @@ provider-agnostic IMAP surface in
 
 ## Findings
 
-No himalaya bugs. Everything works; the notes below are Gmail-IMAP
+No mailman bugs. Everything works; the notes below are Gmail-IMAP
 semantics worth knowing (and were the basis of the cleanup).
 
 - **H1 — messages persist in `All Mail` after a label is removed.**
@@ -78,7 +78,7 @@ semantics worth knowing (and were the basis of the cleanup).
 ## Verdict
 
 Gmail over IMAP is **fully working** across shared and IMAP-specific
-commands, with no himalaya bugs — only Gmail's own label/search
+commands, with no mailman bugs — only Gmail's own label/search
 semantics to account for (H1–H4). The account is IMAP-only, so sending
 needs a separate `[smtp]` block (or the Gmail REST backend). Safe to
 document as a supported provider.

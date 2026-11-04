@@ -14,5 +14,5 @@ The row SHALL be anchored on `parent`, which must be a mailbox of the account, e
 
 #### Scenario: A folder is created through the sync engine
 - GIVEN a pimdir account whose `imap` source declares `collection.create`
-- WHEN `himalaya --json pimdir mailbox create Projets` runs
+- WHEN `mailman --json pimdir mailbox create Projets` runs
 - THEN one `collection-create` row is queued with `{"v":1,"source":"imap","name":"Projets"}`, and the command prints its `queueId` and `"source":"imap"`

@@ -2,14 +2,14 @@
 
 Companion to [imap-smtp-fastmail.md](imap-smtp-fastmail.md) (which covers
 the shared commands). This one exercises the raw protocol commands under
-`himalaya imap …` and `himalaya smtp …`.
+`mailman imap …` and `mailman smtp …`.
 
-- himalaya: `v2.0.0-alpha.1 +imap +smtp +rustls-ring` (rev `1dddbe8` +
+- mailman: `v2.0.0-alpha.1 +imap +smtp +rustls-ring` (rev `1dddbe8` +
   working-tree fixes)
 - account: `fastmail`
 - date: 2026-07-17
 - method: every `imap`/`smtp` subcommand and flag, by hand, inside two
-  throwaway mailboxes (`Himalaya-Imap-A` / `-B`), per
+  throwaway mailboxes (`Mailman-Imap-A` / `-B`), per
   [provider-test-plan.md](provider-test-plan.md).
 
 ## Results

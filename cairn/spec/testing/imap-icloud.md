@@ -5,12 +5,12 @@ IMAP backend against **iCloud** (`imaps://imap.mail.me.com`, app-specific
 password). The account is **IMAP-only** — no SMTP block is configured —
 so `compose`/`send`/`reply`/`forward` were out of scope for this run.
 
-- himalaya: 2.0.0-alpha.1 (rev fcf5b76)
+- mailman: 2.0.0-alpha.1 (rev fcf5b76)
 - account: icloud (`imap`)
 - date: 2026-07-19
 
-All work happened inside two throwaway mailboxes (`Himalaya-Test-A`,
-`Himalaya-Test-B`) created for the run and deleted at the end; real mail
+All work happened inside two throwaway mailboxes (`Mailman-Test-A`,
+`Mailman-Test-B`) created for the run and deleted at the end; real mail
 (Inbox, Archive, Sent Messages) was never touched.
 
 ## Results
@@ -38,16 +38,16 @@ All work happened inside two throwaway mailboxes (`Himalaya-Test-A`,
 
 - **`order by` / `imap sort` is silently ignored — iCloud's server SORT is
   a no-op (provider bug).** iCloud advertises `SORT ESORT CONTEXT=SORT`,
-  so himalaya's default policy (`sort_fallback = !has(SORT)`) trusts it and
-  issues a server `SORT`. The wire trace shows himalaya sending a correct
+  so mailman's default policy (`sort_fallback = !has(SORT)`) trusts it and
+  issues a server `SORT`. The wire trace shows mailman sending a correct
   `UID SORT (REVERSE DATE) UTF-8 ALL` and iCloud replying `* SORT 1 2 3 4 5
   6` — i.e. plain UID-ascending order, **ignoring both the key and
   REVERSE** (`-S subject` likewise came back in UID order, not
-  alphabetical). himalaya relays the server order faithfully; the fault is
+  alphabetical). mailman relays the server order faithfully; the fault is
   iCloud's. Every sort key/direction therefore returns the same UID order.
 
 - **The client-side sort fallback mis-ordered the `date` key (io-imap
-  bug — now FIXED).** Under `imap.sort.fallback = true` himalaya sorts
+  bug — now FIXED).** Under `imap.sort.fallback = true` mailman sorts
   locally (SEARCH + FETCH + sort). Subject ordering was already correct,
   but **date** ordering came back by **weekday name, lexically** (`Fri,
   Mon, Sat, Thu, Tue, Wed`): `io_imap::rfc5256::sort::cmp_fetch_items`
@@ -66,7 +66,7 @@ All work happened inside two throwaway mailboxes (`Himalaya-Test-A`,
   `\Deleted` + EXPUNGE fallback; the move succeeded and the source UID was
   gone afterwards, with an accurate `1 message successfully moved`.
 - **No THREAD capability.** `imap thread` fails with `BAD Parse Error`
-  (iCloud rejects the command) — expected, not a himalaya fault.
+  (iCloud rejects the command) — expected, not a mailman fault.
 - **Custom keywords are accepted.** Raw `imap store <id> --action add -f
   keywordtest` succeeded and the keyword showed up in `fetch --flags`. (The
   *shared* `flag` command still rejects non-standard flags at the CLI enum,
@@ -79,7 +79,7 @@ All work happened inside two throwaway mailboxes (`Himalaya-Test-A`,
 - **`after`** is strict — `after 2026-07-16` excluded the message dated
   2026-07-16 (matched only later ones).
 - **`envelope search` grouping requires glued parens.** `(from a or from
-  b)` parses; `( from a or from b )` (a bare `(` argv token, which himalaya
+  b)` parses; `( from a or from b )` (a bare `(` argv token, which mailman
   space-joins) fails with `expected … (nested filter)`. Minor: the DSL
   doesn't tolerate whitespace immediately inside parens. Grouping itself
   works (glued form excluded the non-matching message correctly).

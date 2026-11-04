@@ -9,14 +9,14 @@ created: 2026-08-01
 
 ## Why
 
-Himalaya can read/write remote mailboxes and local file stores (Maildir, m2dir),
+Mailman can read/write remote mailboxes and local file stores (Maildir, m2dir),
 but not a **pimdir** store — the SQLite-indexed, content-addressed local cache the
 sync engine (Neverest / io-replica + io-pimdir) populates. Reading the same store
 the sync writes gives an indexed, offline, provider-agnostic mailbox with no second
 copy and no format bridge (LOCAL_STORE_PLAN §4 / action plan M4–M5).
 
 pimdir is a **cache, not a live backend**: an item may be un- or partially
-hydrated. The store surfaces that (`PimdirItem.level` + absent `object`); Himalaya
+hydrated. The store surfaces that (`PimdirItem.level` + absent `object`); Mailman
 owns the UI reaction, so a not-downloaded message reads as "body not fetched"
 rather than an error.
 
@@ -43,7 +43,7 @@ carries.
 - **Cache semantics, not a live backend**: no fetch-on-demand (a pure reader has no
   remote — hydration is the sync's job); no native trash; body search only on
   hydrated items.
-- **Shared subcommands only** — no dedicated `himalaya pimdir …` native subcommands
+- **Shared subcommands only** — no dedicated `mailman pimdir …` native subcommands
   yet (no `cli.rs`), so no `json_schema.rs` entries.
 - **Source alignment is a deployment concern** (single-writer + source identity =
   action plan M6); documented, guarded, not solved here.

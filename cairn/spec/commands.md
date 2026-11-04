@@ -18,7 +18,7 @@ Each backend SHALL declare, in one table per backend (src/capability.rs), the sh
 A shared command SHALL be checked against the capabilities its arguments reach (each flag it names, each clause and sort key of its query, `--save`, `--send`, `--seen`) before any connection, on the resolution of the account's blocks or of the kept session client, so a refusal resolves no credential, opens no TLS and drops no kept client. A capability no configured transport answers, or one its transport declares `none`, SHALL fail with the code `capability-missing` and a message naming the account, the capability, the backend or the `--backend` filter, and the detail; a query option SHALL fail with `search-unsupported` instead. A copy `message.send.save-copy` configures SHALL be checked once the account is read, still before the send. An account configuring no transport at all SHALL keep the error naming its blocks.
 
 #### Scenario: Answered on Gmail
-- WHEN `himalaya flag add 42 --flag answered` runs on a Gmail account
+- WHEN `mailman flag add 42 --flag answered` runs on a Gmail account
 - THEN it fails with `capability-missing` naming `flags.answered`, before the token command runs, where it used to report the message flagged and change nothing
 
 ### Requirement: A server-decided capability is refused once connected
@@ -53,7 +53,7 @@ The protocol SHALL live in io-managesieve, so this repository holds a `SieveClie
 ### Requirement: Raw passthrough is byte-verbatim
 The `imap raw` and `smtp raw` commands SHALL forward the command bytes to the server verbatim, resolving the argument through the shared `RawCommandArg` (positional or stdin read whole, refused when not valid UTF-8). It decodes literal `\r` / `\n` escapes into real CRLF so a shell-typed command survives intact. `imap raw` sends a batch of caller-tagged commands: it appends a trailing CRLF when missing and delegates tagging, framing and out-of-order completion tracking to io-imap. `smtp raw` stays a single command line: it strips the trailing CRLF (io-smtp appends its own) and rejects a multi-line batch, since the SMTP exchange reads exactly one reply. `sieve raw` sends one command line and reads the complete ManageSieve response; literal-bearing Sieve commands use their typed commands so the response reader remains synchronized.
 
-The reply SHALL be printed split into what himalaya understands of it. `imap raw` SHALL print each untagged response as an `untagged` event `{kind, number, text}` (`* 3 EXISTS` being kind `EXISTS`, number 3), each continuation request as a `continuation` event `{text}`, and a response it cannot split as an `unparsed` event `{text}`, a literal kept in the response announcing it; then the result `{completions: [{tag, status, code, text}]}`. `sieve raw` SHALL print each data line as a `data` event `{text}`, then the completion `{status, code, text}`. `smtp raw` SHALL print `{code, text}`, the reply's lines joined, `code` `null` when the reply opens with none. A refused completion (an IMAP `NO` or `BAD`, a ManageSieve `NO` or `BYE`, an SMTP 4xx or 5xx) SHALL exit 2, its result printed. `imap raw` reads the whole reply before printing, so its events come before the result but not as they arrive, and io-imap decodes the reply lossily, so a non-UTF-8 byte comes back as U+FFFD.
+The reply SHALL be printed split into what mailman understands of it. `imap raw` SHALL print each untagged response as an `untagged` event `{kind, number, text}` (`* 3 EXISTS` being kind `EXISTS`, number 3), each continuation request as a `continuation` event `{text}`, and a response it cannot split as an `unparsed` event `{text}`, a literal kept in the response announcing it; then the result `{completions: [{tag, status, code, text}]}`. `sieve raw` SHALL print each data line as a `data` event `{text}`, then the completion `{status, code, text}`. `smtp raw` SHALL print `{code, text}`, the reply's lines joined, `code` `null` when the reply opens with none. A refused completion (an IMAP `NO` or `BAD`, a ManageSieve `NO` or `BYE`, an SMTP 4xx or 5xx) SHALL exit 2, its result printed. `imap raw` reads the whole reply before printing, so its events come before the result but not as they arrive, and io-imap decodes the reply lossily, so a non-UTF-8 byte comes back as U+FFFD.
 
 ### Requirement: Account threaded as a sibling argument
 The active account context SHALL be threaded as a sibling argument through every `execute` chain, never reached through the client. Subcommands receive `account` and `client` side by side.
@@ -62,13 +62,13 @@ The active account context SHALL be threaded as a sibling argument through every
 `account check` SHALL check every backend the account declares and `--backend` allows, and print the report whole, one row `{backend, ok, code, error}` per backend, `code` and `error` `null` when the backend answered. When any fails, it SHALL exit 2 after the report, so a script reads the outcome from the exit code and each backend's code from its row. A pimdir block SHALL be checked by opening the store as a reader, listing its mailboxes, then opening a producer and probing it (`PimdirProducer::probe`), which takes and releases the staging lock without waiting and the database's write lock, writing nothing into the store, so an account declaring only a pimdir block is checked rather than refused as declaring no backend, and a store a write cannot reach fails the check rather than the first write: a collector holding the staging lock fails it at once with `store-busy`, and the check leaves nothing in objects/.
 
 ### Requirement: Output discipline
-Data and errors SHALL go to stdout through the printer; `--json` switches every command to JSON. stderr carries logs only. Each command's doc comment is its `--help` text, so `himalaya <command> --help` is the canonical per-command usage reference.
+Data and errors SHALL go to stdout through the printer; `--json` switches every command to JSON. stderr carries logs only. Each command's doc comment is its `--help` text, so `mailman <command> --help` is the canonical per-command usage reference.
 
 ### Requirement: A JSON error carries a stable code
 A failure a caller is expected to act on SHALL carry a stable code, printed under `--json` as a `code` string beside `error`, `sources` and `backtrace`. The code SHALL be found anywhere in the error chain, so added context does not hide it. A failure with no code SHALL print `code: null`. The plain output SHALL stay unchanged. Codes are kebab-case and never renamed; `error` stays free wording.
 
 ### Requirement: The JSON contract is described and versioned
-`json-schema` SHALL describe the failure object under the key `himalaya-error`, its `code` typed by the code vocabulary, and every command printing to stdout under its command key, checked by a test walking the command tree: only a bare `himalaya` (the help, or the wizard `configure` describes), `repl` and `mcp` are left out. A command printing one of two shapes SHALL be described by both, and a command printing events SHALL describe them under `<key>.events`. Schemas SHALL describe a value as printed, so a key always printed is required. Every generated schema SHALL carry an `$id` naming the contract version, the major version of Himalaya. Every registered payload SHALL be a JSON object, checked by a test. Piped `--json` output SHALL print one value per line.
+`json-schema` SHALL describe the failure object under the key `mailman-error`, its `code` typed by the code vocabulary, and every command printing to stdout under its command key, checked by a test walking the command tree: only a bare `mailman` (the help, or the wizard `configure` describes), `repl` and `mcp` are left out. A command printing one of two shapes SHALL be described by both, and a command printing events SHALL describe them under `<key>.events`. Schemas SHALL describe a value as printed, so a key always printed is required. Every generated schema SHALL carry an `$id` naming the contract version, the major version of Mailman. Every registered payload SHALL be a JSON object, checked by a test. Piped `--json` output SHALL print one value per line.
 
 
 | Code | Raised when |
@@ -79,12 +79,12 @@ A failure a caller is expected to act on SHALL carry a stable code, printed unde
 | `search-invalid` | an `envelope search` query does not parse; nothing is searched |
 | `search-unsupported` | an `envelope search` clause the account's backend cannot search, quoted as written; nothing is searched, no clause dropped |
 | `capability-missing` | the account's backend does not serve the verb, or the option of it asked for, as its capability table declares or its server advertises; nothing is done, the message naming the capability and what serves it instead |
-| `store-version` | a pimdir store is of another draft of the format; upgrade Himalaya, or reinstall the store as neverest's MIGRATION.md says |
+| `store-version` | a pimdir store is of another draft of the format; upgrade Mailman, or reinstall the store as neverest's MIGRATION.md says |
 | `store-uncreated` | a pimdir store has no schema yet; its sync engine creates it |
 | `store-foreign` | the database at a pimdir root is not a pimdir store; another program wrote it |
 | `store-corrupt` | a pimdir store's version records disagree, or its schema is not its draft's |
 | `store-not-current` | a pimdir store holds no schema yet and the verb creates none; its sync engine creates it |
-| `store-hash-algo` | a pimdir store names its bodies with a hash Himalaya does not compute |
+| `store-hash-algo` | a pimdir store names its bodies with a hash Mailman does not compute |
 | `sync-version` | a pimdir store's sync state was written by another version of its sync engine |
 | `store-busy` | another writer holds a pimdir store's write lock; retry |
 | `store-owned` | a sync owns a pimdir store; retry once it ends |
@@ -102,14 +102,14 @@ A failure a caller is expected to act on SHALL carry a stable code, printed unde
 | `index-outdated` | a pimdir search index was built by another version; its sync engine rebuilds it |
 | `index-version` | a pimdir search index is of another draft or shape; its sync engine rebuilds one of an earlier draft |
 | `index-zone-unknown` | the zone a pimdir search index reads floating times in is no IANA zone |
-| `index-fts5-missing` | the SQLite Himalaya links lacks what a pimdir search index needs (FTS5, 3.43 or later) |
+| `index-fts5-missing` | the SQLite Mailman links lacks what a pimdir search index needs (FTS5, 3.43 or later) |
 | `query-refused` | a pimdir search query breaks a SEARCH §8.4 rule; nothing is searched |
 | `query-unanswerable` | a pimdir search index could not answer an accepted query, an implementation fault |
 | `tag-refused` | a pimdir tag names no flag, or adds and removes one flag; nothing is staged |
 
 #### Scenario: A body not downloaded yet
 - GIVEN a pimdir item whose body is not local
-- WHEN `himalaya --json message read` reads it
+- WHEN `mailman --json message read` reads it
 - THEN the command exits 1 and prints `{"code":"body-pending","error":"…","sources":[],"backtrace":null}`
 
 ### Requirement: Plain output is printable
@@ -142,7 +142,7 @@ A protocol command type SHALL be named `<Domain><Target><Verb>Command`, so a bar
 ### Requirement: Composers default the From header
 `messages compose`, `messages reply` and `messages forward` SHALL fill the `From` header from the resolved account when `--from` is not passed: `email` as the address, `display-name` as the name it carries. An explicit `--from` SHALL win whole, the configured name never being grafted onto an address the user spelled out. With neither, the header SHALL be omitted rather than guessed.
 
-The name SHALL be handed to the MIME builder apart from the address, so that a name carrying a comma, a quote or a non-ASCII character is encoded by the builder rather than by a quoting rule of Himalaya's own.
+The name SHALL be handed to the MIME builder apart from the address, so that a name carrying a comma, a quote or a non-ASCII character is encoded by the builder rather than by a quoting rule of Mailman's own.
 
 The composers SHALL write the `Date` (the current time at the local offset) and the `Message-ID` themselves, mime-rs's builder writing no field it is not given: the id sits on the domain of the `From` address when it is a plain dot-atom, else on the machine's hostname, else on `localhost`, its left part unique on the machine.
 
@@ -208,12 +208,12 @@ Attachment downloads SHALL atomically create a new file, refusing to follow an e
 
 #### Scenario: An id that does not exist
 - GIVEN a mailbox holding no message with id `99999999`
-- WHEN `himalaya flag add --flag flagged 99999999` runs
+- WHEN `mailman flag add --flag flagged 99999999` runs
 - THEN the command exits 1 with `No flag added: no id matched in the mailbox`
 
 #### Scenario: One id of two exists
 - GIVEN a mailbox holding message `42` and no message `99999999`
-- WHEN `himalaya --json flag add --flag flagged 42 99999999` runs
+- WHEN `mailman --json flag add --flag flagged 42 99999999` runs
 - THEN the command exits 0 and prints `{"flags":[{"raw":"\\Flagged","iana":"flagged"}],"count":1,"queued":false}`
 
 ### Requirement: A queued write says it is queued
@@ -256,18 +256,18 @@ Every write SHALL print what it acted on, never a sentence alone. A shared write
 
 #### Scenario: A Gmail label is created
 - GIVEN a Gmail account
-- WHEN `himalaya --json gmail labels create Projects` runs
+- WHEN `mailman --json gmail labels create Projects` runs
 - THEN it prints `{"id":"Label_12"}`, the id Gmail gave the label
 
 ### Requirement: Absent is null
-An output type of Himalaya's own SHALL print every key, `null` when the value is absent, so its schema marks every key required. A provider payload printed as received SHALL keep its own omissions.
+An output type of Mailman's own SHALL print every key, `null` when the value is absent, so its schema marks every key required. A provider payload printed as received SHALL keep its own omissions.
 
 ### Requirement: Listings resume from their cursor
 `envelope list` and `envelope search` SHALL print `nextPage` beside `envelopes`: the next page number, as a string, while a page comes back full, `null` otherwise, and SHALL take it back through `--page-token`, which wins over `--page`. A full last page leads to an empty one. `msgraph messages list` SHALL print the `$skip` of Graph's next link as `nextPage` and take it back through `--page-token`; a next link carrying no `$skip` (a `$search` page) SHALL be printed whole and refused by `--page-token`. The Gmail listings keep Gmail's page token.
 
 #### Scenario: A second page
 - GIVEN a mailbox holding two messages
-- WHEN `himalaya --json envelope list -s 1` runs, then `himalaya --json envelope list -s 1 --page-token 2`
+- WHEN `mailman --json envelope list -s 1` runs, then `mailman --json envelope list -s 1 --page-token 2`
 - THEN the first prints one envelope and `"nextPage":"2"`, the second the other envelope
 
 ### Requirement: An IMAP command prints its completion
@@ -275,7 +275,7 @@ Every `imap` command but `raw` SHALL print the tagged completion of its exchange
 
 #### Scenario: A mailbox that does not exist
 - GIVEN an IMAP account
-- WHEN `himalaya --json imap select Nope` runs
+- WHEN `mailman --json imap select Nope` runs
 - THEN it prints `{"status":"NO","text":"…"}` with the server's text and exits 2
 
 ### Requirement: A local store flag prints its meaning beside its spelling

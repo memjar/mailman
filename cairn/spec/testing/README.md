@@ -6,7 +6,7 @@ status: current
 
 # Testing reports
 
-Real-world test reports for Himalaya CLI v2, one per backend/provider,
+Real-world test reports for Mailman CLI v2, one per backend/provider,
 plus the provider-agnostic composer. Each was produced by exercising
 every command variant against a live account (or a throwaway local
 store), following the golden rule: **operate only inside fake mailboxes
@@ -16,7 +16,7 @@ Method: [provider-test-plan.md](provider-test-plan.md).
 
 Every report pairs a **shared** run (the cross-protocol `mailbox` /
 `envelope` / `flag` / `message` / `attachment` commands) with a
-**specific** run (the raw `himalaya <proto> …` surface), except where a
+**specific** run (the raw `mailman <proto> …` surface), except where a
 single combined report sufficed.
 
 ## Network backends
@@ -55,7 +55,7 @@ CRLF/empty-body handling, the Maildir/m2dir double-join and variadic-flag
 issues, the `has_prefix` reply/forward subject bug, …). The only
 library-level fixes were in io-imap (untagged MOVE `COPYUID`; and the
 fallback `Date:`-sort fix below) and io-gmail (empty 2xx body parsing),
-all tracked for release; everything else was himalaya-side.
+all tracked for release; everything else was mailman-side.
 
 The iCloud run ([imap-icloud.md](imap-icloud.md)) surfaced two sort
 issues: iCloud's server SORT is a no-op (advertised but ignores key +
@@ -79,15 +79,15 @@ The 2026-08-24 Dovecot Pigeonhole smoke test against `franz@bett.ag` passed
 STARTTLS, PLAIN authentication, `CAPABILITY`, `LISTSCRIPTS`, and
 `account check --backend sieve`. The initial list was empty because the
 existing `.dovecot.sieve` was a regular file outside the personal store. In
-an explicitly authorized migration test, Himalaya uploaded the same rules as
+an explicitly authorized migration test, Mailman uploaded the same rules as
 `main` and activated it; ManageSieve then listed `main` as active and
 `dovecot.orig` as the preserved inactive copy. `GETSCRIPT` verified both
 contents. No script was deleted.
 
 The same migration path was verified on 2026-08-24 for `mail@anycast.io` on
 `mail1.anycast.io`. Its pre-existing regular `.dovecot.sieve` contained the
-invoice forwarding rule. Himalaya uploaded it as `main` and activated it;
+invoice forwarding rule. Mailman uploaded it as `main` and activated it;
 Dovecot converted `.dovecot.sieve` into its managed `sieve/main.sieve`
-symlink and preserved the previous file as inactive `dovecot.orig`. Himalaya
+symlink and preserved the previous file as inactive `dovecot.orig`. Mailman
 and `doveadm` returned the same script contents. No manual symlink or direct
 filesystem edit was used.

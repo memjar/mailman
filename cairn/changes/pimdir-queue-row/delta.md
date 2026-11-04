@@ -14,5 +14,5 @@ change: pimdir-queue-row
 
 #### Scenario: A staged draft is followed by its row
 - GIVEN a pimdir account
-- WHEN `himalaya --json pimdir message add -m imap/Drafts` stages a message
+- WHEN `mailman --json pimdir message add -m imap/Drafts` stages a message
 - THEN it prints `{"queueId":12,"messageId":"d1@x.org"}`, and `pimdir queue show 12` prints `"state":"pending"` until the sync engine applies the row, then `"state":"gone"`

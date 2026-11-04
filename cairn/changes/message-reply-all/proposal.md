@@ -9,7 +9,7 @@ created: 2026-10-14
 
 ## Why
 
-`message reply` derives its recipients from `Reply-To`, or `From` when there is none, and has no way to answer everyone: the other `To` and `Cc` recipients of the source have to be read from `message read --json` and passed back by hand with `--to` and `--cc` ([#779](https://github.com/pimalaya/himalaya/issues/779)).
+`message reply` derives its recipients from `Reply-To`, or `From` when there is none, and has no way to answer everyone: the other `To` and `Cc` recipients of the source have to be read from `message read --json` and passed back by hand with `--to` and `--cc` ([#779](https://github.com/pimalaya/mailman/issues/779)).
 
 ## What
 

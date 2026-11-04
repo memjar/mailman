@@ -9,9 +9,9 @@ created: 2026-10-30
 
 ## Why
 
-The pimdir stable-release review of 2026-10-30 (report-himalaya.md, release blocker 1 and should-fix 6) reproduced data loss through `himalaya pimdir queue cancel`.
+The pimdir stable-release review of 2026-10-30 (report-mailman.md, release blocker 1 and should-fix 6) reproduced data loss through `mailman pimdir queue cancel`.
 
-- It calls io-pimdir's `PimdirStore::cancel_action`, which runs the full owner `open` (io-pimdir src/client.rs:877-885): that migrates and reconciles the schema to the caller's io-pimdir revision. A himalaya built on 3b4bed8, cancelling a row in a store written by io-pimdir HEAD, dropped the `supersessions` table, `task_summary_by_parent`, and the `priority`, `categories`, `parent` and `mid` columns of `task_summary`: unfog's data, deleted by an email client. With version skew between apps, each such open flips the schema back and forth.
+- It calls io-pimdir's `PimdirStore::cancel_action`, which runs the full owner `open` (io-pimdir src/client.rs:877-885): that migrates and reconciles the schema to the caller's io-pimdir revision. A mailman built on 3b4bed8, cancelling a row in a store written by io-pimdir HEAD, dropped the `supersessions` table, `task_summary_by_parent`, and the `priority`, `categories`, `parent` and `mid` columns of `task_summary`: unfog's data, deleted by an email client. With version skew between apps, each such open flips the schema back and forth.
 - It cancels any row id in the store (src/pimdir/client.rs:122-133, src/pimdir/queue/cancel.rs:46), another account's or another app's included, while `queue show` reads those rows as `unknown`. The prompt and the output call every row a message, a flag change or a mailbox creation included.
 
 ## What

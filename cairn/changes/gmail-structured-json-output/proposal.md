@@ -9,7 +9,7 @@ created: 2026-08-14
 
 ## Why
 
-Reported as pimalaya/himalaya#730: `gmail messages get --json` returns `{"message":"Id: 19ffb3...\nThread: ...\n"}`, a human summary wrapped in a JSON string, so nothing can be parsed out of it and `--header` appears to do nothing.
+Reported as pimalaya/mailman#730: `gmail messages get --json` returns `{"message":"Id: 19ffb3...\nThread: ...\n"}`, a human summary wrapped in a JSON string, so nothing can be parsed out of it and `--header` appears to do nothing.
 
 The report understates one thing and overstates another. `--header` is not inert: it reaches Gmail as `metadataHeaders` and the headers come back; the renderer drops the payload. And the shared `envelope list` does serialize Gmail envelopes properly, so subjects and senders were never unreachable, just unreachable from that command.
 

@@ -4,9 +4,9 @@ Shared cross-protocol commands on the JMAP backend. Companion:
 [jmap-specific-fastmail.md](jmap-specific-fastmail.md) (the `jmap …` raw
 API). Method: [provider-test-plan.md](provider-test-plan.md), every
 command × flag by hand inside two throwaway JMAP mailboxes
-(`Himalaya-Jmap-A`/`-B`).
+(`Mailman-Jmap-A`/`-B`).
 
-- himalaya: `v2.0.0-alpha.1 +jmap +rustls-ring` (working tree with the
+- mailman: `v2.0.0-alpha.1 +jmap +rustls-ring` (working tree with the
   shared-JMAP name→id, blob-download, CRLF, F1/F2/F3 fixes)
 - account: `fastmail-jmap` (`jmap.server = api.fastmail.com`, bearer
   token)

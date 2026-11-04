@@ -7,7 +7,7 @@ created: 2026-09-30
 
 # mbox backend
 
-Issue #697 asks Himalaya to read the local spool (/var/mail/$USER) so it can replace `mailx`. The same backend opens mailing-list archives, Gmail Takeout exports and Thunderbird local folders. This change adds a full read-write `mbox` backend over a new I/O-free `io-mbox` crate, mirroring the Maildir backend.
+Issue #697 asks Mailman to read the local spool (/var/mail/$USER) so it can replace `mailx`. The same backend opens mailing-list archives, Gmail Takeout exports and Thunderbird local folders. This change adds a full read-write `mbox` backend over a new I/O-free `io-mbox` crate, mirroring the Maildir backend.
 
 ## Why a new crate
 
@@ -26,11 +26,11 @@ no_std coroutines on io-maildir's conventions, with a std `client` pump. The pie
 
 Its corpus runs invariants on every file: Message-ID agreement with mail-parser, chunk-size independence, flag round trips keeping every byte outside the flag fields, removals, append round trips in mboxo, mboxrd and mboxcl2, and index resume. It passes on 4985 messages (33 MB) of public archives and the fixtures. A 212 MB file syncs in 0.3 s with 32 MB peak memory, and interop tests pass against formail and GNU mailutils. The files are mboxshell's and mail-parser's fixtures, pinned downloads from lists.gnu.org, lists.apache.org and lore.kernel.org, and opt-in private mboxes.
 
-## Himalaya side
+## Mailman side
 
 A `mbox` feature (off by default, like m2dir and pimdir) and an `[accounts.<name>.mbox]` block with `root` (directory of mbox files), `inbox` (the spool, set explicitly, `"$MAIL"` expanding), `format`, `thunderbird` and `lock.*`. `src/mbox/` mirrors `src/maildir/` and implements the full shared set. Sending goes through SMTP. The scan index and the parsed envelopes are cached under the XDG cache dir.
 
-`himalaya mbox` becomes the raw mbox command, so the shared `mailbox` command loses its `mbox` visible alias (an alias, not the command name, so no major bump; recorded under Removed).
+`mailman mbox` becomes the raw mbox command, so the shared `mailbox` command loses its `mbox` visible alias (an alias, not the command name, so no major bump; recorded under Removed).
 
 ## Risks
 

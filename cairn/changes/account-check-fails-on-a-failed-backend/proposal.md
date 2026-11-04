@@ -9,7 +9,7 @@ created: 2026-10-30
 
 ## Why
 
-`account check` printed `<backend>: FAIL (...)` and exited 0 (src/account/check.rs; `a_pimdir_account_is_checked` asserted it on a root holding no store). The output contract makes the exit code the only success signal on stdout, so a script or CI step running `himalaya account check` never saw the failure. The pimdir stable-release plan of 2026-10-30 (Apps, Phase A) made calendula exit non-zero on FAIL (calendula/cairn/log/2026-10-30-account-check-fails-on-a-failed-backend.md); himalaya and cardamum follow it.
+`account check` printed `<backend>: FAIL (...)` and exited 0 (src/account/check.rs; `a_pimdir_account_is_checked` asserted it on a root holding no store). The output contract makes the exit code the only success signal on stdout, so a script or CI step running `mailman account check` never saw the failure. The pimdir stable-release plan of 2026-10-30 (Apps, Phase A) made calendula exit non-zero on FAIL (calendula/cairn/log/2026-10-30-account-check-fails-on-a-failed-backend.md); mailman and cardamum follow it.
 
 ## What
 

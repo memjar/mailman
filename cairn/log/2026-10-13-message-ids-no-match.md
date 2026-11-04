@@ -14,5 +14,5 @@ Verified against Gmail over IMAP: an unknown id failed `flag add`, `flag set`, `
 
 Capabilities moved: **commands** (A command given message ids says how many it found), **backends** (IMAP flag counts).
 
-[#777]: https://github.com/pimalaya/himalaya/issues/777
-[#781]: https://github.com/pimalaya/himalaya/issues/781
+[#777]: https://github.com/pimalaya/mailman/issues/777
+[#781]: https://github.com/pimalaya/mailman/issues/781

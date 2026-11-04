@@ -15,7 +15,7 @@ The wizard SHALL check the name and the default of the account it generates agai
 ## MODIFIED Requirements
 
 ### Requirement: Config loading and merge
-Without `-c/--config`, the config SHALL load every existing canonical path as a layer, in this order: `$XDG_CONFIG_HOME/himalaya/config.toml`, `$HOME/.config/himalaya/config.toml`, `$HOME/.himalayarc`. Each layer SHALL be deep-merged on top of the ones before, so `$HOME/.himalayarc` overrides. Paths naming the same file SHALL be read once.
+Without `-c/--config`, the config SHALL load every existing canonical path as a layer, in this order: `$XDG_CONFIG_HOME/mailman/config.toml`, `$HOME/.config/mailman/config.toml`, `$HOME/.mailmanrc`. Each layer SHALL be deep-merged on top of the ones before, so `$HOME/.mailmanrc` overrides. Paths naming the same file SHALL be read once.
 
 `-c/--config` SHALL replace the canonical paths entirely. Multiple `-c` paths MAY be passed, delimited like `$PATH` (`;` on Windows, `:` elsewhere) or repeated as flags: the first is the base and the rest are deep-merged on top.
 

@@ -15,7 +15,7 @@ Two path keys did work, `pimdir.root` and `downloads-dir`, because the one place
 
 The family answer is `pimalaya_config::toml::shell_expanded_path`, a `deserialize_with` on the field, which carillon already uses. Expansion then happens once, as the file is read, and no future reader can forget.
 
-himalaya-tui reads the same file under the same project name, so its `MaildirConfig` moves onto the same deserializer and the same spellings.
+mailman-tui reads the same file under the same project name, so its `MaildirConfig` moves onto the same deserializer and the same spellings.
 
 ## What
 

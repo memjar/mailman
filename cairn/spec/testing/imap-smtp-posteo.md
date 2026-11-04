@@ -7,7 +7,7 @@ protocol-specific surface documented in
 is provider-agnostic and was not re-run in full here. Method:
 [provider-test-plan.md](provider-test-plan.md).
 
-- himalaya: `v2.0.0-alpha.1 +imap +smtp +rustls-ring` (working tree)
+- mailman: `v2.0.0-alpha.1 +imap +smtp +rustls-ring` (working tree)
 - account: `posteo` — IMAP `imaps://posteo.de`, SMTP `smtps://posteo.de`,
   SASL LOGIN/PLAIN with a `pass`-stored password
 - date: 2026-07-18
@@ -16,7 +16,7 @@ is provider-agnostic and was not re-run in full here. Method:
 
 > ⚠️ **Real mailbox.** This is a live personal account, so the golden
 > rule was applied strictly: every mailbox/message operation happened in
-> throwaway folders `Himalaya-Test` / `Himalaya-Test2` created for the
+> throwaway folders `Mailman-Test` / `Mailman-Test2` created for the
 > run. The one unavoidable real-INBOX touch — an SMTP self-test — was
 > removed with an **atomic per-UID `MOVE`** into the throwaway folder
 > (Posteo advertises `MOVE`+`UIDPLUS`, so no folder-wide `EXPUNGE` ran on
@@ -52,7 +52,7 @@ portability.
 
 - **Hierarchy separator is `.`** — subfolders read as `Archives.Work`,
   `Test2.Test3`, etc. A nested throwaway folder would be
-  `Himalaya-Test.Sub`.
+  `Mailman-Test.Sub`.
 - **`MOVE` + `UIDPLUS` are supported**, so `message move` is atomic
   per-UID and `copy`/`move` report accurate counts (the untagged-COPYUID
   path exercised for Fastmail applies here too).

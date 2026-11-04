@@ -1,9 +1,9 @@
 # JMAP *specific* API on Fastmail — test report
 
 Companion to [jmap-fastmail.md](jmap-fastmail.md) (shared commands). This
-exercises `himalaya jmap …` — the raw JMAP method surface.
+exercises `mailman jmap …` — the raw JMAP method surface.
 
-- himalaya: `v2.0.0-alpha.1 +jmap +rustls-ring` (working tree)
+- mailman: `v2.0.0-alpha.1 +jmap +rustls-ring` (working tree)
 - account: `fastmail-jmap`
 - date: 2026-07-17
 - method: every `jmap` subcommand and flag, inside two throwaway JMAP
@@ -45,9 +45,9 @@ shared `message send` that J3 (shared report) blocks on missing config.
 ### Behaviour (not bugs)
 
 - **K1 — `jmap mailbox query` defaulted to subscribed-only. FIXED.**
-  himalaya (not JMAP) was sending `isSubscribed: true` unless `--all`, so
-  `--name Himalaya` returned `{"mailboxes":[]}` for the unsubscribed fake
-  mailboxes while the raw `Mailbox/query {filter:{name:"Himalaya"}}`
+  mailman (not JMAP) was sending `isSubscribed: true` unless `--all`, so
+  `--name Mailman` returned `{"mailboxes":[]}` for the unsubscribed fake
+  mailboxes while the raw `Mailbox/query {filter:{name:"Mailman"}}`
   returned both. Since native `Mailbox/query` applies no subscription
   filter, the default is now flipped to match: bare `jmap mailbox query`
   lists **all** mailboxes, and `--subscribed` opts into the filter
@@ -73,12 +73,12 @@ shared `message send` that J3 (shared report) blocks on missing config.
   `jmap vacation-response get/set` → `Vacation response is not supported
   by the server`; the raw `VacationResponse/get` returns `HTTP 403`.
   Fastmail does not grant the `urn:ietf:params:jmap:vacationresponse`
-  capability to this token, and himalaya surfaces it cleanly rather than
+  capability to this token, and mailman surfaces it cleanly rather than
   leaking the 403.
 
 ### Housekeeping
 
-- Found **32 leftover test identities** (`Himalaya Test Identity…`, `Test
+- Found **32 leftover test identities** (`Mailman Test Identity…`, `Test
   Updated`) accumulated from prior JMAP identity testing on this shared
   test account; deleted them, keeping the real `Pimalaya` identity. A
   reminder that identity/mailbox create tests must clean up after

@@ -16,12 +16,12 @@ A page SHALL hold `--page-size` files (else `envelope.list.page-size`, else 25).
 
 #### Scenario: A page of files and the next one
 - GIVEN a pimdir account whose stored messages attach four files
-- WHEN `himalaya --json pimdir attachment list -s 3` runs
+- WHEN `mailman --json pimdir attachment list -s 3` runs
 - THEN it prints the three files of the newest messages and a `nextPage` token, and `pimdir attachment list -s 3 --page-token <TOKEN>` prints the fourth with `"nextPage":null`
 
 #### Scenario: Invoices from one sender
 - GIVEN a pimdir account where `billing@shop.test` sent `Facture-Octobre.pdf` and another sender `plage.jpg`
-- WHEN `himalaya --json pimdir attachment search facture billing` runs
+- WHEN `mailman --json pimdir attachment search facture billing` runs
 - THEN it prints `Facture-Octobre.pdf` only
 
 ## MODIFIED Requirements

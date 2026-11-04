@@ -8,7 +8,7 @@ created: 2026-07-25
 # Wizard auth model and mailbox alias pre-fill
 
 ## Why
-The discovered-account wizard split each service into one list entry per authentication method, so a JMAP provider like Fastmail showed a redundant "API token" and "OAuth 2.0" row for the same endpoint, and the OAuth row was a dead end (Himalaya runs no grant). IMAP + SMTP were configured with a single hardcoded credential kind and no per-protocol validation, even though the two sides can advertise different auth. And a generated account carried no `mailbox.alias.*`, so the first shared command failed with "Mailbox is required".
+The discovered-account wizard split each service into one list entry per authentication method, so a JMAP provider like Fastmail showed a redundant "API token" and "OAuth 2.0" row for the same endpoint, and the OAuth row was a dead end (Mailman runs no grant). IMAP + SMTP were configured with a single hardcoded credential kind and no per-protocol validation, even though the two sides can advertise different auth. And a generated account carried no `mailbox.alias.*`, so the first shared command failed with "Mailbox is required".
 
 ## What
 Restructure the discovered flow into a two-step selection and pre-fill the aliases.

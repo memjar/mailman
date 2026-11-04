@@ -9,7 +9,7 @@ created: 2026-10-07
 
 ## Why
 
-io-pimdir `35a1c3f` (pimdir scoped-mail-sync) lets a sync engine list a mailbox within a scope, its mail since a date, in pages, and drops the probe tier and its `probes` table. A store a new owner reconciled has no `probes` table, so Himalaya has to move to that io-pimdir to keep reading the stores neverest writes. A reader such as MOA then needs to say "mail since …" and to know a search is not exhaustive below that date, without reading the store itself: Himalaya is how it reads one.
+io-pimdir `35a1c3f` (pimdir scoped-mail-sync) lets a sync engine list a mailbox within a scope, its mail since a date, in pages, and drops the probe tier and its `probes` table. A store a new owner reconciled has no `probes` table, so Mailman has to move to that io-pimdir to keep reading the stores neverest writes. A reader such as MOA then needs to say "mail since …" and to know a search is not exhaustive below that date, without reading the store itself: Mailman is how it reads one.
 
 ## What
 

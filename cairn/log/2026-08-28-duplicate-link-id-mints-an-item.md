@@ -6,7 +6,7 @@ date: 2026-08-28
 
 # A mailbox may hold one Message-ID twice, and the listing now shows both
 
-Last of eight repositories on one change id, and the only one whose part is mostly an audit. pimdir SPEC §9 makes `link_id` the store's key rather than a restatement of what the body says: the bare hint while it is free in the collection, a minted `dup:<hint>#<handle>` when the same source already binds it under another handle. A mailbox holding one `Message-ID` twice, which a double delivery, a retried append, a restore or a copy of a sent message all produce, used to resolve to one item, the loser recorded on the winner's binding and mirrored nowhere. It is now two items, so Himalaya lists two messages where it listed one, and the message that was invisible can be read. Capability `backends` moved.
+Last of eight repositories on one change id, and the only one whose part is mostly an audit. pimdir SPEC §9 makes `link_id` the store's key rather than a restatement of what the body says: the bare hint while it is free in the collection, a minted `dup:<hint>#<handle>` when the same source already binds it under another handle. A mailbox holding one `Message-ID` twice, which a double delivery, a retried append, a restore or a copy of a sent message all produce, used to resolve to one item, the loser recorded on the winner's binding and mirrored nowhere. It is now two items, so Mailman lists two messages where it listed one, and the message that was invisible can be read. Capability `backends` moved.
 
 ## What landed
 

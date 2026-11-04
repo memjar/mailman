@@ -9,7 +9,7 @@ created: 2026-11-02
 
 ## Why
 
-`envelope search` takes himalaya's own query language: clauses (`date`, `after`, `from`, `to`, `subject`, `body`, `flag`), `and`, `or`, `not` and parentheses with explicit precedence, and `order by`. It is parsed by chumsky in src/email/search into one AST (`SearchEmailsFilterQuery` plus sorters), rendered with ariadne on error, and compiled per backend: IMAP keys, JMAP filters, a Gmail `q`, a Graph KQL `$search`, the shared client-side evaluator for Maildir, m2dir, mbox and pimdir. It is precise and fits a CLI, and it stays: pimdir SEARCH §8 is not adopted, and nothing of this change lives outside himalaya.
+`envelope search` takes mailman's own query language: clauses (`date`, `after`, `from`, `to`, `subject`, `body`, `flag`), `and`, `or`, `not` and parentheses with explicit precedence, and `order by`. It is parsed by chumsky in src/email/search into one AST (`SearchEmailsFilterQuery` plus sorters), rendered with ariadne on error, and compiled per backend: IMAP keys, JMAP filters, a Gmail `q`, a Graph KQL `$search`, the shared client-side evaluator for Maildir, m2dir, mbox and pimdir. It is precise and fits a CLI, and it stays: pimdir SEARCH §8 is not adopted, and nothing of this change lives outside mailman.
 
 What it lacks:
 

@@ -9,7 +9,7 @@ created: 2026-08-16
 
 ## Why
 
-[Issue 734](https://github.com/pimalaya/himalaya/issues/734): the IMAP `ENVELOPE` carries `In-Reply-To` as its 9th element (RFC 3501 §7.4.2), the fetch a listing already issues returns it, and the adapter drops it because the shared `Envelope` has nowhere to put it. The only way to learn a message's parent today is `get_message` plus a parse, which is a body read per row.
+[Issue 734](https://github.com/pimalaya/mailman/issues/734): the IMAP `ENVELOPE` carries `In-Reply-To` as its 9th element (RFC 3501 §7.4.2), the fetch a listing already issues returns it, and the adapter drops it because the shared `Envelope` has nowhere to put it. The only way to learn a message's parent today is `get_message` plus a parse, which is a body read per row.
 
 The field is the parent pointer a client needs to group a conversation, and it is the cheap half of threading: every backend but one already has it in the response it makes for a listing.
 

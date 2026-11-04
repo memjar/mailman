@@ -15,7 +15,7 @@ supported by ManageSieve.
 
 ### Requirement: ManageSieve protocol commands
 
-When built with the `sieve` feature, Himalaya SHALL expose protocol-specific
+When built with the `sieve` feature, Mailman SHALL expose protocol-specific
 commands for `capability`, `list`, `get`, `put`, `check`, `activate`,
 `deactivate`, `delete`, and `raw`. Commands SHALL use the resolved account
 and SHALL keep protocol data output separate from confirmation messages.

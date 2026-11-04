@@ -9,11 +9,11 @@ created: 2026-08-16
 
 ## Why
 
-[Issue 721](https://github.com/pimalaya/himalaya/issues/721): `messages compose` produces a message with no `From` header unless `--from` is passed by hand, every time. The account the command already resolved knows which mailbox it speaks for, and the composer never asks it.
+[Issue 721](https://github.com/pimalaya/mailman/issues/721): `messages compose` produces a message with no `From` header unless `--from` is passed by hand, every time. The account the command already resolved knows which mailbox it speaks for, and the composer never asks it.
 
 The reason is that v2 dropped the field. v1 carried `email` (required) and `display-name` on every account, and the template builder read them, so `From` was filled before the user saw the draft. v2 rebuilt the config around what each backend needs to connect, and an address is not that: IMAP authenticates with a username, Gmail with a token, and neither is necessarily the address the user sends as. So the identity was left out entirely, and with it the only thing that could answer `From`.
 
-himalaya-tui kept the field under different names, `from` and `from-name`, because it composes too and could not do without. The two binaries share one configuration file, so the same account today carries the address under a key one of them ignores.
+mailman-tui kept the field under different names, `from` and `from-name`, because it composes too and could not do without. The two binaries share one configuration file, so the same account today carries the address under a key one of them ignores.
 
 ## What
 

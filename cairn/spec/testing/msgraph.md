@@ -5,7 +5,7 @@ Companion: [msgraph-specific.md](msgraph-specific.md) (the `msgraph …`
 raw API). Method: [provider-test-plan.md](provider-test-plan.md),
 inside a throwaway Graph mail folder.
 
-- himalaya: `v2.0.0-alpha.1 +msgraph +rustls-ring` (working tree)
+- mailman: `v2.0.0-alpha.1 +msgraph +rustls-ring` (working tree)
 - account: `msgraph` (Microsoft Graph REST API, OAuth via `ortie token
   show -a msgraph`; a bearer token scoped to `https://graph.microsoft.com`
   mail permissions — `Mail.ReadWrite`, `Mail.Send`)
@@ -14,7 +14,7 @@ inside a throwaway Graph mail folder.
   `Boîte de réception` for the inbox), which makes the name→id issue easy
   to see: Graph accepts English *well-known* names (`inbox`, `archive`,
   …) in the path but not the localised display name.
-- fixtures: two throwaway folders `Himalaya-Test` / `Himalaya-Test-2`,
+- fixtures: two throwaway folders `Mailman-Test` / `Mailman-Test-2`,
   populated with two drafts created straight into the folder (one
   `multipart/mixed` with a small `note.txt` attachment). Both folders and
   every sent-test message were deleted afterwards; Deleted Items checked

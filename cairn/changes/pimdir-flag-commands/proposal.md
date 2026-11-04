@@ -15,7 +15,7 @@ The backend is mostly there. `store_flags` stages each `Flag` by its raw spellin
 
 ## What
 
-`himalaya pimdir flag list|add|set|remove`, the shape of `m2dir flag`:
+`mailman pimdir flag list|add|set|remove`, the shape of `m2dir flag`:
 
 - `list -m <MAILBOX> <ID>` prints the flags the message carries, staged ones included, one raw spelling per row.
 - `add`, `set` and `remove` take `-m <MAILBOX>`, repeatable `-f <FLAG>` and message ids, and print the queue row of each message, `{"queued": [{"id", "queueId"}]}`, as the other pimdir writes do. The backend stages through a new `stage_flags`, which returns the row ids it gets from `enqueue` and which the shared `store_flags` now wraps.

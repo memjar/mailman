@@ -12,7 +12,7 @@ change: pimdir-mailbox-coverage
 
 #### Scenario: A mailbox synced from a date
 - GIVEN a pimdir account whose `imap` source closed a round on `imap/INBOX` over the mail since 2026-09-07
-- WHEN `himalaya --json pimdir mailbox list` runs
+- WHEN `mailman --json pimdir mailbox list` runs
 - THEN `imap/INBOX` carries `"coverage":{"since":"2026-09-07T00:00:00Z","until":null,"at":…}`, and a mailbox no round closed on carries `"coverage":null`
 
 ## MODIFIED Requirements

@@ -14,7 +14,7 @@ A client holding a raw message (a draft it reopens, a message it forwards, bytes
 - src/shared/message/read.rs: `MessageReadOutput::from_raw`, the one path from raw bytes to the view (bounds included) that `message read` and `message parse` both print.
 - src/shared/attachment/download.rs: `PartBytes::new` and `write_stdout` shared with `message parse --part`, so the bytes are those of `--stdout`.
 - src/cli.rs: `message parse` dispatched before any account is resolved or configuration read; src/shared/message/cli.rs lists it beside the other `message` subcommands.
-- src/json_schema.rs: `himalaya-message-parse`, the `message read` view or the `attachment download --stdout` part.
+- src/json_schema.rs: `mailman-message-parse`, the `message read` view or the `attachment download --stdout` part.
 - tests/message_parse.rs (new): the built binary run with `HOME` and `XDG_CONFIG_HOME` at an empty directory: path, stdin and `-` give the same output; `--part` bytes and JSON; unknown and container ids refused; blank path and blank stdin refused by name; `message-too-complex` on the view and on `--part`; on a Maildir holding the same bytes, the JSON and text views equal `message read`'s and every part equals `attachment download --stdout`'s, raw and JSON.
 
 Capabilities moved: **commands** (a message can be read without an account; a parsed message hands one part over).

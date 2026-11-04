@@ -1,12 +1,12 @@
 # IMAP + SMTP on Fastmail — shared-command test report
 
-- himalaya: `v2.0.0-alpha.1 +imap +smtp +rustls-ring` (rev `1dddbe8`,
+- mailman: `v2.0.0-alpha.1 +imap +smtp +rustls-ring` (rev `1dddbe8`,
   working tree with the shared-JMAP / CRLF / date fixes applied)
 - account: `fastmail` (`imap.server = imaps://imap.fastmail.com`,
   `smtp.server = smtps://smtp.fastmail.com`, SASL PLAIN)
 - date: 2026-07-17
 - method: every shared command × every flag variant, run by hand inside
-  two throwaway mailboxes (`Himalaya-Test-A` / `-B`), per
+  two throwaway mailboxes (`Mailman-Test-A` / `-B`), per
   [provider-test-plan.md](provider-test-plan.md). Fixtures: 6 messages
   (Alpha…Epsilon + Eta) with distinct sender/subject/date/flags and one
   `multipart/mixed` with a `note.txt` attachment.
@@ -46,7 +46,7 @@ both landed in the inbox; delivered copies moved to Trash on cleanup).
 
 - **F2 — no-op copy/move reported success. FIXED.** IMAP `UID COPY`/
   `UID MOVE` of a UID that does not exist is a server no-op that returns
-  `OK`, so himalaya used to print `Message(s) successfully copied/moved`
+  `OK`, so mailman used to print `Message(s) successfully copied/moved`
   although nothing moved. `copy_messages`/`move_messages` now return the
   **actual affected count** and the command prints it: `N message(s)
   successfully copied`, or `No message copied: no id matched in the
@@ -57,7 +57,7 @@ both landed in the inbox; delivered copies moved to Trash on cleanup).
   - Sub-fix in **io-imap**: MOVE's `COPYUID` arrives in an *untagged*
     `OK` (RFC 6851 §4.4), which the coroutine ignored — it only read the
     tagged reply — so every successful move reported `0`. `move.rs` now
-    also scans untagged codes (+ a regression test). himalaya
+    also scans untagged codes (+ a regression test). mailman
     path-patches io-imap until a release >0.2.0 ships this.
 
 - **F3 — inconsistent default-mailbox resolution across shared
@@ -76,7 +76,7 @@ both landed in the inbox; delivered copies moved to Trash on cleanup).
 - **P1 — Fastmail search is word/token-based, not substring.**
   `from ali`, `subject nline`, single letters `subject e` / `subject a`
   all return 0; whole words (`from alice`, `subject inline`,
-  `subject Eta`) match. The trace shows himalaya issues the correct
+  `subject Eta`) match. The trace shows mailman issues the correct
   `SEARCH SUBJECT "e"` (inside a UID `SORT`); Fastmail's full-text index
   decides matching. Users expecting substring search will be surprised —
   worth documenting per provider (Dovecot-based servers may differ).

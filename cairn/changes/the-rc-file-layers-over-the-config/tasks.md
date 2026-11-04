@@ -10,9 +10,9 @@ change: the-rc-file-layers-over-the-config
 - [x] pimalaya-config: `target_path` names the first layer, its doc comment rewritten (the shadowing rationale no longer holds).
 - [x] pimalaya-config: tests for layering order, rc override, symlinked rc read once.
 - [x] pimalaya-config: changelog entry under Changed.
-- [x] himalaya: bump the pimalaya-config pin (5fc629b).
-- [x] himalaya: error on several `default = true` accounts.
-- [x] himalaya: wizard `ExistingConfig` reads the merged config.
-- [x] himalaya: README configuration section and changelog.
-- [ ] himalaya-tui: same pin bump.
+- [x] mailman: bump the pimalaya-config pin (5fc629b).
+- [x] mailman: error on several `default = true` accounts.
+- [x] mailman: wizard `ExistingConfig` reads the merged config.
+- [x] mailman: README configuration section and changelog.
+- [ ] mailman-tui: same pin bump.
 - [x] Fold the delta into spec/config.md, log, set status landed.

@@ -16,7 +16,7 @@ A failure a caller is expected to act on SHALL carry a stable code, printed unde
 
 #### Scenario: A body not downloaded yet
 - GIVEN a pimdir item whose body is not local
-- WHEN `himalaya --json message read` reads it
+- WHEN `mailman --json message read` reads it
 - THEN the command exits 1 and prints `{"code":"body-pending","error":"…","sources":[],"backtrace":null}`
 
 ## MODIFIED Requirements

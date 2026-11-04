@@ -6,7 +6,7 @@ landed: 2026-10-05
 
 # `message.reply.posting-style` and `message.forward.posting-style`
 
-`message.reply.posting-style` and `message.forward.posting-style`, global or per account, set the posting style (`top`, `bottom` or `none`) used when `--posting-style` is not passed, `top` remaining the default ([#772](https://github.com/pimalaya/himalaya/issues/772)). `PostingStyle` moved from the message builder to the config so the schema compiles under any feature subset.
+`message.reply.posting-style` and `message.forward.posting-style`, global or per account, set the posting style (`top`, `bottom` or `none`) used when `--posting-style` is not passed, `top` remaining the default ([#772](https://github.com/pimalaya/mailman/issues/772)). `PostingStyle` moved from the message builder to the config so the schema compiles under any feature subset.
 
 Capabilities moved: **config** (posting styles are configured per account).
 

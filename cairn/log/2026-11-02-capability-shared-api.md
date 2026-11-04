@@ -18,7 +18,7 @@ The shared tree is compiled in every build with a mail transport (`any(backend, 
 
 With it, one-search-language landed its last items: the `envelope.search.*` options and the MCP description, and Gmail's date zone, a bare date being midnight PST to Gmail, so every bound is now Unix seconds of the UTC day (`after d` used to keep day d, `date d` two days).
 
-pimdir: cairn/changes/mail-write-names-from-himalaya (draft, in the pimdir repository) proposes `collection.rename`, `collection.delete`, `mail.flags.important` and `mail.flags.junk` as Annex B rows, and argues the draft verbs and `submit.cancel` out.
+pimdir: cairn/changes/mail-write-names-from-mailman (draft, in the pimdir repository) proposes `collection.rename`, `collection.delete`, `mail.flags.important` and `mail.flags.junk` as Annex B rows, and argues the draft verbs and `submit.cancel` out.
 
 Verified: 404 tests pass with all features. The 6 tests of tests/capability.rs and the 2 new MCP tests fail on the code before this change (run on a `git archive HEAD` copy). The Gmail translator tests pin the seconds. The resolver's unit tests cover the order, the one storage transport of the id-exchanging verbs and sending. Clippy is clean. The imap, maildir, gmail+smtp, jmap, pimdir, mbox, m2dir, msgraph and smtp builds compile without new warnings. The JMAP submission check has no test: no JMAP server is mocked here.
 

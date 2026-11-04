@@ -9,7 +9,7 @@ created: 2026-10-30
 
 ## Why
 
-The pimdir stable-release review of 2026-10-30 (report-himalaya.md, should-fix 3, 7, 8, 11, 13 and release blocker 5) and the plan's Phase A common items found these in the pimdir backend, each verified on a scratch store unless noted. None needs the coming io-pimdir API.
+The pimdir stable-release review of 2026-10-30 (report-mailman.md, should-fix 3, 7, 8, 11, 13 and release blocker 5) and the plan's Phase A common items found these in the pimdir backend, each verified on a scratch store unless noted. None needs the coming io-pimdir API.
 
 - **Partial writes reported as failures.** `delete_messages` and `refile` stage a row per id and bail on the first unknown one (src/pimdir/backend.rs:688-724): `message copy --from imap/INBOX --to imap/Trash 3 999` exited 1 with "Message `999` not found" after queueing a `copy` for 3. cairn/spec/commands.md ("A command given message ids says how many it found") says such a call succeeds and reports how many it found; `refile` also returns `ids.len()` rather than the count found.
 - **A missing blob is a hard error.** A held item whose blob file is gone reads as `{"error":"Body blob missing ..."}` with no code (src/pimdir/backend.rs:379-381). pimdir GUIDE §14 says a blob gone under a purge is not hydrated and not an error: it is `body-pending`.

@@ -6,7 +6,7 @@ status: current
 
 # Provider quirks
 
-Provider-specific behaviour that the generic backends have to accommodate. Each quirk is a fact about a real provider, not a Himalaya design choice.
+Provider-specific behaviour that the generic backends have to accommodate. Each quirk is a fact about a real provider, not a Mailman design choice.
 
 ### Requirement: Bearer-only proprietary APIs
 The Gmail and Microsoft Graph REST APIs SHALL be authenticated with a single OAuth 2.0 bearer token only; neither accepts an app password. Their account config carries one token field, and the wizard offers only the API-token credential path for them.
@@ -21,7 +21,7 @@ A JMAP provider MAY serve blob downloads from a different host than its API endp
 IMAP SHALL mark only the reserved `INBOX` with a mailbox role. Reading the Sent/Drafts/Trash/Junk/Archive roles needs LIST `RETURN (SPECIAL-USE)` (RFC 6154), which io-imap cannot yet issue because upstream imap-codec has no LIST-EXTENDED support. The other IMAP roles are set through `mailbox.alias.<role>` until then.
 
 ### Requirement: RFC 2971 ID after auth
-IMAP SHALL support sending an RFC 2971 `ID` command right after authentication, configured by `imap.id.{auto, fields}`, because some providers require it before serving other commands. Unset `fields` sends himalaya's canned `name`, `version`, `vendor` and `support-url`; an empty map sends `ID NIL`.
+IMAP SHALL support sending an RFC 2971 `ID` command right after authentication, configured by `imap.id.{auto, fields}`, because some providers require it before serving other commands. Unset `fields` sends mailman's canned `name`, `version`, `vendor` and `support-url`; an empty map sends `ID NIL`.
 
 ### Requirement: SASL-IR capability is overridable
 IMAP SHALL accept an `imap.sasl-ir` override deciding whether the RFC 4959 initial response is sent inline with `AUTHENTICATE`. `false` never inlines and waits for the server's continuation request, `true` always inlines, and unset follows the advertised `SASL-IR` capability. The override applies to every SASL mechanism, because a server that mishandles the inline form does so in its command parser rather than per mechanism.

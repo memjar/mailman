@@ -6,8 +6,8 @@ change: first-run-wizard-frame
 # Tasks
 
 - [x] Add a `configure` command (alias `wizard`) running the wizard by name, with no welcome and a non-interactive bail.
-- [x] Move the welcome onto the offer, and give it the configuration path that was looked for, the sample URL and the `himalaya configure` pointer.
-- [x] Add `offer_configuration`, raised by a bare `himalaya` and by account resolution, returning whether the wizard ran.
+- [x] Move the welcome onto the offer, and give it the configuration path that was looked for, the sample URL and the `mailman configure` pointer.
+- [x] Add `offer_configuration`, raised by a bare `mailman` and by account resolution, returning whether the wizard ran.
 - [x] Make account resolution a hook: drop the `exit(0)`, re-read the configuration afterwards, and let the command fail the ordinary way when nothing landed.
 - [x] Guard both entry points on `stdin().is_terminal()` and `printer.is_json()`.
 - [x] Resolve the target path from `Config::target_path` instead of prompting for it.

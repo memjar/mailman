@@ -6,7 +6,7 @@ landed: 2026-08-01
 
 # pimdir cache backend (read + staged writes)
 
-Added a `pimdir` storage backend: Himalaya over a local pimdir store (io-pimdir +
+Added a `pimdir` storage backend: Mailman over a local pimdir store (io-pimdir +
 io-replica) used as the offline cache the sync engine populates (action plan
 M4+M5). Mirrors the m2dir wiring — a `pimdir` feature, `src/pimdir/`
 (`client.rs`/`backend.rs`/`hash.rs`), a `BackendClient::Pimdir` variant, the
@@ -19,7 +19,7 @@ and built from the stored `v: 1` meta without body reads: `list_mailboxes`,
 backends; body clauses only match hydrated items), and `get_message`. Availability
 is surfaced honestly: `get_message` on an item with `level < Full` (no local
 `object`) returns a clear "body not fetched" rather than an error — the item still
-lists; the UI reaction is Himalaya's, the store only reports `level`.
+lists; the UI reaction is Mailman's, the store only reports `level`.
 
 Writes go through the io-replica `mutate` seam (never raw SQL) so the next sync
 derives and pushes them: `store_flags`→`SetFlags`, `add_message`→`Add`,

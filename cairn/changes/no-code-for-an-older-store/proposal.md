@@ -13,5 +13,5 @@ created: 2026-10-30
 
 ## What
 
-- `ErrorCode::StoreOlder` and its `PIMDIR_CODES` entry go, and with them the `store-older` value of `himalaya-error`'s `code` schema.
+- `ErrorCode::StoreOlder` and its `PIMDIR_CODES` entry go, and with them the `store-older` value of `mailman-error`'s `code` schema.
 - The code table, the pimdir store failure requirement and the CHANGELOG Added entry stop naming it.

@@ -6,7 +6,7 @@ landed: 2026-10-14
 
 # `message reply --all`
 
-`message reply --all` (`-A`) fills `Cc` with the other recipients of the source: its `To` and `Cc` without the account's `email`, without anyone already in `To`, each address once, display names kept. `To` is derived as before, and an explicit `--to` or `--cc` wins over the list it would derive ([#779](https://github.com/pimalaya/himalaya/issues/779)).
+`message reply --all` (`-A`) fills `Cc` with the other recipients of the source: its `To` and `Cc` without the account's `email`, without anyone already in `To`, each address once, display names kept. `To` is derived as before, and an explicit `--to` or `--cc` wins over the list it would derive ([#779](https://github.com/pimalaya/mailman/issues/779)).
 
 Capabilities moved: **commands** (reply to all recipients).
 

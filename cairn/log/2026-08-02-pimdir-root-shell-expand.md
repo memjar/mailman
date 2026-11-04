@@ -9,7 +9,7 @@ landed: 2026-08-02
 A pimdir account pointed at a Neverest store with the natural
 `pimdir.root = "~/.local/state/neverest/posteo"` had an empty `mailbox list` (and
 every read empty). `pimdir.root` is a `PathBuf` deserialized verbatim with no
-`~` expansion, and `PimdirStore::open` creates on absence — so himalaya opened the
+`~` expansion, and `PimdirStore::open` creates on absence — so mailman opened the
 literal relative path `./~/.local/…`, made an empty store there, and listed
 nothing, with no error (and littered a `~` dir in the cwd).
 

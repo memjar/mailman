@@ -3,7 +3,7 @@
 Shared cross-protocol commands on the IMAP/SMTP backend against **139 Mail**
 (China Mobile). Method: [provider-test-plan.md](provider-test-plan.md).
 
-- himalaya: `v2.2.1 +imap +smtp +native-tls` (rev `4df380b`)
+- mailman: `v2.2.1 +imap +smtp +native-tls` (rev `4df380b`)
 - account: `mobile` — IMAP `imaps://imap.139.com:993`, SMTP
   `smtps://smtp.139.com:465`, SASL LOGIN with authorization code
 - date: 2026-10-18
@@ -11,7 +11,7 @@ Shared cross-protocol commands on the IMAP/SMTP backend against **139 Mail**
   垃圾邮件); requires `native-tls` (rustls-ring fails TLS handshake)
 
 > ⚠️ **TLS provider.** 139 Mail's IMAP server fails TLS handshake with
-> `rustls-ring` (himalaya's default). Build with `native-tls` to use this
+> `rustls-ring` (mailman's default). Build with `native-tls` to use this
 > provider. See P1 below.
 
 ## Configuration
@@ -57,7 +57,7 @@ smtp.sasl.login.password.raw = "***"
 ### Provider-specific behaviour (not bugs)
 
 - **P1 — TLS compatibility.** `imap.139.com:993` fails TLS handshake with
-  `rustls-ring` (himalaya's default TLS provider). The exact error:
+  `rustls-ring` (mailman's default TLS provider). The exact error:
 
   ```
   imap: FAIL (received fatal alert: HandshakeFailure)

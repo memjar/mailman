@@ -37,7 +37,7 @@ stored object) SHALL report a clear "body not fetched" state (the cue to sync),
 not a data-loss error; the item still lists.
 
 Reads SHALL open the store read-only, which takes no lock (pimdir SPEC §8), so a
-sync in flight neither blocks Himalaya nor is blocked by it.
+sync in flight neither blocks Mailman nor is blocked by it.
 
 A write SHALL be staged as a queued `PimdirAction` through a producer handle
 (`store_flags`→`SetFlags`, `add_message`→`Add`, `copy_messages`→`Copy`,

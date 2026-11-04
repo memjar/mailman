@@ -14,4 +14,4 @@ change: maildir-custom-keywords
 - [x] Build/test/fmt/clippy, including the reduced feature builds.
 - [x] Fold into cairn/spec/backends.md; log; land.
 - [ ] Publish io-maildir 0.3 (prepared), then drop the `[patch.crates-io]` block standing in for it.
-- [ ] himalaya-tui reads entries through the same API: bump it once 0.3 is out.
+- [ ] mailman-tui reads entries through the same API: bump it once 0.3 is out.

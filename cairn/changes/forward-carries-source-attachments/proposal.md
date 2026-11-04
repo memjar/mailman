@@ -19,4 +19,4 @@ created: 2026-10-16
 
 Implemented with Hermes, reviewed with OpenCode, review follow-up prepared with Codex.
 
-[#780]: https://github.com/pimalaya/himalaya/issues/780
+[#780]: https://github.com/pimalaya/mailman/issues/780

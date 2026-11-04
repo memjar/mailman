@@ -9,9 +9,9 @@ created: 2026-09-03
 
 ## Why
 
-io-replica is retired: its sync engine now lives inside io-pimdir, which implements both the storage and the sync parts of the pimdir standard. Himalaya's pimdir backend still built against io-pimdir 0.3 plus io-replica, through two git patches, and against a store shape the merged crate no longer writes.
+io-replica is retired: its sync engine now lives inside io-pimdir, which implements both the storage and the sync parts of the pimdir standard. Mailman's pimdir backend still built against io-pimdir 0.3 plus io-replica, through two git patches, and against a store shape the merged crate no longer writes.
 
-Two things about that shape were Himalaya's to carry and are now the library's. The `v: 1` meta was an opaque JSON string Himalaya deserialised into a private view to build an envelope, guessing at fields the annex may or may not have written, and folding a whole address list into one bare email. And the link id, meta and sort key of a message being added went through `io_pimdir::conventions`, a module that no longer exists.
+Two things about that shape were Mailman's to carry and are now the library's. The `v: 1` meta was an opaque JSON string Mailman deserialised into a private view to build an envelope, guessing at fields the annex may or may not have written, and folding a whole address list into one bare email. And the link id, meta and sort key of a message being added went through `io_pimdir::conventions`, a module that no longer exists.
 
 ## What
 

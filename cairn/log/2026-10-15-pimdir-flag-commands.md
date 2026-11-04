@@ -20,6 +20,6 @@ Verified by the test suite, which covers a keyword round trip, removal, replacem
 
 Capabilities moved: **backends** (pimdir stages flags by their raw spelling, pimdir stages a flag change on every message or none, pimdir writes name their queue row, pimdir is a reader and a producer, never the owner).
 
-[#777]: https://github.com/pimalaya/himalaya/issues/777
-[#790]: https://github.com/pimalaya/himalaya/issues/790
-[#793]: https://github.com/pimalaya/himalaya/pull/793
+[#777]: https://github.com/pimalaya/mailman/issues/777
+[#790]: https://github.com/pimalaya/mailman/issues/790
+[#793]: https://github.com/pimalaya/mailman/pull/793

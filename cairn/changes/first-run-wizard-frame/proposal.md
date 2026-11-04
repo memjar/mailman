@@ -9,9 +9,9 @@ created: 2026-08-14
 
 ## Why
 
-Comodoro's `first-run-wizard` landed the shape a Pimalaya CLI should meet a newcomer with, and Himalaya has most of the pieces but wired differently. The parts that differ are the ones that decide whether someone who just installed the binary gets somewhere.
+Comodoro's `first-run-wizard` landed the shape a Pimalaya CLI should meet a newcomer with, and Mailman has most of the pieces but wired differently. The parts that differ are the ones that decide whether someone who just installed the binary gets somewhere.
 
-Himalaya has no named wizard command. The wizard runs only from a bare `himalaya`, so nothing generates a second account and nothing re-runs it after a decline. The 1.x promise of a `configure` command is unkept.
+Mailman has no named wizard command. The wizard runs only from a bare `mailman`, so nothing generates a second account and nothing re-runs it after a decline. The 1.x promise of a `configure` command is unkept.
 
 The offer is a gate rather than a hook: `resolve_account` prompts, runs the wizard and calls `exit(0)`, so the command someone actually typed never runs, whatever they answered. Comodoro's carries on either way, so accepting gives the command a chance to work and declining leaves it to fail on the configuration it still has not got.
 
@@ -29,7 +29,7 @@ The wizard keeps its discovery flow unchanged; what changes is the frame around 
 
 A `configure` command (alias `wizard`) runs the wizard by name, with no welcome, since whoever typed it knows what it does. The welcome belongs to the offer, and names the configuration path that was looked for.
 
-The offer becomes a hook raised from the two places nothing can happen without a configuration: a bare `himalaya`, and any command needing an account. It never exits: a command carries on afterwards either way, and a bare invocation, having nothing to carry on to, falls back to the help.
+The offer becomes a hook raised from the two places nothing can happen without a configuration: a bare `mailman`, and any command needing an account. It never exits: a command carries on afterwards either way, and a bare invocation, having nothing to carry on to, falls back to the help.
 
 Nothing prompts when stdin is not a terminal or `--json` is set, in the offer and in `configure` alike.
 
@@ -45,4 +45,4 @@ Account naming stays derived rather than prompted, but gains Comodoro's suffix-u
 
 The rendering gains an ordering pass. The serializer still decides what is written, so no field is listed twice and none can go missing, but the flattened dotted keys come out alphabetically, which buries `imap.server` under the credentials authenticating against it and runs every group together. The groups are reordered most-defining-first, `server` is lifted to the top of its own, and a blank line separates them.
 
-`HIMALAYA_CONFIG` comes back, through a `ConfigPathsArg` declared in himalaya rather than pimalaya-cli's shared `ConfigFlags`, since the variable has to carry the product name. Rewriting one arg per repository is cheaper than parameterising the shared one.
+`MAILMAN_CONFIG` comes back, through a `ConfigPathsArg` declared in mailman rather than pimalaya-cli's shared `ConfigFlags`, since the variable has to carry the product name. Rewriting one arg per repository is cheaper than parameterising the shared one.

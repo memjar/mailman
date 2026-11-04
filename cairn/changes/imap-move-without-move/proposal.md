@@ -11,7 +11,7 @@ created: 2026-09-24
 
 The IMAP adapter's `move_messages` always sends `UID MOVE`, which is RFC 6851 and only exists on servers that advertise `MOVE`. On a server that does not, the command is rejected (Dovecot answers `BAD ... command not permitted with UID`), so `message move` fails. `message delete` fails with it: outside the trash it moves to the trash.
 
-Such servers are still common in hosted mail. OVH's shared hosting (Dovecot, `ssl0.ovh.net`) is one: after authentication it advertises `UIDPLUS` but not `MOVE`. Moving and deleting mail are not optional there, and the only way to reach them is currently to leave Himalaya.
+Such servers are still common in hosted mail. OVH's shared hosting (Dovecot, `ssl0.ovh.net`) is one: after authentication it advertises `UIDPLUS` but not `MOVE`. Moving and deleting mail are not optional there, and the only way to reach them is currently to leave Mailman.
 
 ## What
 

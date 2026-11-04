@@ -12,7 +12,7 @@ created: 2026-08-02
 `pimdir.root` is a `PathBuf` deserialized verbatim, with no `~`/env-var
 expansion (unlike the SASL string fields). A user pointing it at a Neverest store
 with the natural `pimdir.root = "~/.local/state/neverest/<account>"` had every
-read come up empty: himalaya opened the *literal* relative path `./~/.local/…`,
+read come up empty: mailman opened the *literal* relative path `./~/.local/…`,
 silently **creating a new empty store** there (`PimdirStore::open` creates on
 absence), so `mailbox list` — and everything downstream — was empty, with no
 error. (It also littered a `~` directory in the working directory.)

@@ -25,10 +25,10 @@ each variant, and fill in the report template at the end.
 
 ## Prerequisites
 
-- The account is configured and `himalaya -a <account> account check`
+- The account is configured and `mailman -a <account> account check`
   reports every backend `OK`.
 - A built binary: `nix develop --command cargo build`, then
-  `H="./target/debug/himalaya -a <account>"`.
+  `H="./target/debug/mailman -a <account>"`.
 
 ## Fixtures
 
@@ -37,7 +37,7 @@ differ across every axis a command might key on — sender, subject, date,
 flags, recipients, and one multipart message with an attachment:
 
 ```bash
-A="Himalaya-Test-A"; B="Himalaya-Test-B"
+A="Mailman-Test-A"; B="Mailman-Test-B"
 $H imap create "$A"; $H imap create "$B"   # protocol-specific create
 ```
 
@@ -166,7 +166,7 @@ the delivered inbox copy to Trash during cleanup.
 ## Protocol-specific API (per backend)
 
 After the shared commands, exercise the backend's raw API — for IMAP/SMTP
-that is `himalaya imap …` / `himalaya smtp …`. These expose the protocol
+that is `mailman imap …` / `mailman smtp …`. These expose the protocol
 verbatim, so the flags differ from the shared enum-driven ones.
 
 - **IMAP** (all inside fake mailboxes): `id [-p KEY:VAL]`;
@@ -249,7 +249,7 @@ Copy this into `cairn/spec/testing/<backend>-<provider>.md`:
 ```markdown
 # <BACKEND> on <PROVIDER> — shared-command test report
 
-- himalaya: <version + build rev>
+- mailman: <version + build rev>
 - account: <name> (<backend blocks>)
 - date: <yyyy-mm-dd>
 

@@ -9,4 +9,4 @@ change: wizard-capability-auth-probe
 - [x] Probe and pick a mechanism in the manual path instead of hardcoding PLAIN
 - [x] Keep SMTP keyed on discovery (EHLO, not the IMAP probe)
 - [x] Bound discovery with `compose_all_within` in io-pim-discovery and call it from the wizard
-- [x] Update CHANGELOG in himalaya, io-imap and io-pim-discovery
+- [x] Update CHANGELOG in mailman, io-imap and io-pim-discovery

@@ -6,7 +6,7 @@ change: pimdir-merged-engine
 
 # The pimdir backend over the merged io-pimdir
 
-io-replica is retired and its sync engine lives inside io-pimdir, one crate for both parts of the pimdir standard. Himalaya's pimdir backend still built against io-pimdir 0.3 plus io-replica through two git patches, read a store shape the merged crate no longer writes, and carried two things that are now the library's: a private deserialisation of the `v: 1` meta JSON into an envelope, and a call into `io_pimdir::conventions`, which no longer exists.
+io-replica is retired and its sync engine lives inside io-pimdir, one crate for both parts of the pimdir standard. Mailman's pimdir backend still built against io-pimdir 0.3 plus io-replica through two git patches, read a store shape the merged crate no longer writes, and carried two things that are now the library's: a private deserialisation of the `v: 1` meta JSON into an envelope, and a call into `io_pimdir::conventions`, which no longer exists.
 
 ## What landed
 
@@ -16,7 +16,7 @@ io-replica is retired and its sync engine lives inside io-pimdir, one crate for 
 
 **One derivation, called twice.** An added message derives its link id through `summary::mail::derive`, and names it on the queued `Add`. The action carries no summary any more: the owner derives it, and the sort key, from the same body through the same call when it applies the action. `pimdir queue list` reads the body the action pins and derives the row it shows the same way, so a queued message still renders with its subject and recipient.
 
-**A mailbox declares its kind.** The allowance for a kind-less collection, left by a sync predating declared kinds, is deleted: the store cannot summarise such a collection, and a store from that draft is refused on open by io-pimdir, which says to delete it and resync. Himalaya adds no shim and no migration, the draft offering none.
+**A mailbox declares its kind.** The allowance for a kind-less collection, left by a sync predating declared kinds, is deleted: the store cannot summarise such a collection, and a store from that draft is refused on open by io-pimdir, which says to delete it and resync. Mailman adds no shim and no migration, the draft offering none.
 
 **Manifest.** The `pimdir` feature drops `dep:io-replica`, io-pimdir moves to 0.4 through `[patch.crates-io] io-pimdir = { path = "../io-pimdir" }` until it is released, the io-replica patch is gone, and `mail-parser` stays: a pimdir-only build compiles the shared attachment, search and compose code under the `backend` cfg, and that code parses bodies with it. Confirmed by building `--no-default-features --features pimdir,rustls-ring` with the dependency removed, which fails in four shared modules.
 

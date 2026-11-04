@@ -13,6 +13,6 @@ change: pimdir-queued-send
 - [x] Test: a sent message is one `submit` row whose payload decodes to the derived envelope, Bcc in `rcpts`, body stored verbatim
 - [x] Test: no `From:` or no recipient stages nothing
 - [x] Test: no anchor stages nothing and names `mailbox.alias.sent`
-- [ ] Test: Neverest's `SubmitIntent::envelope` decodes the payload Himalaya writes; not written, the payload shape is pinned on this side instead
+- [ ] Test: Neverest's `SubmitIntent::envelope` decodes the payload Mailman writes; not written, the payload shape is pinned on this side instead
 - [x] CHANGELOG: pimdir sends through the queue; an `smtp` section on a pimdir account is no longer used
 - [x] Fold the delta into `cairn/spec/backends.md`, log, `status: landed`

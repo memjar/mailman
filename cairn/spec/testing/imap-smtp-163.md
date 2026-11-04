@@ -4,7 +4,7 @@ Shared cross-protocol commands on the IMAP/SMTP backend against **163 Mail**
 (NetEase, Coremail). Method:
 [provider-test-plan.md](provider-test-plan.md).
 
-- himalaya: `v2.2.1 +imap +smtp +rustls-ring` (rev `4df380b`)
+- mailman: `v2.2.1 +imap +smtp +rustls-ring` (rev `4df380b`)
 - account: `netease` — IMAP `imaps://imap.163.com:993`, SMTP
   `smtps://smtp.163.com:465`, SASL LOGIN with authorization code
 - date: 2026-10-18
@@ -68,7 +68,7 @@ smtp.sasl.login.password.raw = "***"
   `-- from "..."` return 0 results even when matching messages exist. Flag-based
   search (`--seen`) works correctly. The IMAP-level `imap search --from` also
   returns 0. This is a Coremail server limitation or configuration issue, not a
-  himalaya bug. Users should be aware that search on 163 Mail is unreliable for
+  mailman bug. Users should be aware that search on 163 Mail is unreliable for
   text content.
 
 - **P2 — Coremail SASL-IR is broken.** Confirmed that `imap.sasl-ir = false` is
@@ -76,7 +76,7 @@ smtp.sasl.login.password.raw = "***"
   initial response.
 
 - **P3 — ID command is required.** Confirmed that `imap.id.auto = true` is
-  required. The client (himalaya) sends an RFC 2971 ID command after authentication,
+  required. The client (mailman) sends an RFC 2971 ID command after authentication,
   and the server requires it.
 
 - **P4 — Chinese mailbox names.** 163 Mail uses Chinese names for default
@@ -121,7 +121,7 @@ functionality (list, read, flag, copy, move, send, reply, forward) all work
 correctly, and Chinese mailbox names and content are handled properly.
 
 **The main limitation is text search**, which does not work on Coremail. This is
-a provider-side issue, not a himalaya bug. Users should be documented that
+a provider-side issue, not a mailman bug. Users should be documented that
 search on 163 Mail is unreliable.
 
 The Coremail quirks (SASL-IR, ID command) are correctly documented in

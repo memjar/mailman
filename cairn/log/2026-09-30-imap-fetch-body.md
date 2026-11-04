@@ -22,4 +22,4 @@ A client downloading a mailbox had one way to get a message's RFC 5322 bytes: `m
 
 Unit tests cover the item list for `--body` alone, with `--flags` and with no flag, and 8-bit octets kept intact through `from_items`. The contributor tested against Yandex (`imap.yandex.ru`): for 50 messages across `INBOX` and a sent mailbox with a non-ASCII name, 9 of them 8-bit, the bytes equal those of `message read --raw` for every UID, and unseen messages stay unseen. 150 messages come down in 3.7 s in batches of 25 UIDs, against 0.43 s per message one `message read` at a time.
 
-[#762]: https://github.com/pimalaya/himalaya/pull/762
+[#762]: https://github.com/pimalaya/mailman/pull/762

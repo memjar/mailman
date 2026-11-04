@@ -12,12 +12,12 @@ change: message-ids-no-match
 
 #### Scenario: An id that does not exist
 - GIVEN a mailbox holding no message with id `99999999`
-- WHEN `himalaya flag add --flag flagged 99999999` runs
+- WHEN `mailman flag add --flag flagged 99999999` runs
 - THEN the command exits 1 with `No flag added: no id matched in the mailbox`
 
 #### Scenario: One id of two exists
 - GIVEN a mailbox holding message `42` and no message `99999999`
-- WHEN `himalaya --json flag add --flag flagged 42 99999999` runs
+- WHEN `mailman --json flag add --flag flagged 42 99999999` runs
 - THEN the command exits 0 and prints `{"flags":["flagged"],"count":1}`
 
 ### Requirement: IMAP flag counts

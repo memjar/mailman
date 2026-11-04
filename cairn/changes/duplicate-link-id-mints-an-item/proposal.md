@@ -7,7 +7,7 @@ created: 2026-08-28
 
 # A mailbox may hold one Message-ID twice, and the store now says so
 
-> Cross-repo change, same id in eight repositories. This crate is at the end of the chain, and its part is an audit plus a bump: **pimdir** → **io-replica** → **io-pimdir** → **io-webdav** → **neverest** → **himalaya** (here), **cardamum**, **calendula**.
+> Cross-repo change, same id in eight repositories. This crate is at the end of the chain, and its part is an audit plus a bump: **pimdir** → **io-replica** → **io-pimdir** → **io-webdav** → **neverest** → **mailman** (here), **cardamum**, **calendula**.
 
 ## Why
 

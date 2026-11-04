@@ -15,4 +15,4 @@ Most listed messages are from today or yesterday, so a full date and offset spen
 
 A new `envelope.list.datetime-relative` option, off by default, picks the DATE format per row from the message age, falling back to `datetime-fmt` past a week. The table only; JSON keeps the exact date.
 
-[#510]: https://github.com/pimalaya/himalaya/issues/510
+[#510]: https://github.com/pimalaya/mailman/issues/510

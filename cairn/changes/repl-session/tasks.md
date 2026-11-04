@@ -7,7 +7,7 @@ change: repl-session
 
 Task 1 of the 2027 NLnet plan, "Pimalaya CLI: REPL and MCP".
 
-## himalaya (this repository)
+## mailman (this repository)
 
 - [x] `Session` (src/session.rs): one optional client per kind, built on first use, dropped when a command fails on it; every `Command::execute` arm runs over it, a one-shot run with a fresh one
 - [x] `Command::Repl` (src/repl.rs): shell-style splitting (`shlex`), `quit`/`exit`/EOF, `repl` and `configure` refused, failures printed and the loop continued
@@ -19,5 +19,5 @@ Task 1 of the 2027 NLnet plan, "Pimalaya CLI: REPL and MCP".
 
 ## Later
 
-- [ ] pimalaya-cli: the loop made generic (splitting, TTY versus piped, quit, failure printed and loop continued), then himalaya and ortie on it
+- [ ] pimalaya-cli: the loop made generic (splitting, TTY versus piped, quit, failure printed and loop continued), then mailman and ortie on it
 - [ ] sirup: a client queued behind another gets an immediate refusal instead of hanging; keepalive while an attached client is idle

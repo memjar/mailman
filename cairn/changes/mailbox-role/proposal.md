@@ -9,7 +9,7 @@ created: 2026-09-29
 
 ## Why
 
-A UI needs to target the inbox, sent, drafts or trash mailbox without guessing from names (himalaya#743). Today the only source is `mailbox.alias.*`, which the wizard pre-fills from native roles it already knows (JMAP roles, Gmail system labels, Graph well-known names). The shared `Mailbox` carries no role, so himalaya-tui matches `inbox` by name, which breaks on JMAP opaque ids and localized names.
+A UI needs to target the inbox, sent, drafts or trash mailbox without guessing from names (mailman#743). Today the only source is `mailbox.alias.*`, which the wizard pre-fills from native roles it already knows (JMAP roles, Gmail system labels, Graph well-known names). The shared `Mailbox` carries no role, so mailman-tui matches `inbox` by name, which breaks on JMAP opaque ids and localized names.
 
 There is no default mailbox as such, only roles. Most backends expose them natively; the alias is the fallback for backends that cannot.
 

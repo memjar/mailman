@@ -5,12 +5,12 @@ Shared cross-protocol commands on the Gmail REST backend. Companion:
 [provider-test-plan.md](provider-test-plan.md), inside a throwaway Gmail
 label.
 
-- himalaya: `v2.0.0-alpha.1 +gmail +rustls-ring` (working tree)
+- mailman: `v2.0.0-alpha.1 +gmail +rustls-ring` (working tree)
 - account: `gmail` (Gmail REST API, OAuth via `ortie token show -a
   gmail`; needs a token scoped to `https://mail.google.com/`, not
   `carddav`)
 - date: 2026-07-17
-- fixtures: a fake label `Himalaya-Test` (`Label_7`) with a few inserted
+- fixtures: a fake label `Mailman-Test` (`Label_7`) with a few inserted
   messages (one `multipart/mixed` with a small `note.txt` attachment).
 
 ## Results
@@ -32,7 +32,7 @@ label.
 ### Bugs
 
 - **G1 — shared `-m <label-name>` now resolves to a label id. FIXED.**
-  `envelope list -m Himalaya-Test` used to fail `HTTP 400: Invalid
+  `envelope list -m Mailman-Test` used to fail `HTTP 400: Invalid
   label`; only `-m Label_7` (the opaque id) worked. Gmail labels are
   opaque-id + display-name like JMAP mailboxes, so `GmailClient` now
   gains a cached `resolve_mailbox_id` (name → id via `labels.list`, id

@@ -9,7 +9,7 @@ created: 2026-11-03
 
 ## Why
 
-With both `~/.config/himalaya/config.toml` and `~/.himalayarc` on disk, only the first is read: `TomlConfig::first_valid_default_path` in pimalaya-config stops at the first default path that exists, so the rc file is silently ignored. A user who keeps a shared config and an rc of local overrides (or the reverse) loses half their accounts with no message.
+With both `~/.config/mailman/config.toml` and `~/.mailmanrc` on disk, only the first is read: `TomlConfig::first_valid_default_path` in pimalaya-config stops at the first default path that exists, so the rc file is silently ignored. A user who keeps a shared config and an rc of local overrides (or the reverse) loses half their accounts with no message.
 
 ## What
 
@@ -27,4 +27,4 @@ Details the merge forces:
 
 ## Scope / non-goals
 
-The code lands in pimalaya-config (`src/toml.rs`), which every Pimalaya CLI shares, so each one picks the rule up on its next pin bump; himalaya and himalaya-tui move together since they read one file. The array-concatenation rule of the merge is unchanged, for `-c` and layers alike. The other CLIs' wizards get the same `ExistingConfig` fix as they bump.
+The code lands in pimalaya-config (`src/toml.rs`), which every Pimalaya CLI shares, so each one picks the rule up on its next pin bump; mailman and mailman-tui move together since they read one file. The array-concatenation rule of the merge is unchanged, for `-c` and layers alike. The other CLIs' wizards get the same `ExistingConfig` fix as they bump.

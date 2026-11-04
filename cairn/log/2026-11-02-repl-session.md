@@ -4,9 +4,9 @@ change: repl-session
 landed: 2026-11-02
 ---
 
-# `himalaya repl`: one session, many commands
+# `mailman repl`: one session, many commands
 
-`himalaya repl` runs the CLI's own commands, one per stdin line, over clients kept for the session, so a client connects once rather than once per command. It is Task 1's first half in the 2027 NLnet plan ("Pimalaya CLI: REPL and MCP"), unreleased.
+`mailman repl` runs the CLI's own commands, one per stdin line, over clients kept for the session, so a client connects once rather than once per command. It is Task 1's first half in the 2027 NLnet plan ("Pimalaya CLI: REPL and MCP"), unreleased.
 
 Every command now runs over a `Session` (src/session.rs): one optional client per kind (the shared `EmailClient` and each protocol client), built by `SessionAccount::run` on first use and dropped when a command fails on it. A one-shot run uses a fresh session for its one command, so its behaviour is unchanged; the REPL (src/repl.rs) keeps it. The loop follows ortie's: lines split with `shlex` (quotes, backslashes), `quit`/`exit`/EOF, `repl` and `configure` refused, a parse or command failure printed through the printer and the loop continued, a prompt on stderr at a terminal.
 

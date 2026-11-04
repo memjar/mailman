@@ -6,10 +6,10 @@ change: pimdir-adopts-the-io-pimdir-release
 ## ADDED Requirements
 
 ### Requirement: A pimdir store failure carries its code (backends)
-A failure io-pimdir reports SHALL keep io-pimdir's message as a cause and carry, under `--json`, the code `PimdirError::code()` gives it, spelled the same, when it is one a caller acts on: `store-newer`, `store-older`, `store-uncreated`, `store-corrupt`, `store-not-current`, `store-stale`, `store-hash-algo`, `store-busy`, `store-owned`, `store-staging`, `store-in-flight`, `item-duplicate`, `unsupported`, `no-performer` and `ambiguous-performer`. An SQL, I/O or JSON failure and a malformed action carry none. Himalaya SHALL NOT derive a code from a message, and SHALL NOT advise deleting the store: a store newer than Himalaya's schema says to upgrade Himalaya, an older, stale or reshaped one to run or upgrade the store's sync engine.
+A failure io-pimdir reports SHALL keep io-pimdir's message as a cause and carry, under `--json`, the code `PimdirError::code()` gives it, spelled the same, when it is one a caller acts on: `store-newer`, `store-older`, `store-uncreated`, `store-corrupt`, `store-not-current`, `store-stale`, `store-hash-algo`, `store-busy`, `store-owned`, `store-staging`, `store-in-flight`, `item-duplicate`, `unsupported`, `no-performer` and `ambiguous-performer`. An SQL, I/O or JSON failure and a malformed action carry none. Mailman SHALL NOT derive a code from a message, and SHALL NOT advise deleting the store: a store newer than Mailman's schema says to upgrade Mailman, an older, stale or reshaped one to run or upgrade the store's sync engine.
 
 #### Scenario: A store a newer sync engine wrote
-- GIVEN a pimdir store stamped with a schema version above Himalaya's
+- GIVEN a pimdir store stamped with a schema version above Mailman's
 - WHEN any pimdir command opens it
 - THEN the command fails with the code `store-newer`, saying to upgrade this program
 

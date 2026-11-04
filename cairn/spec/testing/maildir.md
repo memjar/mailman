@@ -5,20 +5,20 @@ Shared cross-protocol commands on the Maildir backend. Companion:
 Method: [provider-test-plan.md](provider-test-plan.md), against a
 throwaway Maildir tree in `/tmp`.
 
-- himalaya: `v2.0.0-alpha.1 +maildir +rustls-ring` (working tree).
+- mailman: `v2.0.0-alpha.1 +maildir +rustls-ring` (working tree).
   **`maildir` is not a default feature** (the default local backend is
   `m2dir`); build with `cargo build --features maildir`.
 - backend: local filesystem, io-maildir default **fs layout** (root is
   itself INBOX, subfolders are real nested dirs with their own
   `cur`/`new`/`tmp`, not the dot-prefixed Maildir++ layout).
 - date: 2026-07-18
-- fixture: `/tmp/himalaya-maildir` with `cur`/`new`/`tmp` at the root
+- fixture: `/tmp/mailman-maildir` with `cur`/`new`/`tmp` at the root
   and three subfolders `Archive` / `Sent` / `Drafts`, config:
 
   ```toml
   [accounts.maildir]
-  maildir.root = "/tmp/himalaya-maildir"
-  mailbox.alias.inbox = "/tmp/himalaya-maildir"
+  maildir.root = "/tmp/mailman-maildir"
+  mailbox.alias.inbox = "/tmp/mailman-maildir"
   ```
 
 ## Results
@@ -42,12 +42,12 @@ throwaway Maildir tree in `/tmp`.
 - **D1 — the mailbox id from `mailbox list` (and an absolute `inbox`
   alias) were not usable as a selector. FIXED.** `mailbox list` prints
   each mailbox id as its absolute path, but feeding one back
-  (`envelope list -m /tmp/himalaya-maildir/Archive`) failed `path
-  /tmp/himalaya-maildir//tmp/himalaya-maildir/Archive is not a
-  directory`, and `mailbox.alias.inbox = "/tmp/himalaya-maildir"`
+  (`envelope list -m /tmp/mailman-maildir/Archive`) failed `path
+  /tmp/mailman-maildir//tmp/mailman-maildir/Archive is not a
+  directory`, and `mailbox.alias.inbox = "/tmp/mailman-maildir"`
   (the natural way to make the root the default mailbox) failed the same
   way. Root cause: io-maildir resolves every logical name **relative to
-  the store root**, and himalaya's `resolve_maildir` re-joined the root
+  the store root**, and mailman's `resolve_maildir` re-joined the root
   onto an already-absolute path (io-maildir's `MaildirFsPath::join`
   concatenates rather than replacing on an absolute component, so
   `<root> + <root>/Archive`). `resolve_maildir` now reduces an absolute
@@ -62,7 +62,7 @@ throwaway Maildir tree in `/tmp`.
   filters/sorts client-side against the already-read bytes), unlike the
   Gmail and Graph backends which bail.
 - The root maildir is INBOX; `mailbox list` shows its `name` as the root
-  directory's basename (e.g. `himalaya-maildir`). Select it by the
+  directory's basename (e.g. `mailman-maildir`). Select it by the
   `inbox` alias, by `.`, or by its full path — not by that basename
   (there is no `<root>/<basename>` folder). Subfolders are addressed by
   their relative name (`-m Archive`, `-m Projects/Work`).

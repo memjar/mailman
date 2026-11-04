@@ -13,7 +13,7 @@ Landed on 2026-11-02 (cairn/log/2026-11-02-one-search-language.md), items 3 and 
 - [x] The attachment clause's spelling: a bare `attachment`
 - [x] `before` bounds: strict, as `after`
 
-## himalaya (this repository)
+## mailman (this repository)
 
 - [x] Grammar and AST: `before`, `cc`, `bcc`, `address`, `attachment`; parser tests, and a `Display` rendering a filter back into the language
 - [x] Compile the new clauses per backend: IMAP keys, JMAP filter, Gmail `q`, Graph KQL, the shared evaluator (copies from the raw headers, or the pimdir summary)

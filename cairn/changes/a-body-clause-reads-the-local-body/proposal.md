@@ -9,7 +9,7 @@ created: 2026-10-30
 
 ## Why
 
-The pimdir stable-release review of 2026-10-30 (report-himalaya.md, should-fix 1) verified that a `body` clause never matches on the pimdir backend: both search paths hand the shared matcher an empty body (`eval::matches_filter(&envelope, &[], filter)`, src/pimdir/backend.rs:298 and :331). On a store holding three local bodies containing "See attached.", `envelope search -m imap/INBOX body attached` returned nothing with exit 0, and `not body attached` returned every message. The doc comment at src/pimdir/backend.rs:226-229 and the draft a-search-says-what-it-covered say only unfetched bodies miss, which is wrong.
+The pimdir stable-release review of 2026-10-30 (report-mailman.md, should-fix 1) verified that a `body` clause never matches on the pimdir backend: both search paths hand the shared matcher an empty body (`eval::matches_filter(&envelope, &[], filter)`, src/pimdir/backend.rs:298 and :331). On a store holding three local bodies containing "See attached.", `envelope search -m imap/INBOX body attached` returned nothing with exit 0, and `not body attached` returned every message. The doc comment at src/pimdir/backend.rs:226-229 and the draft a-search-says-what-it-covered say only unfetched bodies miss, which is wrong.
 
 This is phase 0 of the approved pimdir search plan (pimdir-search): the shared `envelope list` keeps this in-memory path until the v3 query moves to the SEARCH.md language.
 

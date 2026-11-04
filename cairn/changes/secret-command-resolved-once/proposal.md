@@ -19,7 +19,7 @@ The same release turns `Secret::Command` from a built `std::process::Command` in
 
 ## What
 
-himalaya moves to pimalaya-config 0.2.0. The wizard's secret module builds `CommandConfig::Argv` and `CommandConfig::Shell` instead of a `std::process::Command`.
+mailman moves to pimalaya-config 0.2.0. The wizard's secret module builds `CommandConfig::Argv` and `CommandConfig::Shell` instead of a `std::process::Command`.
 
 `SaslConfig::try_into_sasl`, `jmap_http_auth`, `gmail_token` and `msgraph_token` take a `&mut SecretResolver` and resolve through it. The two places that reach several backends in one run build one resolver and thread it: `account check` and `test_account` in the account checker, and the IMAP plus SMTP connection tests in the discovered-backend wizard.
 

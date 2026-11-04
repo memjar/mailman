@@ -4,7 +4,7 @@ Shared cross-protocol commands on the IMAP/SMTP backend against **QQ Mail**
 (Tencent / Foxmail). Method:
 [provider-test-plan.md](provider-test-plan.md).
 
-- himalaya: `v2.2.1 +imap +smtp +native-tls` (rev `4df380b`)
+- mailman: `v2.2.1 +imap +smtp +native-tls` (rev `4df380b`)
 - account: `qq` — IMAP `imaps://imap.qq.com:993`, SMTP
   `smtps://smtp.qq.com:465`, SASL LOGIN with authorization code
 - date: 2026-10-18

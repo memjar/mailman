@@ -9,7 +9,7 @@ created: 2026-10-30
 
 ## Why
 
-The pimdir stable-release review of 2026-10-30 (report-himalaya.md, should-fix 2) verified that the role names `mailbox list` shows on a pimdir account address nothing. `EmailClient::role_mailbox_id` returns `Ok(None)` for pimdir (src/shared/client.rs:433), `resolve_mailbox_id` passes the value through (src/shared/client.rs:533-543), and `MailboxIndex` is gated to JMAP, Gmail and Graph (src/email/mailbox.rs:44-48). So `envelope list` without `-m` fails with "Mailbox `inbox` not found", `-m inbox` fails the same way, and `message delete` without `mailbox.alias.trash` fails with "Cannot determine the trash mailbox" though a trash-role collection exists. CHANGELOG.md:26 and cairn/log/2026-10-05-pimdir-mailbox-roles.md claim the opposite; cairn/spec/backends.md ("Mailbox role") and config.sample.toml say pimdir has no roles.
+The pimdir stable-release review of 2026-10-30 (report-mailman.md, should-fix 2) verified that the role names `mailbox list` shows on a pimdir account address nothing. `EmailClient::role_mailbox_id` returns `Ok(None)` for pimdir (src/shared/client.rs:433), `resolve_mailbox_id` passes the value through (src/shared/client.rs:533-543), and `MailboxIndex` is gated to JMAP, Gmail and Graph (src/email/mailbox.rs:44-48). So `envelope list` without `-m` fails with "Mailbox `inbox` not found", `-m inbox` fails the same way, and `message delete` without `mailbox.alias.trash` fails with "Cannot determine the trash mailbox" though a trash-role collection exists. CHANGELOG.md:26 and cairn/log/2026-10-05-pimdir-mailbox-roles.md claim the opposite; cairn/spec/backends.md ("Mailbox role") and config.sample.toml say pimdir has no roles.
 
 ## What
 

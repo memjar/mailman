@@ -9,7 +9,7 @@ created: 2026-11-03
 
 ## Why
 
-pimalaya-cli's every-output-is-data (pimalaya-cli cairn, landed 2026-11-03) removes `Message` and sets the rules every binary's payloads follow. The JSON review of 2026-11-03, made at 2f49f86, found himalaya printing 111 `{"message": ...}` confirmations, 56 of them built from data (new ids, counts, server replies, warnings, message bodies), 110 leaves with no schema, raw bytes written to stdout under `--json`, five shapes for flags, two for `inReplyTo` and addresses, a list-wrapped reply under a generic `response` key, four paging styles, mixed `null` and omitted keys, and an `account check` that dropped each backend's code on failure.
+pimalaya-cli's every-output-is-data (pimalaya-cli cairn, landed 2026-11-03) removes `Message` and sets the rules every binary's payloads follow. The JSON review of 2026-11-03, made at 2f49f86, found mailman printing 111 `{"message": ...}` confirmations, 56 of them built from data (new ids, counts, server replies, warnings, message bodies), 110 leaves with no schema, raw bytes written to stdout under `--json`, five shapes for flags, two for `inReplyTo` and addresses, a list-wrapped reply under a generic `response` key, four paging styles, mixed `null` and omitted keys, and an `account check` that dropped each backend's code on failure.
 
 ## What
 
@@ -25,10 +25,10 @@ pimalaya-cli's every-output-is-data (pimalaya-cli cairn, landed 2026-11-03) remo
 
 ## Decided (2026-11-03)
 
-- Raw-faithful applies to JSON payloads; IMAP, SMTP, ManageSieve and the local stores print what himalaya understood, text otherwise, with no `raw` field beside it (no io-imap change now).
+- Raw-faithful applies to JSON payloads; IMAP, SMTP, ManageSieve and the local stores print what mailman understood, text otherwise, with no `raw` field beside it (no io-imap change now).
 - Typed IMAP commands emit no events: io-imap returns their output whole. `imap raw` parses its reply after the fact, so its events come before the result but not progressively, and stay lossy on non-UTF-8 bytes (io-imap decodes the reply with `from_utf8_lossy`).
 - A protocol refusal is a result exiting 2; the shared commands keep coded failures.
 
 ## Compatibility
 
-Breaking for every `--json` caller, landing in himalaya 3.0.0 with the camelCase keys already on master. MIGRATION.md lists each shape that moved.
+Breaking for every `--json` caller, landing in mailman 3.0.0 with the camelCase keys already on master. MIGRATION.md lists each shape that moved.

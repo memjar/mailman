@@ -4,7 +4,7 @@ Unlike the per-provider reports, the built-in `compose`, `reply` and
 `forward` composers are **provider-independent** and were validated with
 **unit tests**, no account or network required.
 
-- himalaya: `v2.0.0-alpha.1` (working tree)
+- mailman: `v2.0.0-alpha.1` (working tree)
 - date: 2026-07-18
 - tests: `src/shared/message/builder.rs` (`mod tests`), run with
   `cargo test builder`

@@ -20,4 +20,4 @@ Requested in [#510]: a listing is mostly today's and yesterday's messages, so a 
 
 Unit tests render a fixed today against each age bucket and a missing date, and check the absolute path is untouched when the option is off.
 
-[#510]: https://github.com/pimalaya/himalaya/issues/510
+[#510]: https://github.com/pimalaya/mailman/issues/510

@@ -1,10 +1,10 @@
 # Microsoft Graph *specific* API on Outlook — test report
 
 Companion to [msgraph.md](msgraph.md) (shared commands). Exercises
-`himalaya msgraph …` — the raw Microsoft Graph mail surface (profile,
+`mailman msgraph …` — the raw Microsoft Graph mail surface (profile,
 mail folders, messages, attachments).
 
-- himalaya: `v2.0.0-alpha.1 +msgraph +rustls-ring` (working tree)
+- mailman: `v2.0.0-alpha.1 +msgraph +rustls-ring` (working tree)
 - account: `msgraph` (Microsoft Graph REST, OAuth via ortie)
 - date: 2026-07-18
 - method: every `msgraph` subcommand, inside two throwaway folders, per
@@ -57,7 +57,7 @@ shapes as the verified verbs.
   (both call `message_move`) and works on any settled message id — the
   405 comes from Graph itself, whose `copy` is **asynchronous**: the id
   it returns points at a copy still materialising and is not yet
-  operable. Not a himalaya bug; re-list the destination folder to get the
+  operable. Not a mailman bug; re-list the destination folder to get the
   settled id before moving it. The raw 405 is surfaced verbatim.
 
 - `msgraph messages create --folder` and `messages list --folder` take a

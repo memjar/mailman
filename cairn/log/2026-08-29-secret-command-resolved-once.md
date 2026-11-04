@@ -6,7 +6,7 @@ landed: 2026-08-29
 
 # A credential command is resolved once per run
 
-himalaya moved to pimalaya-config 0.2.0 and adopted its `SecretResolver`, so a credential command several blocks of one account name is spawned once per run instead of once per block.
+mailman moved to pimalaya-config 0.2.0 and adopted its `SecretResolver`, so a credential command several blocks of one account name is spawned once per run instead of once per block.
 
 The waste was real and easy to hit. `[imap]`, `[smtp]` and `[sieve]` each hold their own `password.command`, the natural configuration points all three at one entry, and `Secret::get` caches nothing: `account check` spawned it three times, and the wizard's IMAP and SMTP tests twice even after answering yes to "Use the same credentials for SMTP?". For a `pass` or `gpg` entry each spawn is a key unlock, so validating an account meant unlocking once per backend.
 

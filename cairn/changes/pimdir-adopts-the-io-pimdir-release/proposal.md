@@ -9,9 +9,9 @@ created: 2026-10-30
 
 ## Why
 
-The pimdir stable-release plan (2026-10-30, Apps Phase A) gives io-pimdir an API the apps then move onto, so each stops hand-rolling what the library should own. Himalaya is affected on five points, all waiting for that io-pimdir revision; none can land before it.
+The pimdir stable-release plan (2026-10-30, Apps Phase A) gives io-pimdir an API the apps then move onto, so each stops hand-rolling what the library should own. Mailman is affected on five points, all waiting for that io-pimdir revision; none can land before it.
 
-- **Store errors lose their type** (report-himalaya.md should-fix 5): every `PimdirError` is stringified through `anyhow!("...{err}")` (src/pimdir/client.rs:65, :102, :123-131), so the JSON error has no `code`; a stale store relays io-pimdir's "delete the store and let it resync", which silently drops queued sends and other apps' local-only items; a newer store never says to upgrade himalaya. io-pimdir gains `PimdirError::code()` and a Display without that advice, `Version` saying upgrade.
+- **Store errors lose their type** (report-mailman.md should-fix 5): every `PimdirError` is stringified through `anyhow!("...{err}")` (src/pimdir/client.rs:65, :102, :123-131), so the JSON error has no `code`; a stale store relays io-pimdir's "delete the store and let it resync", which silently drops queued sends and other apps' local-only items; a newer store never says to upgrade mailman. io-pimdir gains `PimdirError::code()` and a Display without that advice, `Version` saying upgrade.
 - **Duplicate creates**: a staged `add` whose link id the mailbox already holds, or one already pending, is accepted and parks later. io-pimdir gains a duplicate-link refusal helper (`seq_for_link` and the pending creates) to refuse it at staging time.
 - **Body staging**: a-staged-body-is-written-under-the-lock orders the producer open and the blob write by hand. io-pimdir gains `PimdirProducer::stage_body`, hashing and writing under the lock in one call, with reader blobs read-only.
 - **Hand-rolled submit payload** (should-fix 9): `SubmitPayload` (src/pimdir/backend.rs) duplicates neverest's `SubmitMeta`, carries an `object` field Annex B.2 does not list, and omits `source` on undeclared stores; `const SUBMIT` duplicates `io_pimdir::intent::SUBMIT`. io-pimdir gains a typed `PimdirSubmit`.
@@ -20,7 +20,7 @@ The pimdir stable-release plan (2026-10-30, Apps Phase A) gives io-pimdir an API
 
 ## What
 
-- Map store errors to `ErrorCode` variants from `PimdirError::code()` (`store-stale`, `store-newer`, `store-busy`, ...), with no "delete the store" advice anywhere in himalaya's output.
+- Map store errors to `ErrorCode` variants from `PimdirError::code()` (`store-stale`, `store-newer`, `store-busy`, ...), with no "delete the store" advice anywhere in mailman's output.
 - Refuse a duplicate create before staging it, through io-pimdir's helper.
 - Stage bodies through `stage_body`.
 - Build the `submit` intent from `PimdirSubmit`, dropping `SubmitPayload` and `SUBMIT`.

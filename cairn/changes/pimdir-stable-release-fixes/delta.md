@@ -14,11 +14,11 @@ change: pimdir-stable-release-fixes
 - THEN one `copy` row is queued for 3, and the command succeeds reporting one message
 
 ### Requirement: The pimdir queue view shows parked rows
-`himalaya pimdir queue list` SHALL list the mailbox's parked rows, any action kind, beside its queued creations and sends: the row id, the action kind, when it was queued, and the error that parked it, as `parked` under `--json`. `queue cancel` SHALL take a parked row as it takes a pending one.
+`mailman pimdir queue list` SHALL list the mailbox's parked rows, any action kind, beside its queued creations and sends: the row id, the action kind, when it was queued, and the error that parked it, as `parked` under `--json`. `queue cancel` SHALL take a parked row as it takes a pending one.
 
 #### Scenario: A duplicate draft parks
 - GIVEN a staged `add` the sync engine parked because the mailbox already holds its `Message-ID`
-- WHEN `himalaya pimdir queue list -m imap/Drafts` runs
+- WHEN `mailman pimdir queue list -m imap/Drafts` runs
 - THEN the row is listed as parked with its error, and `pimdir queue cancel` on its id removes it
 
 ## MODIFIED Requirements
@@ -26,7 +26,7 @@ change: pimdir-stable-release-fixes
 ### Requirement: pimdir is a reader and a producer, never the owner
 The pimdir backend SHALL treat the store as a possibly-partial cache owned by the sync engine. `get_message` on an item whose body is not local (`level < Full`, no stored object, or a stored object whose blob file is gone, pimdir GUIDE §14) SHALL fail with the code `body-pending` (commands, "A JSON error carries a stable code"), the cue to sync, not a data-loss error; the item still lists.
 
-Reads SHALL go through `PimdirReader`, the role that takes no lock (pimdir STORAGE §8) and carries no write at all, so a sync in flight neither blocks Himalaya nor is blocked by it, and the backend cannot drain the queue or sweep the store even by mistake.
+Reads SHALL go through `PimdirReader`, the role that takes no lock (pimdir STORAGE §8) and carries no write at all, so a sync in flight neither blocks Mailman nor is blocked by it, and the backend cannot drain the queue or sweep the store even by mistake.
 
 An envelope SHALL be built from the item's typed mail summary and the addresses joined to it (pimdir STORAGE Annex A.1, A.6): every `From` and `To` address with its display name, the `In-Reply-To` list, the date, the size and the attachment mark as stored, with no body read. `hasAttachment` SHALL be `true` or `false` as the store marks it, and `null` on a row that holds no mark. A listing SHALL take the store's own order, newest first, the mail sort key being the date.
 
@@ -40,12 +40,12 @@ An added message SHALL derive its link id through io-pimdir's mail derivation (`
 
 #### Scenario: An add on flags never synced is refused
 - GIVEN a pimdir message whose flags the sync engine never read
-- WHEN `himalaya flag add -m imap/INBOX -f flagged 42` runs
+- WHEN `mailman flag add -m imap/INBOX -f flagged 42` runs
 - THEN the command fails saying the flags of `42` were never synced, and nothing is queued
 
 #### Scenario: A flag the message carries already
 - GIVEN a pimdir message showing `\Seen`
-- WHEN `himalaya flag add -m imap/INBOX -f seen 6` runs
+- WHEN `mailman flag add -m imap/INBOX -f seen 6` runs
 - THEN no row is queued, and the command reports one message found
 
 #### Scenario: A body purged under a held item
@@ -62,5 +62,5 @@ The plain output of every `pimdir` subcommand SHALL end with a newline.
 
 #### Scenario: A staged draft is followed by its row
 - GIVEN a pimdir account
-- WHEN `himalaya --json pimdir message add -m imap/Drafts` stages a message
+- WHEN `mailman --json pimdir message add -m imap/Drafts` stages a message
 - THEN it prints `{"queueId":12,"messageId":"d1@x.org"}`, and `pimdir queue show 12` prints `"state":"pending"` until the sync engine applies the row, then `"state":"applied"` with the `seq` the message is read by

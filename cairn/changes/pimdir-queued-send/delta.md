@@ -30,7 +30,7 @@ The command SHALL report the queue row id, and its text SHALL say the message is
 - THEN nothing is staged and the error names `mailbox.alias.sent`
 
 ### Requirement: The queue view shows queued sends
-`himalaya pimdir queue list` SHALL render a queued `submit` as a message, derived from the body it pins as a create is, marked as a send, beside the queued creates of the same mailbox. The count an envelope listing reports SHALL include the mailbox's queued sends.
+`mailman pimdir queue list` SHALL render a queued `submit` as a message, derived from the body it pins as a create is, marked as a send, beside the queued creates of the same mailbox. The count an envelope listing reports SHALL include the mailbox's queued sends.
 
 ## MODIFIED Requirements
 

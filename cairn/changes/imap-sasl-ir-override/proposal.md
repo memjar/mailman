@@ -9,7 +9,7 @@ created: 2026-08-11
 
 ## Why
 
-Reported as pimalaya/himalaya#729: authenticating against Coremail (NetEase 126.com and 163.com) fails on v2.0.0 with `AUTHENTICATE PLAIN failed: BAD Request not ending with`, and no configuration can work around it.
+Reported as pimalaya/mailman#729: authenticating against Coremail (NetEase 126.com and 163.com) fails on v2.0.0 with `AUTHENTICATE PLAIN failed: BAD Request not ending with`, and no configuration can work around it.
 
 The server advertises the RFC 4959 `SASL-IR` capability but rejects the inline initial response it promises to accept. io-imap decides whether to inline credentials from that capability alone, so a lying server leaves the client with no usable signal and no way in. The reporter's only escape was to abandon the mechanism entirely and fall back to `sasl.login`.
 

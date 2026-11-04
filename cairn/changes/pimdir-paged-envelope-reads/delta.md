@@ -14,5 +14,5 @@ change: pimdir-paged-envelope-reads
 
 #### Scenario: The first page of a large mailbox
 - GIVEN a pimdir mailbox holding 50,000 mails
-- WHEN `himalaya envelope list -s 50` runs
+- WHEN `mailman envelope list -s 50` runs
 - THEN the store reads the 50 newest items, and one more per queued removal, rather than the 50,000

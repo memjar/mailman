@@ -17,7 +17,7 @@ Borrowed from an external engine: a three-axis search coverage (what is local an
 
 - `envelope list` on the pimdir backend computes the coverage of its query: the hits that could only match on headers because the body is absent, and whether the query's range reaches below the mailbox's coverage or into a round still filling.
 - The table prints one line under the results when the search is not complete (*12 messages have no local body; mail before 2026-03-01 is not synced*); `--json` carries it as a `coverage` object; complete searches print nothing extra.
-- The type and its roll-up come from io-pimdir (cairn/changes/search-feature, section "Coverage, three axes") so himalaya, the Android app and other clients say the same thing; until it lands, himalaya computes the two axes it can from the coverage rows it already reads.
+- The type and its roll-up come from io-pimdir (cairn/changes/search-feature, section "Coverage, three axes") so mailman, the Android app and other clients say the same thing; until it lands, mailman computes the two axes it can from the coverage rows it already reads.
 - The remote axis stays `LocalOnly`: falling back to the account's server search is a separate change, if ever.
 
 ## Open questions

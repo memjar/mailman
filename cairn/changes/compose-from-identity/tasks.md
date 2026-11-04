@@ -11,6 +11,6 @@ change: compose-from-identity
 - [x] src/shared/message/{compose,reply,forward}.rs: the default resolved through `account.resolve_from`, and the `--from` help naming it.
 - [x] src/wizard/discover.rs: `prompted_email` reading the prompt back as an address, written onto the generated account; a URL's userinfo is not one.
 - [x] Tests: the name-with-a-comma coming out quoted, the global name pairing with the account address, and `--from` dropping the configured name; the shapes `prompted_email` refuses.
-- [x] himalaya-tui: `email` and `display-name` accepted as aliases of `from` and `from-name`, its own spec and log entry.
+- [x] mailman-tui: `email` and `display-name` accepted as aliases of `from` and `from-name`, its own spec and log entry.
 - [x] config.sample.toml and the CHANGELOG entry.
 - [x] Fold the delta into [cairn/spec/config.md](../../spec/config.md), [cairn/spec/commands.md](../../spec/commands.md) and [cairn/spec/wizard.md](../../spec/wizard.md); write [cairn/log/2026-08-16-compose-from-identity.md](../../log/2026-08-16-compose-from-identity.md).

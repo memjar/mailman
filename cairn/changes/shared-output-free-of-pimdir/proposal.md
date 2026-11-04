@@ -13,4 +13,4 @@ The shared commands are a protocol-agnostic API, and pimdir is one backend among
 
 ## What
 
-The shared outputs drop `queued`, `queueId` and `notes`. A queued send logs its row id at info level, a write a source supports only in part logs a warning, and `himalaya pimdir queue list` remains the place to see what is queued. `EmailClient::send_message` returns only whether the backend filed the sent copy itself, documented without naming a backend.
+The shared outputs drop `queued`, `queueId` and `notes`. A queued send logs its row id at info level, a write a source supports only in part logs a warning, and `mailman pimdir queue list` remains the place to see what is queued. `EmailClient::send_message` returns only whether the backend filed the sent copy itself, documented without naming a backend.

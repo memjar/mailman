@@ -4,7 +4,7 @@ change: pimdir-producer-reader
 landed: 2026-08-26
 ---
 
-# Himalaya reads the sync store as a reader, and stages its edits as a producer
+# Mailman reads the sync store as a reader, and stages its edits as a producer
 
 Two defects against a real Neverest store, one visible from the first command and
 one that had not fired yet.
@@ -26,12 +26,12 @@ candidates rather than read as an empty mailbox.
 an io-replica `mutate` coroutine into `ReplicaStorage::write`, which in 0.2 ends
 every batch with `collect_garbage`: `DELETE FROM objects WHERE refcount = 0` and
 unlink. Neverest's phase 2 streams bodies into the blob tree at refcount 0 and
-attaches them in phase 3, which pimdir SPEC §14 invites, so one `himalaya flag
+attaches them in phase 3, which pimdir SPEC §14 invites, so one `mailman flag
 add` during a sync destroys every not-yet-attached body, bytes included. 0.2 takes
 no owner lock, so nothing made the two exclusive. The store is gigabytes and the
 sync is what refills it.
 
-Himalaya was holding a role it should never have had. It is a reader and a
+Mailman was holding a role it should never have had. It is a reader and a
 producer now, which is what the format already provides for: reads open through
 `open_read_only` (`_lock: None`, so no lock at all), and each write is one
 `PimdirProducer::enqueue` of a `PimdirAction` addressed by the public `seq`, for
@@ -67,7 +67,7 @@ Writes were driven against a scratch copy of the index: `flag add` staged
 `set-flags seq 5005 -> [\Flagged \Seen]` (the existing marker kept), `message move`
 and `message delete` staged `move seq N -> imap/Trash` (the namespace back on the
 target), and `message save` wrote the blob to its sharded path and enqueued
-`add link mid:staged@himalaya, object aw64hcc…`. 116 tests green, fmt and clippy
+`add link mid:staged@mailman, object aw64hcc…`. 116 tests green, fmt and clippy
 clean.
 
 Spec updated: `backends` (ADDED "pimdir names a mailbox the way its server does";

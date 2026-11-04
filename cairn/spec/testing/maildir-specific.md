@@ -1,12 +1,12 @@
 # Maildir *specific* API — test report
 
 Companion to [maildir.md](maildir.md) (shared commands). Exercises
-`himalaya maildir …` — the raw Maildir API (folder lifecycle, message
+`mailman maildir …` — the raw Maildir API (folder lifecycle, message
 store/copy/move, filename flags).
 
-- himalaya: `v2.0.0-alpha.1 +maildir +rustls-ring` (working tree; build
+- mailman: `v2.0.0-alpha.1 +maildir +rustls-ring` (working tree; build
   with `--features maildir`, not a default feature)
-- backend: local `/tmp/himalaya-maildir`, io-maildir default fs layout
+- backend: local `/tmp/mailman-maildir`, io-maildir default fs layout
 - date: 2026-07-18
 - method: every `maildir` subcommand against the throwaway tree, per
   [provider-test-plan.md](provider-test-plan.md).
@@ -34,7 +34,7 @@ store/copy/move, filename flags).
   and passed the resulting **absolute** path to io-maildir, which then
   re-joined the root (relative-name contract, concatenating join). So
   `maildir create Trash` reported success but actually created
-  `/tmp/himalaya-maildir/tmp/himalaya-maildir/Trash` — silently
+  `/tmp/mailman-maildir/tmp/mailman-maildir/Trash` — silently
   polluting the store's own `tmp/`. The three commands now pass the bare
   root-relative name. Verified: `create Trash` / `create Projects/Work`
   land at `<root>/Trash` and `<root>/Projects/Work`, `rename Trash Junk`

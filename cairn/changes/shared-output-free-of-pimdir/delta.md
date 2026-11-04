@@ -13,10 +13,10 @@ The output of a shared command SHALL NOT carry a field that only one backend fil
 ## MODIFIED Requirements
 
 ### Requirement: A queued creation is reported, not listed
-A queued creation has no public id until the store's owner applies it, so the pimdir backend SHALL NOT project one as an envelope, and SHALL NOT put a placeholder in `Envelope.id`. `add_message` returns the link id it staged, which identifies the creation across the window. `himalaya pimdir queue list` is where queued creations show.
+A queued creation has no public id until the store's owner applies it, so the pimdir backend SHALL NOT project one as an envelope, and SHALL NOT put a placeholder in `Envelope.id`. `add_message` returns the link id it staged, which identifies the creation across the window. `mailman pimdir queue list` is where queued creations show.
 
 ### Requirement: pimdir sends by queueing a submit intent
 The command SHALL NOT report the queue row id in its output; the pimdir backend SHALL log it at info level.
 
 ### Requirement: The queue view shows queued sends
-`himalaya pimdir queue list` SHALL render a queued `submit` as a message, derived from the body it pins as a create is, marked as a send, beside the queued creates of the same mailbox.
+`mailman pimdir queue list` SHALL render a queued `submit` as a message, derived from the body it pins as a create is, marked as a send, beside the queued creates of the same mailbox.

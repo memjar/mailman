@@ -9,15 +9,15 @@ created: 2026-08-29
 
 ## Why
 
-The Pimalaya family standardises the object keys of `--json` on camelCase, and Himalaya is one of the four products that cannot follow immediately.
+The Pimalaya family standardises the object keys of `--json` on camelCase, and Mailman is one of the four products that cannot follow immediately.
 
-camelCase is what the wire formats these commands wrap already speak. JMAP objects are camelCase by RFC 8620, and so are Microsoft Graph and every Google API Himalaya talks to. A Gmail or Graph response crossing into a Himalaya output type crosses a case boundary today for no reason other than serde's default.
+camelCase is what the wire formats these commands wrap already speak. JMAP objects are camelCase by RFC 8620, and so are Microsoft Graph and every Google API Mailman talks to. A Gmail or Graph response crossing into a Mailman output type crosses a case boundary today for no reason other than serde's default.
 
 The second reason is the consumer `--json` exists for. Neither JavaScript nor jq can use dot access on a key containing a hyphen: `.messages-total` has to be written `."messages-total"` in jq and `obj["messages-total"]` in JavaScript, and a script that forgets the quoting fails silently rather than loudly. `messagesTotal` reads the same in both.
 
-What Himalaya emits today is not one convention but two. Twenty-six types carry `#[serde(rename_all = "kebab-case")]` (src/gmail/profile/get.rs, src/msgraph/profile/get.rs, src/gmail/history/list.rs, the three Gmail get renderers, the five Gmail settings singletons, src/sieve/get.rs, src/sieve/list.rs, src/sieve/capability.rs, src/imap/id.rs, src/shared/message/delete.rs, src/email/envelope.rs, src/email/mailbox.rs, src/email/flag.rs, src/email/address.rs). The rest carry nothing and emit serde's snake_case, so `next_page` from src/shared/output.rs and `messages-total` from `gmail profile get` ship side by side in the same CLI.
+What Mailman emits today is not one convention but two. Twenty-six types carry `#[serde(rename_all = "kebab-case")]` (src/gmail/profile/get.rs, src/msgraph/profile/get.rs, src/gmail/history/list.rs, the three Gmail get renderers, the five Gmail settings singletons, src/sieve/get.rs, src/sieve/list.rs, src/sieve/capability.rs, src/imap/id.rs, src/shared/message/delete.rs, src/email/envelope.rs, src/email/mailbox.rs, src/email/flag.rs, src/email/address.rs). The rest carry nothing and emit serde's snake_case, so `next_page` from src/shared/output.rs and `messages-total` from `gmail profile get` ship side by side in the same CLI.
 
-Himalaya is 2.1.0 and `--json` keys are a published contract, so changing them is breaking and waits for 3.0.
+Mailman is 2.1.0 and `--json` keys are a published contract, so changing them is breaking and waits for 3.0.
 
 ## What changes at 3.0
 
@@ -31,9 +31,9 @@ Config types stay kebab-case. src/config.rs is deserialized from TOML, where hyp
 
 Provider passthrough keeps its own spelling. A field carrying a wire name verbatim keeps its `#[serde(rename = "...")]`: `@odata.nextLink` is what Microsoft Graph called it and `nextPageToken` is what Gmail called it, and neither is derivable from a Rust field name. Applying `rename_all` to a type holding one of those does not touch it, which is correct, and nobody should "fix" it later.
 
-Transparent newtypes over io-gmail and io-msgraph resources are not Himalaya's to rename. `MsgraphMessageGetOutput` and the Gmail settings newtypes serialize whatever the io- crate declared, which is already the provider's camelCase. They need no attribute and must not be forced into one.
+Transparent newtypes over io-gmail and io-msgraph resources are not Mailman's to rename. `MsgraphMessageGetOutput` and the Gmail settings newtypes serialize whatever the io- crate declared, which is already the provider's camelCase. They need no attribute and must not be forced into one.
 
-Himalaya's own pagination field is not passthrough: `Paginated::next_page` in src/shared/output.rs is a Himalaya invention wrapping the provider cursor, and it becomes `nextPage` like any other output field.
+Mailman's own pagination field is not passthrough: `Paginated::next_page` in src/shared/output.rs is a Mailman invention wrapping the provider cursor, and it becomes `nextPage` like any other output field.
 
 ## The alias trap
 

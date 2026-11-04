@@ -14,4 +14,4 @@ Verified with `maildir message save`: a piped message holding `\xff` and a bare 
 
 Capabilities moved: **commands** (message argument kept as bytes; raw command stdin read whole).
 
-[#786]: https://github.com/pimalaya/himalaya/issues/786
+[#786]: https://github.com/pimalaya/mailman/issues/786

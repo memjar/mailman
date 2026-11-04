@@ -14,5 +14,5 @@ Covered by `tests/message_forward.rs` on Maildir. Not exercised against a remote
 
 Capabilities moved: **commands** (A forward carries the attachments of its source).
 
-[#780]: https://github.com/pimalaya/himalaya/issues/780
-[#788]: https://github.com/pimalaya/himalaya/pull/788
+[#780]: https://github.com/pimalaya/mailman/issues/780
+[#788]: https://github.com/pimalaya/mailman/pull/788

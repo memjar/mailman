@@ -13,7 +13,7 @@ The pimdir backend named a mailbox by stripping a `<namespace>/` prefix off its 
 
 The id is not a composite. `collections.id` is an opaque `TEXT PRIMARY KEY` and io-pimdir splits it nowhere; pimdir SPEC 9.2 says the store neither parses nor validates it, and models hierarchy through the `parent` foreign key instead. The `/` is Neverest's convention, which its own spec calls internal and non-configurable. So the prefix is not something the store can be asked about, only something a consumer can guess at, and the guessing showed: the derivation needs a kind filter to work at all, needs `pimdir.namespace` for the case it cannot decide, and needs an ambiguity error for the case where two collections strip to one name.
 
-Himalaya already has a backend whose ids are not names. JMAP mailbox ids are opaque server strings, `Mailbox.id` carries them verbatim, and `[mailbox.alias]` is how a user avoids typing one. That mechanism exists, is documented as existing for exactly this reason, and covers pimdir with no new concept.
+Mailman already has a backend whose ids are not names. JMAP mailbox ids are opaque server strings, `Mailbox.id` carries them verbatim, and `[mailbox.alias]` is how a user avoids typing one. That mechanism exists, is documented as existing for exactly this reason, and covers pimdir with no new concept.
 
 ## What
 

@@ -8,7 +8,7 @@ change: pimdir-cache-backend
 ## ADDED Requirements
 
 ### Requirement: pimdir cache backend
-Himalaya SHALL support a `pimdir` storage backend: a local
+Mailman SHALL support a `pimdir` storage backend: a local
 [pimdir](https://github.com/pimalaya/pimdir) store (io-pimdir over io-replica) used
 as an offline **cache** the sync engine populates, selected local-before-network
 like the file backends. It adapts io-pimdir's client read API and the io-replica

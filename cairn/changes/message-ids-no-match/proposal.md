@@ -27,5 +27,5 @@ The other backends already fail on an unknown id (JMAP `notUpdated`, an HTTP 404
 - A stable `--json` error `code` for "no id matched". It fits `json-error-code` and can follow if wanted.
 - The newline missing after piped `--json` output, which is the printer's in pimalaya/cli and applies to every command.
 
-[#777]: https://github.com/pimalaya/himalaya/issues/777
-[#781]: https://github.com/pimalaya/himalaya/issues/781
+[#777]: https://github.com/pimalaya/mailman/issues/777
+[#781]: https://github.com/pimalaya/mailman/issues/781

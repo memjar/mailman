@@ -12,7 +12,7 @@ store synced as a single source (the local-sync case), writes as that one source
 no configuration, no wrong-by-default `local` guard failure. It falls back to
 `local` only when the store has no or several sources.
 
-Verified: with no `pimdir.source` configured, a `\Seen` edited in Himalaya against
+Verified: with no `pimdir.source` configured, a `\Seen` edited in Mailman against
 a one-side neverest store propagates to the remote on the next sync (the neverest
 report shows the push). Build/test/fmt clean.
 

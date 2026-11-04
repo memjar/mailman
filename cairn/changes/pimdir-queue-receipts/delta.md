@@ -14,7 +14,7 @@ change: pimdir-queue-receipts
 
 #### Scenario: A staged draft is followed by its row
 - GIVEN a pimdir account
-- WHEN `himalaya --json pimdir message add -m imap/Drafts` stages a message
+- WHEN `mailman --json pimdir message add -m imap/Drafts` stages a message
 - THEN it prints `{"queueId":12,"messageId":"d1@x.org"}`, and `pimdir queue show 12` prints `"state":"pending"` until the sync engine applies the row, then `"state":"applied"` with the `seq` the message is read by
 
 ### Requirement: pimdir creates a mailbox by queueing an intent
@@ -24,6 +24,6 @@ The row SHALL be anchored on `parent`, which must be a mailbox of the account, e
 
 #### Scenario: A folder is created through the sync engine
 - GIVEN a pimdir account whose `imap` source declares `collection.create`
-- WHEN `himalaya --json pimdir mailbox create Projets` runs
+- WHEN `mailman --json pimdir mailbox create Projets` runs
 - THEN one `collection-create` row is queued with `{"v":1,"source":"imap","name":"Projets"}`, and the command prints its `queueId` and `"source":"imap"`
 

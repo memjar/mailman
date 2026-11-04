@@ -41,5 +41,5 @@ change: mailbox-role
 ## Follow-ups outside this repo
 
 - [x] Release io-msgraph with `$batch` (0.3.1), then drop the `[patch.crates-io]` path entry from Cargo.toml
-- [ ] himalaya-tui (src/tui/update.rs name match) and himalaya-vim read `role`
-- [ ] Reply on himalaya#743
+- [ ] mailman-tui (src/tui/update.rs name match) and mailman-vim read `role`
+- [ ] Reply on mailman#743

@@ -1,12 +1,12 @@
 # m2dir *specific* API — test report
 
-Companion to [m2dir.md](m2dir.md) (shared commands). Exercises `himalaya
+Companion to [m2dir.md](m2dir.md) (shared commands). Exercises `mailman
 m2dir …` — the raw m2dir API (store/folder lifecycle, message save,
 sidecar flags).
 
-- himalaya: `v2.0.0-alpha.1 +m2dir +rustls-ring` (working tree; `m2dir`
+- mailman: `v2.0.0-alpha.1 +m2dir +rustls-ring` (working tree; `m2dir`
   is a default feature)
-- backend: local `/tmp/himalaya-m2dir` ([m2dir spec][spec])
+- backend: local `/tmp/mailman-m2dir` ([m2dir spec][spec])
 - date: 2026-07-18
 - method: every `m2dir` subcommand against the throwaway store, per
   [provider-test-plan.md](provider-test-plan.md).

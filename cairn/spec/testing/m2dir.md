@@ -5,20 +5,20 @@ Shared cross-protocol commands on the m2dir backend. Companion:
 [provider-test-plan.md](provider-test-plan.md), against a throwaway
 m2store in `/tmp`.
 
-- himalaya: `v2.0.0-alpha.1 +m2dir +rustls-ring` (working tree). `m2dir`
+- mailman: `v2.0.0-alpha.1 +m2dir +rustls-ring` (working tree). `m2dir`
   is the **default** local backend (unlike `maildir`).
 - backend: local filesystem, the [m2dir spec][spec]: an m2store root
   marked by `.m2store`, one directory per mailbox (each with a `.m2dir`
   marker and a `.meta/` sidecar dir), messages stored content-addressed
   as `<date>,<checksum>.<nonce>` with per-message `.meta/<id>.flags`.
 - date: 2026-07-18
-- fixture: `/tmp/himalaya-m2dir` with `Inbox` / `Archive` / `Sent`
+- fixture: `/tmp/mailman-m2dir` with `Inbox` / `Archive` / `Sent`
   folders (bootstrapped with `m2dir create`, which inits the store),
   config:
 
   ```toml
   [accounts.m2dir]
-  m2dir.root = "/tmp/himalaya-m2dir"
+  m2dir.root = "/tmp/mailman-m2dir"
   mailbox.alias.inbox = "Inbox"
   ```
 
@@ -44,7 +44,7 @@ m2store in `/tmp`.
 
 - **E1 — shared `-m <folder-name>` did not resolve. FIXED.**
   `envelope list -m Inbox` failed `path Inbox is not a directory`; only
-  the absolute path from `mailbox list` (`-m /tmp/himalaya-m2dir/Inbox`)
+  the absolute path from `mailbox list` (`-m /tmp/mailman-m2dir/Inbox`)
   worked. io-m2dir's `open_m2dir` takes a filesystem path as-is, and the
   shared backend passed the raw `-m` value straight to it, so a folder
   name never resolved (the inverse of the Maildir backend, and

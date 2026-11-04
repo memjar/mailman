@@ -38,7 +38,7 @@ server, while `sieve://` plus STARTTLS succeeded. Dovecot Pigeonhole reported
 Sieve 1.0 and SASL PLAIN; authenticated `LISTSCRIPTS` returned an empty list,
 and `account check --backend sieve` returned `OK`. The server-side
 `.dovecot.sieve` was a regular file outside the personal ManageSieve store.
-With explicit authorization, Himalaya then uploaded the supplied rules as
+With explicit authorization, Mailman then uploaded the supplied rules as
 `main` and activated it. `LISTSCRIPTS` showed `main` active and `dovecot.orig`
 inactive; `GETSCRIPT` verified that both contained the original rules. No
 script was deleted manually. A cleartext-auth guard bug found during the
@@ -51,7 +51,7 @@ boundaries and the allocation guard.
 
 The same authorized migration was then verified for `mail@anycast.io` on
 `mail1.anycast.io`. The existing regular `.dovecot.sieve` contained the
-invoice forwarding rule. Himalaya uploaded it as `main` and activated it;
+invoice forwarding rule. Mailman uploaded it as `main` and activated it;
 Dovecot created the managed `sieve/main.sieve` symlink and preserved the old
 file as inactive `dovecot.orig`. `sieve list`, `doveadm sieve list`, and
 `doveadm sieve get` agreed on the active script and its contents. No manual
