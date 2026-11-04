@@ -16,4 +16,4 @@ jobs:
       - name: Security audit
         run: cargo audit
       - name: Deny vulnerabilities
-        run: cargo deny check advisories
+        run: cargo install cargo-deny && cargo deny check advisories
