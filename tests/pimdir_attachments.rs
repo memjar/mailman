@@ -219,7 +219,7 @@ impl Himalaya {
     }
 
     fn command(&self, args: &[&str]) -> Command {
-        let mut cmd = Command::new(env!("CARGO_BIN_EXE_himalaya"));
+        let mut cmd = Command::new(env!("CARGO_BIN_EXE_mailman"));
         cmd.arg("-c")
             .arg(&self.config)
             .args(args)

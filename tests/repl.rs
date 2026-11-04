@@ -46,7 +46,7 @@ fn account(dir: &Path) -> PathBuf {
 /// per output line.
 fn session(dir: &Path, lines: &str) -> Vec<Value> {
     let config = account(dir);
-    let mut child = Command::new(env!("CARGO_BIN_EXE_himalaya"))
+    let mut child = Command::new(env!("CARGO_BIN_EXE_mailman"))
         .args(["-c", config.to_str().unwrap(), "--json", "repl"])
         .env("HOME", dir)
         .env("XDG_CONFIG_HOME", dir)

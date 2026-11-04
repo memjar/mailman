@@ -48,7 +48,7 @@ fn account(dir: &Path) -> PathBuf {
 /// Runs `message reply` with the flags and returns the `to` and `cc`
 /// lists of the template it prints.
 fn reply(config: &Path, home: &Path, flags: &[&str]) -> (Vec<String>, Vec<String>) {
-    let output = Command::new(env!("CARGO_BIN_EXE_himalaya"))
+    let output = Command::new(env!("CARGO_BIN_EXE_mailman"))
         .args(["-c", config.to_str().unwrap(), "--json", "message", "reply"])
         .args(flags)
         .args(["--body", "ok", "plan"])

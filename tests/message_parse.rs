@@ -76,7 +76,7 @@ impl Himalaya {
     }
 
     fn command(&self, args: &[&str]) -> Command {
-        let mut cmd = Command::new(env!("CARGO_BIN_EXE_himalaya"));
+        let mut cmd = Command::new(env!("CARGO_BIN_EXE_mailman"));
         cmd.args(args)
             .env("HOME", self.home.path())
             .env("XDG_CONFIG_HOME", self.home.path())

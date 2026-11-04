@@ -26,7 +26,7 @@ fn capabilities(args: &[&str]) -> Vec<Value> {
     );
     fs::write(&config, account).unwrap();
 
-    let output = Command::new(env!("CARGO_BIN_EXE_himalaya"))
+    let output = Command::new(env!("CARGO_BIN_EXE_mailman"))
         .args(["-c", config.to_str().unwrap(), "--json"])
         .args(args)
         .args(["account", "capability"])

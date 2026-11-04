@@ -121,7 +121,7 @@ fn account(dir: &Path, source: &[u8]) -> PathBuf {
 /// Runs `message forward` of the source with the given extra flags and
 /// returns the raw composed message it prints.
 fn forward(config: &Path, home: &Path, flags: &[&str]) -> String {
-    let output = Command::new(env!("CARGO_BIN_EXE_himalaya"))
+    let output = Command::new(env!("CARGO_BIN_EXE_mailman"))
         .args(["-c", config.to_str().unwrap(), "message", "forward"])
         .args(flags)
         .args(["--body", "ok", "src"])

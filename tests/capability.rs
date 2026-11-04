@@ -36,7 +36,7 @@ fn run(blocks: &str, args: &[&str]) -> (bool, Value) {
 }
 
 fn himalaya(home: &Path, config: &Path, args: &[&str]) -> std::process::Output {
-    Command::new(env!("CARGO_BIN_EXE_himalaya"))
+    Command::new(env!("CARGO_BIN_EXE_mailman"))
         .args(["-c", config.to_str().unwrap(), "--json"])
         .args(args)
         .env("HOME", home)

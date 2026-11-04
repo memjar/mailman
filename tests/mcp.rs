@@ -47,7 +47,7 @@ fn account(dir: &Path) -> PathBuf {
 /// responses in order.
 fn serve(config: &Path, flags: &[&str], requests: &[Value]) -> Vec<Value> {
     let dir = config.parent().unwrap();
-    let mut child = Command::new(env!("CARGO_BIN_EXE_himalaya"))
+    let mut child = Command::new(env!("CARGO_BIN_EXE_mailman"))
         .args(["-c", config.to_str().unwrap(), "mcp"])
         .args(flags)
         .env("HOME", dir)

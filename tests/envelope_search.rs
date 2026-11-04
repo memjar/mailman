@@ -68,7 +68,7 @@ fn account(dir: &Path) -> PathBuf {
 /// Runs `envelope search --json` with the given query and returns the exit
 /// status and the JSON it prints.
 fn search(config: &Path, home: &Path, query: &[&str]) -> (bool, Value) {
-    let output = Command::new(env!("CARGO_BIN_EXE_himalaya"))
+    let output = Command::new(env!("CARGO_BIN_EXE_mailman"))
         .args([
             "-c",
             config.to_str().unwrap(),

@@ -25,7 +25,7 @@ fn himalaya(dir: &Path, root: &Path, args: &[&str]) -> Value {
     );
     fs::write(&config, account).unwrap();
 
-    let output = Command::new(env!("CARGO_BIN_EXE_himalaya"))
+    let output = Command::new(env!("CARGO_BIN_EXE_mailman"))
         .args(["-c", config.to_str().unwrap(), "--json"])
         .args(args)
         .env("HOME", dir)
