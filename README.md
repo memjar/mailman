@@ -3,9 +3,9 @@
   <h1>📫 Mailman</h1>
   <p>CLI to manage emails</p>
   <p>
-    <a href="https://matrix.to/#/#pimalaya:matrix.org"><img alt="Matrix" src="https://img.shields.io/badge/chat-%23pimalaya-blue?style=flat&logo=matrix&logoColor=white"/></a>
-    <a href="https://fosstodon.org/@pimalaya"><img alt="Mastodon" src="https://img.shields.io/badge/news-%40pimalaya-blue?style=flat&logo=mastodon&logoColor=white"/></a>
-    <a href="https://pimalaya.org/sponsor/"><img alt="Sponsor" src="https://img.shields.io/badge/sponsor-pink?style=flat&logo=github-sponsors&logoColor=white"/></a>
+    <a href="https://matrix.to/#/#mailman:matrix.org"><img alt="Matrix" src="https://img.shields.io/badge/chat-%23mailman-blue?style=flat&logo=matrix&logoColor=white"/></a>
+    <a href="https://fosstodon.org/@mailman"><img alt="Mastodon" src="https://img.shields.io/badge/news-%40mailman-blue?style=flat&logo=mastodon&logoColor=white"/></a>
+    <a href="https://github.com/sponsors/memjar"><img alt="Sponsor" src="https://img.shields.io/badge/sponsor-pink?style=flat&logo=github-sponsors&logoColor=white"/></a>
   </p>
 </div>
 
@@ -19,7 +19,7 @@
 - [Usage](#usage)
 - [Interfaces](#interfaces)
 - [FAQ](#faq)
-- [AI policy](https://github.com/pimalaya/.github/blob/master/AI_POLICY.md)
+- [AI policy](https://github.com/memjar/.github/blob/master/AI_POLICY.md)
 - [License](#license)
 - [Social](#social)
 - [Contributing](./CONTRIBUTING.md)
@@ -30,7 +30,7 @@
 - **Shared API** for `mailboxes`, `envelopes`, `flags`, `messages` and `attachments`
 - **Protocol-specific APIs** exposing each backend's full surface
 - **IMAP**, **SMTP**, **ManageSieve**, **JMAP**, **Gmail** (REST API), **Microsoft Graph** (Outlook / Microsoft 365) support
-- **Maildir** <sup>[specs](https://cr.yp.to/proto/maildir.html)</sup>, **m2dir** <sup>[specs](https://man.sr.ht/~bitfehler/m2dir/)</sup>, **mbox** <sup>[specs](https://manpages.debian.org/bookworm/mutt/mbox.5.en.html)</sup>, **pimdir** <sup>[specs](https://github.com/pimalaya/pimdir)</sup> support
+- **Maildir** <sup>[specs](https://cr.yp.to/proto/maildir.html)</sup>, **m2dir** <sup>[specs](https://man.sr.ht/~bitfehler/m2dir/)</sup>, **mbox** <sup>[specs](https://manpages.debian.org/bookworm/mutt/mbox.5.en.html)</sup>, **pimdir** <sup>[specs](https://github.com/memjar/pimdir)</sup> support
 - **Simple auth** support for IMAP, SMTP and ManageSieve (anonymous, login, plain, oauthbearer, xoauth2, scram-sha-256)
 - **HTTP auth** support for JMAP: basic, bearer
 - **TLS** support:
@@ -64,18 +64,18 @@ Mailman can be installed with the installer:
 *As root:*
 
 ```
-curl -sSL https://raw.githubusercontent.com/pimalaya/mailman/master/install.sh | sudo sh
+curl -sSL https://raw.githubusercontent.com/memjar/mailman/master/install.sh | sudo sh
 ```
 
 *As a regular user:*
 
 ```
-curl -sSL https://raw.githubusercontent.com/pimalaya/mailman/master/install.sh | PREFIX=~/.local sh
+curl -sSL https://raw.githubusercontent.com/memjar/mailman/master/install.sh | PREFIX=~/.local sh
 ```
 
-These commands install the latest binary from the GitHub [releases](https://github.com/pimalaya/mailman/releases) section.
+These commands install the latest binary from the GitHub [releases](https://github.com/memjar/mailman/releases) section.
 
-For a more up-to-date version than the latest release, check out the [releases](https://github.com/pimalaya/mailman/actions/workflows/releases.yml) GitHub workflow and look for the *Artifacts* section. These pre-built binaries are built from the `master` branch.
+For a more up-to-date version than the latest release, check out the [releases](https://github.com/memjar/mailman/actions/workflows/releases.yml) GitHub workflow and look for the *Artifacts* section. These pre-built binaries are built from the `master` branch.
 
 > [!NOTE]
 > Such binaries are built with the default cargo features. If you need specific features, please use another installation method.
@@ -83,13 +83,13 @@ For a more up-to-date version than the latest release, check out the [releases](
 ### Cargo
 
 ```
-cargo install --locked --git https://github.com/pimalaya/mailman.git
+cargo install --locked --git https://github.com/memjar/mailman.git
 ```
 
 With only IMAP+SMTP support:
 
 ```
-cargo install --locked --git https://github.com/pimalaya/mailman.git \
+cargo install --locked --git https://github.com/memjar/mailman.git \
   --no-default-features \
   --features imap,smtp,rustls-ring
 ```
@@ -145,13 +145,13 @@ dnf install mailman
 If you have the [Flakes](https://nixos.wiki/wiki/Flakes) feature enabled:
 
 ```
-nix profile install github:pimalaya/mailman
+nix profile install github:memjar/mailman
 ```
 
 Or run without installing:
 
 ```
-nix run github:pimalaya/mailman
+nix run github:memjar/mailman
 ```
 
 ### Sources
@@ -159,7 +159,7 @@ nix run github:pimalaya/mailman
 Requires [Rust](https://www.rust-lang.org/tools/install) 1.89 or later:
 
 ```
-git clone https://github.com/pimalaya/mailman
+git clone https://github.com/memjar/mailman
 cd mailman
 cargo build --release --locked
 ```
@@ -180,7 +180,7 @@ A persistent configuration is loaded from every existing path among the followin
 
 At most one account may be marked `default = true` across them: an rc file moving the default sets `default = false` on the account the other file marks.
 
-These are the same paths the [mailman-tui](https://github.com/pimalaya/mailman-tui) TUI looks at: one TOML file backs both binaries. CLI-only fields and TUI-only sections coexist without errors. See [config.sample.toml](./config.sample.toml) for a documented template.
+These are the same paths the [mailman-tui (upstream)](https://github.com/memjar/mailman-tui (upstream)) TUI looks at: one TOML file backs both binaries. CLI-only fields and TUI-only sections coexist without errors. See [config.sample.toml](./config.sample.toml) for a documented template.
 
 Override those paths with `-c <PATH>`; multiple paths can be passed at once, separated by `;` on Windows and `:` elsewhere, as `$PATH` separates them, or by repeating `-c`. The first one is the base and the rest are deep-merged on top.
 
@@ -261,7 +261,7 @@ Every Gmail label shows up as a top-level IMAP mailbox, and the special ones liv
 
 `[Gmail]/All Mail` is the archive holding every message, so aliasing it puts "search everything" one flag away: `mailman envelope search -m archive ...`.
 
-To use Gmail's native REST API instead of IMAP/SMTP, replace the blocks above with a single OAuth 2.0 bearer token from a helper such as [ortie](https://github.com/pimalaya/ortie):
+To use Gmail's native REST API instead of IMAP/SMTP, replace the blocks above with a single OAuth 2.0 bearer token from a helper such as [ortie](https://github.com/memjar/ortie):
 
 ```toml
 gmail.auth.token.command = ["ortie", "token", "show", "-a", "gmail"]
@@ -271,7 +271,7 @@ Labels become mailboxes here too, but they carry the API's opaque label ids; add
 
 ### Outlook
 
-Microsoft has retired basic authentication: use OAuth 2.0 via `oauthbearer` or `xoauth2`, with the access token supplied by an external helper such as [ortie](https://github.com/pimalaya/ortie).
+Microsoft has retired basic authentication: use OAuth 2.0 via `oauthbearer` or `xoauth2`, with the access token supplied by an external helper such as [ortie](https://github.com/memjar/ortie).
 
 ```toml
 [accounts.outlook]
@@ -374,11 +374,11 @@ ManageSieve uses the optional `sieve` account block. RFC 5804 registers one port
 
 `capability`, `list`, `get`, `put`, `check`, `activate`, `deactivate`, `rename`, `delete` and `raw` are available, and `put` and `check` accept a script file, inline text or stdin.
 
-On a pimdir account, `pimdir search`, `pimdir count`, `pimdir thread` and `pimdir tag` ask the store's search index in the [pimdir query language](https://github.com/pimalaya/pimdir/blob/master/SEARCH.md): words, phrases, `field:value` terms, `and`, `or`, `not` and parentheses, over the account's mail. The store's sync engine builds the index and refreshes it after each run; Mailman only reads it, so a message shows once it is synced and indexed, and a line under the results says what they could not see (bodies not downloaded, mail older than what the store holds, the index lagging the store). `pimdir tag` queues one flag change per matched message for the sync engine to apply.
+On a pimdir account, `pimdir search`, `pimdir count`, `pimdir thread` and `pimdir tag` ask the store's search index in the [pimdir query language](https://github.com/memjar/pimdir/blob/master/SEARCH.md): words, phrases, `field:value` terms, `and`, `or`, `not` and parentheses, over the account's mail. The store's sync engine builds the index and refreshes it after each run; Mailman only reads it, so a message shows once it is synced and indexed, and a line under the results says what they could not see (bodies not downloaded, mail older than what the store holds, the index lagging the store). `pimdir tag` queues one flag change per matched message for the sync engine to apply.
 
 ### Composing messages
 
-`message compose` / `reply` / `forward` cover simple cases through flags. For rich MIME (MML directives, signing, encryption, an editor-driven flow), chain a composer such as [mml](https://github.com/pimalaya/mml) into `message send` / `message add`, or stage a prepared file as a draft:
+`message compose` / `reply` / `forward` cover simple cases through flags. For rich MIME (MML directives, signing, encryption, an editor-driven flow), chain a composer such as [mml](https://github.com/memjar/mml) into `message send` / `message add`, or stage a prepared file as a draft:
 
 ```sh
 mailman message compose --to you@example.org --subject Hello --body Hi --send
@@ -386,14 +386,14 @@ mml compose >(mailman message send)
 mailman message add -m drafts --flag draft < message.eml
 ```
 
-See `mailman message send --help` and the [mml](https://github.com/pimalaya/mml) docs for the composer chaining.
+See `mailman message send --help` and the [mml](https://github.com/memjar/mml) docs for the composer chaining.
 
 ### Re-using sessions
 
 Each invocation opens a fresh TCP+TLS+SASL session. To amortize the handshake, there are two options:
 
 - `mailman repl` keeps one process alive for one account: each stdin line is a command without the binary name (`envelope list`, `message read 42`), run over clients that connect the first time a command needs them and stay connected for the session. Quote arguments as in a shell; `quit`, `exit` or EOF ends it. The account, `--backend` and `--json` are given once, on the `repl` command. Piped, every line gets one answer on stdout (one JSON value per line under `--json`, a failure being the error object), so a program can drive it. Stdin carries the commands, so a command takes its input as an argument or a file path, never from stdin. SMTP still connects per send, a server dropping an idle SMTP connection after a few minutes, and a command that fails drops its client so the next one connects again.
-- [sirup](https://github.com/pimalaya/sirup) serves a pre-authenticated IMAP/SMTP session over a Unix socket that `imap.server` / `smtp.server` can point at, shared by every process: the choice for many short invocations, or several tools at once. Do not point a `mailman repl` at a sirup socket yet: sirup serves one client at a time and keeps the upstream alive only while none is attached.
+- [sirup](https://github.com/memjar/sirup) serves a pre-authenticated IMAP/SMTP session over a Unix socket that `imap.server` / `smtp.server` can point at, shared by every process: the choice for many short invocations, or several tools at once. Do not point a `mailman repl` at a sirup socket yet: sirup serves one client at a time and keeps the upstream alive only while none is attached.
 
 ### MCP server
 
@@ -411,10 +411,10 @@ Only the tools that read are listed by default. `--allow-write` adds the ones th
 
 ## Interfaces
 
-Mailman CLI is one of several front-ends to the Pimalaya libraries:
+Mailman CLI is one of several front-ends to the Mailman libraries:
 
-- [pimalaya/mailman-tui](https://github.com/pimalaya/mailman-tui): official TUI (in active development)
-- [pimalaya/mailman-vim](https://github.com/pimalaya/mailman-vim): Vim plugin
+- [mailman-tui](https://github.com/memjar/mailman-tui): official TUI (in active development)
+- [mailman-vim](https://github.com/memjar/mailman-vim): Vim plugin
 - [dantecatalfamo/mailman-emacs](https://github.com/dantecatalfamo/mailman-emacs): Emacs plugin
 - [jns/mailman](https://www.raycast.com/jns/mailman): Raycast extension
 - [openclaw/openclaw](https://github.com/openclaw/openclaw/blob/main/skills/mailman/SKILL.md): OpenClaw SKILL
@@ -430,7 +430,7 @@ Mailman CLI is one of several front-ends to the Pimalaya libraries:
 
   Mailman is a Command-Line Interface (CLI). There is no event loop: you interact with your emails using shell commands, in a stateless way.
 
-  A dedicated TUI ([mailman-tui](https://github.com/pimalaya/mailman-tui)) is in active development on top of the same Pimalaya libraries, and is definitely closer to aerc, mutt and alpine.
+  A dedicated TUI ([mailman-tui (upstream)](https://github.com/memjar/mailman-tui (upstream))) is in active development on top of the same Mailman libraries, and is definitely closer to aerc, mutt and alpine.
 </details>
 
 <details>
@@ -450,7 +450,7 @@ Mailman CLI is one of several front-ends to the Pimalaya libraries:
 <details>
   <summary>How is OAuth 2.0 handled?</summary>
 
-  v2 ships no OAuth flow. Use [ortie](https://github.com/pimalaya/ortie), or any other token broker, to obtain an access token, then plug it in as a `command` printing that token on stdout.
+  v2 ships no OAuth flow. Use [ortie](https://github.com/memjar/ortie), or any other token broker, to obtain an access token, then plug it in as a `command` printing that token on stdout.
 
   For JMAP, point `jmap.auth.bearer.token.command` at the broker. For IMAP and SMTP, route the bearer through a SASL mechanism taking a command-sourced password.
 </details>
@@ -465,7 +465,7 @@ Mailman CLI is one of several front-ends to the Pimalaya libraries:
   - **RFC 6186 SRV**: `_imap._tcp`, `_imaps._tcp`, `_submission._tcp` lookups assembled into a single report.
   - **RFC 8620 JMAP**: the SRV record and the `/.well-known/jmap` session resource.
 
-  A final WWW-Authenticate probe refines the advertised auth schemes, and a detected Google or Microsoft account short-circuits to its dedicated configurations. See [io-pim-discovery](https://github.com/pimalaya/io-pim-discovery) for the full chain.
+  A final WWW-Authenticate probe refines the advertised auth schemes, and a detected Google or Microsoft account short-circuits to its dedicated configurations. See [io-pim-discovery](https://github.com/memjar/io-pim-discovery) for the full chain.
 </details>
 
 <details>
@@ -507,9 +507,9 @@ This project is licensed under either of:
 
 ## Social
 
-- Chat on [Matrix](https://matrix.to/#/#pimalaya:matrix.org)
-- News on [Mastodon](https://fosstodon.org/@pimalaya) or [RSS](https://fosstodon.org/@pimalaya.rss)
-- Mail at [pimalaya.org@posteo.net](mailto:pimalaya.org@posteo.net)
+- Chat on [Matrix](https://matrix.to/#/#mailman:matrix.org)
+- News on [Mastodon](https://fosstodon.org/@mailman) or [RSS](https://fosstodon.org/@mailman.rss)
+- Mail at [hello@mailman.app](mailto:hello@mailman.app)
 
 ## Sponsoring
 
@@ -518,15 +518,15 @@ This project is licensed under either of:
 Special thanks to the [NLnet foundation](https://nlnet.nl/) and the [European Commission](https://www.ngi.eu/) that have been financially supporting the project for years:
 
 - 2022 → 2023: [NGI Assure](https://nlnet.nl/project/Mailman/)
-- 2023 → 2024: [NGI Zero Entrust](https://nlnet.nl/project/Pimalaya/)
-- 2024 → 2026: [NGI Zero Core](https://nlnet.nl/project/Pimalaya-PIM/)
-- 2026 → 2027: [NGI Zero Commons Fund](https://nlnet.nl/project/Pimalaya-pimdir/)
+- 2023 → 2024: [NGI Zero Entrust](https://nlnet.nl/project/Mailman/)
+- 2024 → 2026: [NGI Zero Core](https://nlnet.nl/project/Mailman-PIM/)
+- 2026 → 2027: [NGI Zero Commons Fund](https://nlnet.nl/project/Mailman-pimdir/)
 
-This program is part of Pimalaya, free software funded entirely by grants and donations. If you find it useful, consider [sponsoring](https://pimalaya.org/sponsor/) its development:
+This program is part of Mailman, free software funded entirely by grants and donations. If you find it useful, consider [sponsoring](https://ko-fi.com/mailman/) its development:
 
 [![GitHub](https://img.shields.io/badge/-GitHub%20Sponsors-fafbfc?logo=GitHub%20Sponsors)](https://github.com/sponsors/soywod)
-[![Ko-fi](https://img.shields.io/badge/-Ko--fi-ff5e5a?logo=Ko-fi&logoColor=ffffff)](https://ko-fi.com/pimalaya)
-[![Buy Me a Coffee](https://img.shields.io/badge/-Buy%20Me%20a%20Coffee-ffdd00?logo=Buy%20Me%20A%20Coffee&logoColor=000000)](https://www.buymeacoffee.com/pimalaya)
-[![Liberapay](https://img.shields.io/badge/-Liberapay-f6c915?logo=Liberapay&logoColor=222222)](https://liberapay.com/pimalaya)
+[![Ko-fi](https://img.shields.io/badge/-Ko--fi-ff5e5a?logo=Ko-fi&logoColor=ffffff)](https://ko-fi.com/mailman)
+[![Buy Me a Coffee](https://img.shields.io/badge/-Buy%20Me%20a%20Coffee-ffdd00?logo=Buy%20Me%20A%20Coffee&logoColor=000000)](https://www.buymeacoffee.com/mailman)
+[![Liberapay](https://img.shields.io/badge/-Liberapay-f6c915?logo=Liberapay&logoColor=222222)](https://liberapay.com/mailman)
 [![thanks.dev](https://img.shields.io/badge/-thanks.dev-000000?logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQuMDk3IiBoZWlnaHQ9IjE3LjU5NyIgY2xhc3M9InctMzYgbWwtMiBsZzpteC0wIHByaW50Om14LTAgcHJpbnQ6aW52ZXJ0IiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik05Ljc4MyAxNy41OTdINy4zOThjLTEuMTY4IDAtMi4wOTItLjI5Ny0yLjc3My0uODktLjY4LS41OTMtMS4wMi0xLjQ2Mi0xLjAyLTIuNjA2di0xLjM0NmMwLTEuMDE4LS4yMjctMS43NS0uNjc4LTIuMTk1LS40NTItLjQ0Ni0xLjIzMi0uNjY5LTIuMzQtLjY2OUgwVjcuNzA1aC41ODdjMS4xMDggMCAxLjg4OC0uMjIyIDIuMzQtLjY2OC40NTEtLjQ0Ni42NzctMS4xNzcuNjc3LTIuMTk1VjMuNDk2YzAtMS4xNDQuMzQtMi4wMTMgMS4wMjEtMi42MDZDNS4zMDUuMjk3IDYuMjMgMCA3LjM5OCAwaDIuMzg1djEuOTg3aC0uOTg1Yy0uMzYxIDAtLjY4OC4wMjctLjk4LjA4MmExLjcxOSAxLjcxOSAwIDAgMC0uNzM2LjMwN2MtLjIwNS4xNTYtLjM1OC4zODQtLjQ2LjY4Mi0uMTAzLjI5OC0uMTU0LjY4Mi0uMTU0IDEuMTUxVjUuMjNjMCAuODY3LS4yNDkgMS41ODYtLjc0NSAyLjE1NS0uNDk3LjU2OS0xLjE1OCAxLjAwNC0xLjk4MyAxLjMwNXYuMjE3Yy44MjUuMyAxLjQ4Ni43MzYgMS45ODMgMS4zMDUuNDk2LjU3Ljc0NSAxLjI4Ny43NDUgMi4xNTR2MS4wMjFjMCAuNDcuMDUxLjg1NC4xNTMgMS4xNTIuMTAzLjI5OC4yNTYuNTI1LjQ2MS42ODIuMTkzLjE1Ny40MzcuMjYuNzMyLjMxMi4yOTUuMDUuNjIzLjA3Ni45ODQuMDc2aC45ODVabTE0LjMxNC03LjcwNmgtLjU4OGMtMS4xMDggMC0xLjg4OC4yMjMtMi4zNC42NjktLjQ1LjQ0NS0uNjc3IDEuMTc3LS42NzcgMi4xOTVWMTQuMWMwIDEuMTQ0LS4zNCAyLjAxMy0xLjAyIDIuNjA2LS42OC41OTMtMS42MDUuODktMi43NzQuODloLTIuMzg0di0xLjk4OGguOTg0Yy4zNjIgMCAuNjg4LS4wMjcuOTgtLjA4LjI5Mi0uMDU1LjUzOC0uMTU3LjczNy0uMzA4LjIwNC0uMTU3LjM1OC0uMzg0LjQ2LS42ODIuMTAzLS4yOTguMTU0LS42ODIuMTU0LTEuMTUydi0xLjAyYzAtLjg2OC4yNDgtMS41ODYuNzQ1LTIuMTU1LjQ5Ny0uNTcgMS4xNTgtMS4wMDQgMS45ODMtMS4zMDV2LS4yMTdjLS44MjUtLjMwMS0xLjQ4Ni0uNzM2LTEuOTgzLTEuMzA1LS40OTctLjU3LS43NDUtMS4yODgtLjc0NS0yLjE1NXYtMS4wMmMwLS40Ny0uMDUxLS44NTQtLjE1NC0xLjE1Mi0uMTAyLS4yOTgtLjI1Ni0uNTI2LS40Ni0uNjgyYTEuNzE5IDEuNzE5IDAgMCAwLS43MzctLjMwNyA1LjM5NSA1LjM5NSAwIDAgMC0uOTgtLjA4MmgtLjk4NFYwaDIuMzg0YzEuMTY5IDAgMi4wOTMuMjk3IDIuNzc0Ljg5LjY4LjU5MyAxLjAyIDEuNDYyIDEuMDIgMi42MDZ2MS4zNDZjMCAxLjAxOC4yMjYgMS43NS42NzggMi4xOTUuNDUxLjQ0NiAxLjIzMS42NjggMi4zNC42NjhoLjU4N3oiIGZpbGw9IiNmZmYiLz48L3N2Zz4=)](https://thanks.dev/u/gh/soywod)
 [![PayPal](https://img.shields.io/badge/-PayPal-0079c1?logo=PayPal&logoColor=ffffff)](https://www.paypal.com/paypalme/soywod)
