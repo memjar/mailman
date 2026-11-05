@@ -45,8 +45,9 @@ tmpdir=$(mktemp -d) || die "Cannot create temporary directory"
 trap "rm -rf $tmpdir" EXIT
 
 echo "Downloading latest $system release…"
-curl -sLo "$tmpdir/mailman.tgz" \
-     "$RELEASES_URL/latest/download/mailman.$target.tgz"
+curl -fL --retry 5 --retry-all-errors -o "$tmpdir/mailman.tgz" \
+     "$RELEASES_URL/latest/download/mailman.$target.tgz" \
+    || die "Could not download the release archive (network or missing asset)" 1
 
 echo "Installing binary…"
 tar -xzf "$tmpdir/mailman.tgz" -C "$tmpdir"
