@@ -81,7 +81,7 @@
       "locked": {
         "lastModified": 1792239857,
         "narHash": "sha256-H46IHYSpNkrykDyTAqThWUWALhignIK6LeJXUtW8XZ8=",
-        "owner": "memjar",
+        "owner": "axetechnologies",
         "repo": "nix",
         "rev": "57c346fd629d4563bd8b672d944603ac634bc63e",
         "type": "github"

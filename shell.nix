@@ -2,7 +2,7 @@
   nixpkgs ? <nixpkgs>,
   system ? builtins.currentSystem,
   pkgs ? import nixpkgs { inherit system; },
-  pimalaya ? import (fetchTarball "https://github.com/memjar/nix/archive/master.tar.gz"),
+  axe ? import (fetchTarball "https://github.com/axetechnologies/nix/archive/master.tar.gz"),
   fenix ? import (fetchTarball "https://github.com/nix-community/fenix/archive/monthly.tar.gz") { },
 }:
 
@@ -14,7 +14,7 @@ let
     sqlite
     ;
 
-  shell = pimalaya.mkShell {
+  shell = axe.mkShell {
     inherit
       nixpkgs
       system

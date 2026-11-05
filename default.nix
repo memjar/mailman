@@ -1,6 +1,6 @@
 {
   nixpkgs ? <nixpkgs>,
-  pimalaya ? import (fetchTarball "https://github.com/memjar/nix/archive/master.tar.gz"),
+  axe ? import (fetchTarball "https://github.com/axetechnologies/nix/archive/master.tar.gz"),
   ...
 }@args:
 
@@ -14,7 +14,7 @@ let
   );
 
 in
-pimalaya.mkDefault (
+axe.mkDefault (
   {
     src = ./.;
     version = "2.2.1";
@@ -83,5 +83,5 @@ pimalaya.mkDefault (
         })
     );
   }
-  // removeAttrs args [ "pimalaya" ]
+  // removeAttrs args [ "axe" ]
 )
