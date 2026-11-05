@@ -160,7 +160,7 @@ checksum = "ac07cdecf99051d9a5238b80f35af32cdeba5b336e55d957b318b50137e18da5"
 [[package]]
 name = "base64-codec"
 version = "0.0.1"
-source = "git+https://github.com/pimalaya/base64-codec?rev=d39f6b90f02abf8eb91ef041b7601320df8def99#d39f6b90f02abf8eb91ef041b7601320df8def99"
+source = "git+https://github.com/memjar/base64-codec?rev=d39f6b90f02abf8eb91ef041b7601320df8def99#d39f6b90f02abf8eb91ef041b7601320df8def99"
 dependencies = [
  "simd-cpu",
 ]
@@ -524,9 +524,9 @@ dependencies = [
 
 [[package]]
 name = "ctutils"
-version = "0.4.7"
+version = "0.4.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a2376ffd6f96d8a9db59875b4b6b0237d6900b5baf64279714e05493ce64828a"
+checksum = "261af4dc7a06ea8a527a8717d8cbba3417530d6ea14e1edb3de6b67806be474f"
 dependencies = [
  "cmov",
 ]
@@ -1000,7 +1000,7 @@ dependencies = [
 [[package]]
 name = "ical-rs"
 version = "0.6.1"
-source = "git+https://github.com/pimalaya/ical?rev=99b92736a6a076c72936fac29c9b85a5168e4c2f#99b92736a6a076c72936fac29c9b85a5168e4c2f"
+source = "git+https://github.com/memjar/ical?rev=99b92736a6a076c72936fac29c9b85a5168e4c2f#99b92736a6a076c72936fac29c9b85a5168e4c2f"
 dependencies = [
  "jiff",
  "jiff-tzdb",
@@ -1184,7 +1184,7 @@ dependencies = [
 [[package]]
 name = "io-http"
 version = "0.5.0"
-source = "git+https://github.com/pimalaya/io-http?rev=e1815307771c1ec65a86b77256d46c33241d3038#e1815307771c1ec65a86b77256d46c33241d3038"
+source = "git+https://github.com/memjar/io-http?rev=e1815307771c1ec65a86b77256d46c33241d3038#e1815307771c1ec65a86b77256d46c33241d3038"
 dependencies = [
  "anyhow",
  "base64 0.23.1",
@@ -1200,8 +1200,7 @@ dependencies = [
 [[package]]
 name = "io-imap"
 version = "0.8.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5dda12297289e689f40fc2dd288dfb6be078bac9ded42cc2a9e854e0d8e84e2b"
+source = "git+https://github.com/memjar/io-imap?rev=a0d6100626f864c3cae2f75e34587ae7a6557fea#a0d6100626f864c3cae2f75e34587ae7a6557fea"
 dependencies = [
  "anyhow",
  "base64 0.23.1",
@@ -1218,7 +1217,7 @@ dependencies = [
 [[package]]
 name = "io-jmap"
 version = "0.6.0"
-source = "git+https://github.com/pimalaya/io-jmap?rev=919eab465ab620b323f9191ab8de2f640bc4a1d2#919eab465ab620b323f9191ab8de2f640bc4a1d2"
+source = "git+https://github.com/memjar/io-jmap?rev=919eab465ab620b323f9191ab8de2f640bc4a1d2#919eab465ab620b323f9191ab8de2f640bc4a1d2"
 dependencies = [
  "anyhow",
  "io-http",
@@ -1248,8 +1247,7 @@ dependencies = [
 [[package]]
 name = "io-maildir"
 version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d790ef6241fdaefdf2c18035d7e38ceae51a04f0314067e9c65bc934f2a34bb7"
+source = "git+https://github.com/memjar/io-maildir?rev=7c7aafc3bba6538cd633023eca5356f0def1134d#7c7aafc3bba6538cd633023eca5356f0def1134d"
 dependencies = [
  "gethostname",
  "log",
@@ -1291,7 +1289,7 @@ dependencies = [
 [[package]]
 name = "io-msgraph"
 version = "0.6.0"
-source = "git+https://github.com/pimalaya/io-msgraph?rev=2ae26370aefa671c16316dbad98107634436bce6#2ae26370aefa671c16316dbad98107634436bce6"
+source = "git+https://github.com/memjar/io-msgraph?rev=2ae26370aefa671c16316dbad98107634436bce6#2ae26370aefa671c16316dbad98107634436bce6"
 dependencies = [
  "anyhow",
  "base64 0.23.1",
@@ -1330,7 +1328,7 @@ dependencies = [
 [[package]]
 name = "io-pimdir"
 version = "0.8.0"
-source = "git+https://github.com/pimalaya/io-pimdir?rev=0c701447473a03e5cf9effcd0039a49a78419c4d#0c701447473a03e5cf9effcd0039a49a78419c4d"
+source = "git+https://github.com/memjar/io-pimdir?rev=0c701447473a03e5cf9effcd0039a49a78419c4d#0c701447473a03e5cf9effcd0039a49a78419c4d"
 dependencies = [
  "blake3",
  "encoding_rs",
@@ -1350,8 +1348,7 @@ dependencies = [
 [[package]]
 name = "io-proxy"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ea1200e73a98f7a2500af468bb7857a1c78b5b4b453c8d69760c2a61b9df5303"
+source = "git+https://github.com/memjar/io-proxy?rev=d80a50f349ea6270769ec37f54661ad797f153b5#d80a50f349ea6270769ec37f54661ad797f153b5"
 dependencies = [
  "base64 0.23.1",
  "log",
@@ -1361,8 +1358,7 @@ dependencies = [
 [[package]]
 name = "io-sasl"
 version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "68c646c1b97cc26d3ffbffac5db3a242f5aa58f77d0cfe4df986df68c926949d"
+source = "git+https://github.com/memjar/io-sasl?rev=75d38a8fd09d8376b8f0337c6aa770051417a7b6#75d38a8fd09d8376b8f0337c6aa770051417a7b6"
 dependencies = [
  "base64 0.23.1",
  "hmac",
@@ -1378,8 +1374,7 @@ dependencies = [
 [[package]]
 name = "io-smtp"
 version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "54db4f8a0730a0f604c35b4c620310715823b01fa3d561ab5b830ddd453d95b7"
+source = "git+https://github.com/memjar/io-smtp?rev=e8f67c167823ecdff156d4a0d8fdcfe0a7d7499c#e8f67c167823ecdff156d4a0d8fdcfe0a7d7499c"
 dependencies = [
  "anyhow",
  "base64 0.23.1",
@@ -1718,14 +1713,14 @@ dependencies = [
 
 [[package]]
 name = "mime"
-version = "0.3.17"
+version = "0.3.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6877bb514081ee2a7ff5ef9de3281f14a4dd4bceac4c09388074a6b5df8a139a"
+checksum = "d5848f5a9e8117cf94f2f90faac24a87ff81600ff8628c1e3deaab572e76bfa1"
 
 [[package]]
 name = "mime-rs"
 version = "0.0.1"
-source = "git+https://github.com/pimalaya/mime-rs?rev=d7ea03296a197647a6effeb593a8528b47bdb0ed#d7ea03296a197647a6effeb593a8528b47bdb0ed"
+source = "git+https://github.com/memjar/mime-rs?rev=d7ea03296a197647a6effeb593a8528b47bdb0ed#d7ea03296a197647a6effeb593a8528b47bdb0ed"
 dependencies = [
  "base64-codec",
  "encoding_rs",
@@ -1973,8 +1968,7 @@ checksum = "9b4f627cb1b25917193a259e49bdad08f671f8d9708acfd5fe0a8c1455d87220"
 [[package]]
 name = "pimalaya-cli"
 version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3fe9eda0c6d281d896f4bbb0e88fa2b88f5ae3bfc8daab083de922959e5d549f"
+source = "git+https://github.com/memjar/cli?rev=4c9a6b5998555dac338601b1c8de3ce2d15207a9#4c9a6b5998555dac338601b1c8de3ce2d15207a9"
 dependencies = [
  "anyhow",
  "base64 0.23.1",
@@ -2000,8 +1994,7 @@ dependencies = [
 [[package]]
 name = "pimalaya-config"
 version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8ea46595a4484b0a6e8af89ee9597d5d10cd7ccec39442137aafc969f0a5587a"
+source = "git+https://github.com/memjar/config?rev=7963c5b7bce4e49e93d9bca706fa2ff7d68aadfb#7963c5b7bce4e49e93d9bca706fa2ff7d68aadfb"
 dependencies = [
  "anyhow",
  "dirs 7.0.0",
@@ -2016,8 +2009,7 @@ dependencies = [
 [[package]]
 name = "pimalaya-stream"
 version = "0.3.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b327ad009344854c74da2a96956f312241ffb90d8680159736d2303d50ae5cf2"
+source = "git+https://github.com/memjar/stream?rev=966def319f71dcfa5233a0b09ee728148350023f#966def319f71dcfa5233a0b09ee728148350023f"
 dependencies = [
  "anyhow",
  "io-proxy",
@@ -2097,7 +2089,7 @@ dependencies = [
 [[package]]
 name = "quoted-printable-codec"
 version = "0.0.1"
-source = "git+https://github.com/pimalaya/quoted-printable-codec?rev=d63612b0f9c046717e183e3be534c98f300d913a#d63612b0f9c046717e183e3be534c98f300d913a"
+source = "git+https://github.com/memjar/quoted-printable-codec?rev=d63612b0f9c046717e183e3be534c98f300d913a#d63612b0f9c046717e183e3be534c98f300d913a"
 dependencies = [
  "simd-cpu",
 ]
@@ -2591,7 +2583,7 @@ dependencies = [
 [[package]]
 name = "simd-cpu"
 version = "0.0.1"
-source = "git+https://github.com/pimalaya/simd-cpu?rev=f2eb72cff2fafad8ae135e00685bc19f9e80e5cc#f2eb72cff2fafad8ae135e00685bc19f9e80e5cc"
+source = "git+https://github.com/memjar/simd-cpu?rev=f2eb72cff2fafad8ae135e00685bc19f9e80e5cc#f2eb72cff2fafad8ae135e00685bc19f9e80e5cc"
 
 [[package]]
 name = "simd_cesu8"
@@ -2765,9 +2757,9 @@ checksum = "fd3ca314f692efd6c868f8408f53fe444634a845f96c028b97d35f6a1f79f0ee"
 
 [[package]]
 name = "toml"
-version = "1.1.8+spec-1.1.0"
+version = "1.2.0+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "20489e00e4d8741d6be680764cc12e270655e375a20d1011e844a9c3379e678d"
+checksum = "c5ffcdf8f50436dbbfd675c1fe1b8e0854f42b7defea8584bdebe1aee900e561"
 dependencies = [
  "indexmap",
  "serde_core",
@@ -2798,9 +2790,9 @@ dependencies = [
 
 [[package]]
 name = "toml_writer"
-version = "1.1.3+spec-1.1.0"
+version = "1.2.0+spec-1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "06bdbd8cfc056b8d2e2e85f29b56a3bdbecb527cef81eb39e3e7b98af4652770"
+checksum = "009dbb7700f11c55ef83aebbe4c0e9cf1f1ac0844bd8d6f00dc38f302026e13a"
 
 [[package]]
 name = "typenum"
@@ -3167,9 +3159,9 @@ checksum = "589f6da84c646204747d1270a2a5661ea66ed1cced2631d546fdfb155959f9ec"
 
 [[package]]
 name = "winnow"
-version = "1.0.4"
+version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "23b97319f7b8343df12cc98938e5c3eb436064524c8d2b4e30a1d3a36eecdf81"
+checksum = "8c3b93199df0ab874cdf0c6a94f0a0dc3423fe41f1cafb62b8bd7b1deb277aef"
 
 [[package]]
 name = "writeable"

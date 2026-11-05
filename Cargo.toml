@@ -67,7 +67,7 @@ io-pimdir = { version = "0.8", default-features = false, features = ["client"], 
 io-sasl = { version = "0.1", default-features = false, features = ["scram"] }
 io-smtp = { version = "0.6", default-features = false, optional = true }
 log = "0.4"
-mime-rs = { version = "0.0.1", git = "https://github.com/pimalaya/mime-rs", rev = "d7ea03296a197647a6effeb593a8528b47bdb0ed", optional = true }
+mime-rs = { version = "0.0.1", git = "https://github.com/memjar/mime-rs", rev = "d7ea03296a197647a6effeb593a8528b47bdb0ed", optional = true }
 mime_guess = "2"
 open = "5"
 percent-encoding = "2"
@@ -89,8 +89,33 @@ url = { version = "2.2", features = ["serde"] }
 uds_windows = "1"
 
 [patch.crates-io]
-ical-rs = { git = "https://github.com/pimalaya/ical", rev = "99b92736a6a076c72936fac29c9b85a5168e4c2f" }
-io-http = { git = "https://github.com/pimalaya/io-http", rev = "e1815307771c1ec65a86b77256d46c33241d3038" }
-io-jmap = { git = "https://github.com/pimalaya/io-jmap", rev = "919eab465ab620b323f9191ab8de2f640bc4a1d2" }
-io-msgraph = { git = "https://github.com/pimalaya/io-msgraph", rev = "2ae26370aefa671c16316dbad98107634436bce6" }
-io-pimdir = { git = "https://github.com/pimalaya/io-pimdir", rev = "0c701447473a03e5cf9effcd0039a49a78419c4d" }
+# AXE mirrors of the crates this build resolves today, each pinned to the exact
+# revision Cargo.lock recorded before the move. Nothing fetches from a third
+# party's repository.
+ical-rs = { git = "https://github.com/memjar/ical", rev = "99b92736a6a076c72936fac29c9b85a5168e4c2f" }
+io-http = { git = "https://github.com/memjar/io-http", rev = "e1815307771c1ec65a86b77256d46c33241d3038" }
+io-jmap = { git = "https://github.com/memjar/io-jmap", rev = "919eab465ab620b323f9191ab8de2f640bc4a1d2" }
+io-msgraph = { git = "https://github.com/memjar/io-msgraph", rev = "2ae26370aefa671c16316dbad98107634436bce6" }
+io-pimdir = { git = "https://github.com/memjar/io-pimdir", rev = "0c701447473a03e5cf9effcd0039a49a78419c4d" }
+pimalaya-cli = { git = "https://github.com/memjar/cli", rev = "4c9a6b5998555dac338601b1c8de3ce2d15207a9" }
+pimalaya-config = { git = "https://github.com/memjar/config", rev = "7963c5b7bce4e49e93d9bca706fa2ff7d68aadfb" }
+pimalaya-stream = { git = "https://github.com/memjar/stream", rev = "966def319f71dcfa5233a0b09ee728148350023f" }
+io-imap = { git = "https://github.com/memjar/io-imap", rev = "a0d6100626f864c3cae2f75e34587ae7a6557fea" }
+io-smtp = { git = "https://github.com/memjar/io-smtp", rev = "e8f67c167823ecdff156d4a0d8fdcfe0a7d7499c" }
+io-sasl = { git = "https://github.com/memjar/io-sasl", rev = "75d38a8fd09d8376b8f0337c6aa770051417a7b6" }
+io-maildir = { git = "https://github.com/memjar/io-maildir", rev = "7c7aafc3bba6538cd633023eca5356f0def1134d" }
+io-proxy = { git = "https://github.com/memjar/io-proxy", rev = "d80a50f349ea6270769ec37f54661ad797f153b5" }
+
+# Transitive git deps the mirrored crates name by their old source; patched to
+# the same content under memjar.
+[patch."https://github.com/pimalaya/base64-codec"]
+base64-codec = { git = "https://github.com/memjar/base64-codec", rev = "d39f6b90f02abf8eb91ef041b7601320df8def99" }
+
+[patch."https://github.com/pimalaya/quoted-printable-codec"]
+quoted-printable-codec = { git = "https://github.com/memjar/quoted-printable-codec", rev = "d63612b0f9c046717e183e3be534c98f300d913a" }
+
+[patch."https://github.com/pimalaya/simd-cpu"]
+simd-cpu = { git = "https://github.com/memjar/simd-cpu", rev = "f2eb72cff2fafad8ae135e00685bc19f9e80e5cc" }
+
+[patch."https://github.com/pimalaya/mime-rs"]
+mime-rs = { git = "https://github.com/memjar/mime-rs", rev = "d7ea03296a197647a6effeb593a8528b47bdb0ed" }
