@@ -9,7 +9,7 @@
       url = "github:nix-community/fenix/monthly";
     };
     axe = {
-      url = "github:memjar/nix";
+      url = "github:axetechnologies/nix";
       flake = false;
     };
   };

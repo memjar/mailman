@@ -33,7 +33,7 @@ on:
 
 jobs:
   release-on-demand:
-    uses: memjar/nix/.github/workflows/release-on-demand.yml@master
+    uses: axetechnologies/nix/.github/workflows/release-on-demand.yml@master
     secrets: inherit
     with:
       project: mailman
