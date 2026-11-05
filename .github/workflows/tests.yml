@@ -2,7 +2,7 @@ name: Tests
 
 on:
   push:
-    branches: [main]
+    branches: ["*"]
   pull_request:
     branches: [main]
 
@@ -17,7 +17,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
-          components: [clippy, rustfmt]
+          components: clippy,rustfmt
       - name: Cache dependencies
         uses: actions/cache@v3
         with:
