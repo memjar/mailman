@@ -278,7 +278,7 @@ mod tests {
     #[test]
     fn template_decodes_headers_and_body_and_quotes_names() {
         let raw = concat!(
-            "From: =?utf-8?q?Cl=C3=A9ment?= <c@example.org>\r\n",
+            "From: =?utf-8?q?Ren=C3=A9e?= <r@example.org>\r\n",
             "To: a@example.org, Bob <b@example.org>, \"Doe, J.\" <j@example.org>\r\n",
             "Subject: =?utf-8?q?R=C3=A9union?=\r\n",
             "Content-Type: text/plain; charset=utf-8\r\n",
@@ -289,7 +289,7 @@ mod tests {
 
         let template = MessageTemplateOutput::parse(raw.as_bytes()).unwrap();
 
-        assert_eq!(template.from.as_deref(), Some("Clément <c@example.org>"));
+        assert_eq!(template.from.as_deref(), Some("Renée <r@example.org>"));
         assert_eq!(
             template.to,
             [

@@ -30,18 +30,18 @@ fn run(blocks: &str, args: &[&str]) -> (bool, Value) {
     let account = format!("[accounts.a]\ndefault = true\nemail = \"a@example.org\"\n{blocks}");
     fs::write(&config, account).unwrap();
 
-    let output = himalaya(dir.path(), &config, args);
+    let output = client(dir.path(), &config, args);
     let json = serde_json::from_slice(&output.stdout).unwrap_or(Value::Null);
     (output.status.success(), json)
 }
 
-fn himalaya(home: &Path, config: &Path, args: &[&str]) -> std::process::Output {
+fn client(home: &Path, config: &Path, args: &[&str]) -> std::process::Output {
     Command::new(env!("CARGO_BIN_EXE_mailman"))
         .args(["-c", config.to_str().unwrap(), "--json"])
         .args(args)
         .env("HOME", home)
         .env("XDG_CONFIG_HOME", home)
-        .env_remove("HIMALAYA_CONFIG")
+        .env_remove("MAILMAN_CONFIG")
         .env_remove("XDG_CONFIG_DIRS")
         .stdin(Stdio::null())
         .output()

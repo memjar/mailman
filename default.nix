@@ -1,6 +1,6 @@
 {
   nixpkgs ? <nixpkgs>,
-  pimalaya ? import (fetchTarball "https://github.com/pimalaya/nix/archive/master.tar.gz"),
+  pimalaya ? import (fetchTarball "https://github.com/memjar/nix/archive/master.tar.gz"),
   ...
 }@args:
 

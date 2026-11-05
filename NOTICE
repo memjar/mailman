@@ -1,0 +1,60 @@
+mailman
+Copyright (c) 2026 AXE <oss@axe.onl>
+
+This product includes software developed by AXE, licensed under the
+Apache License, Version 2.0 and the MIT License.
+
+======================================================================
+ Third-party attribution
+======================================================================
+
+mailman is a fork of Himalaya, Copyright (c) 2022-2026 soywod
+<https://github.com/soywod/himalaya>. This file is the attribution those
+licenses require. LICENSE-MIT and LICENSE-APACHE in this repository carry
+AXE's own copyright only.
+
+The upstream MIT licence text, reproduced verbatim, because §4 of that
+licence requires the copyright notice and this permission notice to travel
+together with any copy or substantial portion of the software:
+
+  MIT License
+
+  Copyright (c) 2022-2026 soywod <pimalaya.org@posteo.net>
+
+  Permission is hereby granted, free of charge, to any person obtaining a
+  copy of this software and associated documentation files (the
+  "Software"), to deal in the Software without restriction, including
+  without limitation the rights to use, copy, modify, merge, publish,
+  distribute, sublicense, and/or sell copies of the Software, and to
+  permit persons to whom the Software is furnished to do so, subject to
+  the following conditions:
+
+  The above copyright notice and this permission notice shall be included
+  in all copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+  MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+  CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+  TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+  SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+The fork renames the product, replaces its CI, logos and documentation,
+trims the default feature set, and adds the `init` template writer, the
+cross-platform release pipeline and the client onboarding guide.
+
+It links against these third-party crates, each under its own license:
+
+  pimalaya-cli, pimalaya-config, pimalaya-stream   MIT OR Apache-2.0
+  io-imap, io-smtp, io-sasl, io-maildir, io-mbox   MIT OR Apache-2.0
+  io-jmap, io-gmail, io-msgraph, io-pimdir         MIT OR Apache-2.0
+  io-http, ical-rs, mime-rs                        MIT OR Apache-2.0
+  serde, serde_json, clap, anyhow, chrono, toml    MIT OR Apache-2.0
+  rusqlite (bundled SQLite)                        MIT
+  ring, rustls                                     Apache-2.0 OR MIT
+  schemars, secrecy, log, url, base64              MIT OR Apache-2.0
+
+The full list with versions is in Cargo.lock; the license texts shipped
+inside each dependency are the authoritative terms. SQLite is vendored
+from source (the `vendored` feature).

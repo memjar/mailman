@@ -17,7 +17,7 @@ use tempfile::TempDir;
 
 /// Runs `--json <args>` against a Maildir account rooted at `root`,
 /// returning the JSON printed, failing on a non-zero exit.
-fn himalaya(dir: &Path, root: &Path, args: &[&str]) -> Value {
+fn client(dir: &Path, root: &Path, args: &[&str]) -> Value {
     let config = dir.join("config.toml");
     let account = format!(
         "[accounts.a]\ndefault = true\nemail = \"a@example.org\"\nmaildir.root = \"{}\"\n",
@@ -30,7 +30,7 @@ fn himalaya(dir: &Path, root: &Path, args: &[&str]) -> Value {
         .args(args)
         .env("HOME", dir)
         .env("XDG_CONFIG_HOME", dir)
-        .env_remove("HIMALAYA_CONFIG")
+        .env_remove("MAILMAN_CONFIG")
         .env_remove("XDG_CONFIG_DIRS")
         .stdin(Stdio::null())
         .output()
@@ -54,7 +54,7 @@ fn a_mailbox_is_created_renamed_under_its_parent_and_deleted() {
         fs::create_dir_all(root.join("Archive").join(sub)).unwrap();
     }
 
-    let created = himalaya(
+    let created = client(
         dir.path(),
         &root,
         &["mailbox", "create", "2025", "--parent", "Archive"],
@@ -62,7 +62,7 @@ fn a_mailbox_is_created_renamed_under_its_parent_and_deleted() {
     assert_eq!(created["name"], "2025");
     assert!(root.join("Archive/2025/cur").is_dir(), "{created}");
 
-    let renamed = himalaya(
+    let renamed = client(
         dir.path(),
         &root,
         &["mailbox", "rename", "Archive/2025", "2026"],
@@ -71,7 +71,7 @@ fn a_mailbox_is_created_renamed_under_its_parent_and_deleted() {
     assert!(root.join("Archive/2026/cur").is_dir(), "{renamed}");
     assert!(!root.join("Archive/2025").exists(), "{renamed}");
 
-    let deleted = himalaya(dir.path(), &root, &["mailbox", "delete", "Archive/2026"]);
+    let deleted = client(dir.path(), &root, &["mailbox", "delete", "Archive/2026"]);
     assert!(deleted["id"].is_string(), "{deleted}");
     assert!(!root.join("Archive/2026").exists(), "{deleted}");
 }
