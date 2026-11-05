@@ -106,6 +106,7 @@ mod error;
 mod gmail;
 #[cfg(feature = "imap")]
 mod imap;
+mod init_templates;
 #[cfg(feature = "jmap")]
 mod jmap;
 mod json_schema;
