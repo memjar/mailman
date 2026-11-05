@@ -1648,7 +1648,7 @@ dependencies = [
 
 [[package]]
 name = "mailman"
-version = "2.2.1"
+version = "2.2.2"
 dependencies = [
  "anyhow",
  "ariadne",
