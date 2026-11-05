@@ -28,6 +28,22 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+      - name: No third-party git sources (AXE mirrors only)
+        run: |
+          status=0
+          # A fetch target looks like: git = "https://github.com/<owner>/<repo>".
+          # The [patch."https://github.com/pimalaya/..."] table headers are not
+          # fetch targets — they name the source being redirected — so they stay.
+          if grep -nE 'git *= *"https://github\.(com|localhost)/(pimalaya|soywod)/' Cargo.toml; then
+            echo "::error::Cargo.toml fetches a dependency from a third-party repository; mirror it under memjar (docs/DEPENDENCIES.md)"
+            status=1
+          fi
+          if grep -nE 'git\+https://github\.com/(pimalaya|soywod)/' Cargo.lock; then
+            echo "::error::Cargo.lock resolved a dependency from a third-party repository"
+            status=1
+          fi
+          if [ "$status" = 0 ]; then echo "every git dependency resolves to github.com/memjar"; fi
+          exit $status
       - name: Build
         run: cargo build --verbose
       - name: Run tests
