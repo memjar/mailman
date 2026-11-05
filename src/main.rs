@@ -1,15 +1,12 @@
 //! # Mailman
 //!
 //! A CLI to manage emails, and the crate architecture (header-001): the
-//! behavioural contract lives in cairn/spec/, the manual provider test
-//! reports in cairn/spec/testing/, the history in cairn/log/, the shared
-//! conventions in the [Pimalaya ARCHITECTURE][pimalaya].
-//!
-//! [pimalaya]: https://github.com/pimalaya/.github/blob/master/ARCHITECTURE.md
+//! behavioural contract lives in `_axe/spec/`, the change proposals in
+//! `_axe/changes/` and the dated history in `_axe/log/`.
 //!
 //! ## Place in the stack
 //!
-//! An application, the top of the Pimalaya stack: it writes no protocol
+//! An application, the top of the stack: it writes no protocol
 //! and no storage logic of its own and ships no library target, only this
 //! binary. A thin shell driving the sans-I/O io-* libraries below it,
 //! consuming their blocking `*Std` clients and rendering the results.

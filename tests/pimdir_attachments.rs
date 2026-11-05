@@ -195,12 +195,12 @@ fn placement(
 }
 
 /// The binary, configured with one pimdir account over `store`.
-struct Himalaya {
+struct MailmanCli {
     home: TempDir,
     config: PathBuf,
 }
 
-impl Himalaya {
+impl MailmanCli {
     fn new(fill: impl FnOnce(&Path)) -> Self {
         let home = TempDir::new().unwrap();
         let root = home.path().join("store");
@@ -225,7 +225,7 @@ impl Himalaya {
             .args(args)
             .env("HOME", self.home.path())
             .env("XDG_CONFIG_HOME", self.home.path())
-            .env_remove("HIMALAYA_CONFIG")
+            .env_remove("MAILMAN_CONFIG")
             .env_remove("XDG_CONFIG_DIRS")
             .stdin(Stdio::null());
         cmd
@@ -264,9 +264,9 @@ fn names(page: &Value) -> Vec<&str> {
 
 #[test]
 fn every_file_lists_newest_message_first_with_its_message() {
-    let himalaya = Himalaya::new(store);
+    let client = MailmanCli::new(store);
 
-    let page = himalaya.json(&["pimdir", "attachment", "list"]);
+    let page = client.json(&["pimdir", "attachment", "list"]);
     assert_eq!(
         names(&page),
         [
@@ -302,19 +302,19 @@ fn every_file_lists_newest_message_first_with_its_message() {
     assert_eq!(page["attachments"][2]["section"], "2");
     assert_eq!(page["attachments"][3]["mailbox"], "imap/Archive");
 
-    let table = String::from_utf8(ok(himalaya.run(&["pimdir", "attachment", "list"]))).unwrap();
+    let table = String::from_utf8(ok(client.run(&["pimdir", "attachment", "list"]))).unwrap();
     assert!(table.contains("Facture-Octobre.pdf"), "{table}");
     assert!(!table.contains("Next page"), "{table}");
 }
 
 #[test]
 fn a_file_s_message_is_the_one_envelope_list_shows() {
-    let himalaya = Himalaya::new(store);
-    let page = himalaya.json(&["pimdir", "attachment", "list"]);
+    let client = MailmanCli::new(store);
+    let page = client.json(&["pimdir", "attachment", "list"]);
 
     for file in page["attachments"].as_array().unwrap() {
         let mailbox = file["mailbox"].as_str().unwrap();
-        let envelopes = himalaya.json(&["envelope", "list", "-m", mailbox]);
+        let envelopes = client.json(&["envelope", "list", "-m", mailbox]);
         let envelope = envelopes["envelopes"]
             .as_array()
             .unwrap()
@@ -327,12 +327,12 @@ fn a_file_s_message_is_the_one_envelope_list_shows() {
 
 #[test]
 fn a_file_s_bytes_are_its_message_s_section() {
-    let himalaya = Himalaya::new(store);
-    let page = himalaya.json(&["pimdir", "attachment", "list"]);
+    let client = MailmanCli::new(store);
+    let page = client.json(&["pimdir", "attachment", "list"]);
     let file = &page["attachments"][1];
     assert_eq!(file["name"], "dune.png");
 
-    let raw = ok(himalaya.run(&[
+    let raw = ok(client.run(&[
         "message",
         "read",
         "--raw",
@@ -341,7 +341,7 @@ fn a_file_s_bytes_are_its_message_s_section() {
         file["messageId"].as_str().unwrap(),
     ]));
 
-    let mut parse = himalaya
+    let mut parse = client
         .command(&[
             "--json",
             "message",
@@ -365,7 +365,7 @@ fn a_file_s_bytes_are_its_message_s_section() {
 
 #[test]
 fn pages_follow_one_another_by_their_token() {
-    let himalaya = Himalaya::new(store);
+    let client = MailmanCli::new(store);
 
     let mut seen = Vec::new();
     let mut token: Option<String> = None;
@@ -375,7 +375,7 @@ fn pages_follow_one_another_by_their_token() {
         if let Some(token) = &token {
             args.extend(["--page-token", token.as_str()]);
         }
-        let page = himalaya.json(&args);
+        let page = client.json(&args);
         seen.extend(names(&page).into_iter().map(String::from));
         pages += 1;
         match page["nextPage"].as_str() {
@@ -396,20 +396,14 @@ fn pages_follow_one_another_by_their_token() {
     );
 
     // NOTE: a page exactly full of the last files names no next page.
-    let page = himalaya.json(&["pimdir", "attachment", "list", "-s", "4"]);
+    let page = client.json(&["pimdir", "attachment", "list", "-s", "4"]);
     assert_eq!(page["nextPage"], Value::Null);
 
-    let table = String::from_utf8(ok(himalaya.run(&[
-        "pimdir",
-        "attachment",
-        "list",
-        "-s",
-        "1",
-    ])))
-    .unwrap();
+    let table =
+        String::from_utf8(ok(client.run(&["pimdir", "attachment", "list", "-s", "1"]))).unwrap();
     assert!(table.contains("Next page: "), "{table}");
 
-    let output = himalaya.run(&[
+    let output = client.run(&[
         "--json",
         "pimdir",
         "attachment",
@@ -430,11 +424,11 @@ fn pages_follow_one_another_by_their_token() {
 
 #[test]
 fn a_search_finds_files_by_name_and_by_sender() {
-    let himalaya = Himalaya::new(store);
+    let client = MailmanCli::new(store);
     let search = |words: &[&str]| {
         let mut args = vec!["pimdir", "attachment", "search"];
         args.extend_from_slice(words);
-        himalaya.json(&args)
+        client.json(&args)
     };
 
     assert_eq!(
@@ -460,7 +454,7 @@ fn a_search_finds_files_by_name_and_by_sender() {
 #[test]
 fn an_account_holding_no_attachments_lists_none() {
     // NOTE: mail listed with no body: no attachments collection at all.
-    let himalaya = Himalaya::new(|dir| {
+    let client = MailmanCli::new(|dir| {
         let mut store = PimdirStore::open(dir)
             .unwrap()
             .for_account(ACCOUNT)
@@ -487,7 +481,7 @@ fn an_account_holding_no_attachments_lists_none() {
         &["pimdir", "attachment", "search", "a"][..],
     ] {
         assert_eq!(
-            himalaya.json(args),
+            client.json(args),
             json!({ "attachments": [], "nextPage": null })
         );
     }

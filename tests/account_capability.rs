@@ -32,7 +32,7 @@ fn capabilities(args: &[&str]) -> Vec<Value> {
         .args(["account", "capability"])
         .env("HOME", dir.path())
         .env("XDG_CONFIG_HOME", dir.path())
-        .env_remove("HIMALAYA_CONFIG")
+        .env_remove("MAILMAN_CONFIG")
         .env_remove("XDG_CONFIG_DIRS")
         .stdin(Stdio::null())
         .output()

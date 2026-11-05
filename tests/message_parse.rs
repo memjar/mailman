@@ -64,11 +64,11 @@ const MIXED: &[u8] = b"From: =?utf-8?Q?Ren=C3=A9?= <rene@example.org>\r\n\
     --m--\r\n";
 
 /// The binary, run with no configuration within reach.
-struct Himalaya {
+struct MailmanCli {
     home: TempDir,
 }
 
-impl Himalaya {
+impl MailmanCli {
     fn new() -> Self {
         Self {
             home: TempDir::new().unwrap(),
@@ -80,7 +80,7 @@ impl Himalaya {
         cmd.args(args)
             .env("HOME", self.home.path())
             .env("XDG_CONFIG_HOME", self.home.path())
-            .env_remove("HIMALAYA_CONFIG")
+            .env_remove("MAILMAN_CONFIG")
             .env_remove("XDG_CONFIG_DIRS")
             .stdin(Stdio::null());
         cmd
@@ -126,11 +126,11 @@ fn json(output: Output) -> serde_json::Value {
 
 #[test]
 fn runs_with_no_configuration_from_a_path_and_from_stdin() {
-    let himalaya = Himalaya::new();
-    let path = himalaya.eml("m.eml", MIXED);
+    let client = MailmanCli::new();
+    let path = client.eml("m.eml", MIXED);
     let path = path.to_str().unwrap();
 
-    let view = json(himalaya.run(&["--json", "message", "parse", path]));
+    let view = json(client.run(&["--json", "message", "parse", path]));
     assert_eq!(view["headers"]["subject"], "Caf\u{e9}");
     assert_eq!(view["text"], "Un caf\u{e9} ?");
     let ids: Vec<&str> = view["parts"]
@@ -141,33 +141,33 @@ fn runs_with_no_configuration_from_a_path_and_from_stdin() {
         .collect();
     assert_eq!(ids, ["4", "5", "6", "7", "8"]);
 
-    let stdin = json(himalaya.run_stdin(&["--json", "message", "parse"], MIXED));
-    let dash = json(himalaya.run_stdin(&["--json", "message", "parse", "-"], MIXED));
+    let stdin = json(client.run_stdin(&["--json", "message", "parse"], MIXED));
+    let dash = json(client.run_stdin(&["--json", "message", "parse", "-"], MIXED));
     assert_eq!(stdin, view);
     assert_eq!(dash, view);
 
-    let text = ok(himalaya.run(&["message", "parse", path]));
-    assert_eq!(ok(himalaya.run_stdin(&["message", "parse"], MIXED)), text);
+    let text = ok(client.run(&["message", "parse", path]));
+    assert_eq!(ok(client.run_stdin(&["message", "parse"], MIXED)), text);
 
     // NOTE: nothing was looked for, so nothing was offered or written.
-    assert_eq!(fs::read_dir(himalaya.home.path()).unwrap().count(), 1);
+    assert_eq!(fs::read_dir(client.home.path()).unwrap().count(), 1);
 }
 
 #[test]
 fn a_part_comes_out_as_its_decoded_bytes() {
-    let himalaya = Himalaya::new();
-    let path = himalaya.eml("m.eml", MIXED);
+    let client = MailmanCli::new();
+    let path = client.eml("m.eml", MIXED);
     let path = path.to_str().unwrap();
 
-    let bytes = ok(himalaya.run(&["message", "parse", "--part", "7", path]));
+    let bytes = ok(client.run(&["message", "parse", "--part", "7", path]));
     assert_eq!(bytes, b"\x00\x01\xff\xfe\x00\x0a\x0d");
 
     // NOTE: a Latin-1 body keeps its charset, only the transfer
     // encoding being undone.
-    let body = ok(himalaya.run_stdin(&["message", "parse", "--part", "4"], MIXED));
+    let body = ok(client.run_stdin(&["message", "parse", "--part", "4"], MIXED));
     assert_eq!(body, b"Un caf\xe9 ?");
 
-    let part = json(himalaya.run(&["--json", "message", "parse", "--part", "7", path]));
+    let part = json(client.run(&["--json", "message", "parse", "--part", "7", path]));
     assert_eq!(
         part,
         serde_json::json!({
@@ -182,12 +182,12 @@ fn a_part_comes_out_as_its_decoded_bytes() {
 
 #[test]
 fn an_unknown_or_container_part_is_refused() {
-    let himalaya = Himalaya::new();
-    let path = himalaya.eml("m.eml", MIXED);
+    let client = MailmanCli::new();
+    let path = client.eml("m.eml", MIXED);
     let path = path.to_str().unwrap();
 
     for id in ["1", "2", "9"] {
-        let output = himalaya.run(&["--json", "message", "parse", "--part", id, path]);
+        let output = client.run(&["--json", "message", "parse", "--part", id, path]);
         assert!(!output.status.success());
         let err: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
         let err = err["error"].as_str().unwrap();
@@ -197,15 +197,15 @@ fn an_unknown_or_container_part_is_refused() {
 
 #[test]
 fn a_blank_source_is_refused_naming_it() {
-    let himalaya = Himalaya::new();
-    let path = himalaya.eml("blank.eml", b" \r\n\t\n");
+    let client = MailmanCli::new();
+    let path = client.eml("blank.eml", b" \r\n\t\n");
 
-    let output = himalaya.run(&["--json", "message", "parse", path.to_str().unwrap()]);
+    let output = client.run(&["--json", "message", "parse", path.to_str().unwrap()]);
     assert!(!output.status.success());
     let err: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
     assert!(err["error"].as_str().unwrap().contains("blank.eml"));
 
-    let output = himalaya.run_stdin(&["--json", "message", "parse", "-"], b"\n\n");
+    let output = client.run_stdin(&["--json", "message", "parse", "-"], b"\n\n");
     assert!(!output.status.success());
     let err: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
     assert_eq!(err["error"], "The message read from stdin is empty");
@@ -213,8 +213,8 @@ fn a_blank_source_is_refused_naming_it() {
 
 #[test]
 fn a_part_is_named_by_its_imap_section_too() {
-    let himalaya = Himalaya::new();
-    let path = himalaya.eml("m.eml", MIXED);
+    let client = MailmanCli::new();
+    let path = client.eml("m.eml", MIXED);
     let path = path.to_str().unwrap();
 
     // NOTE: mixed holds related (1: alternative 1.1, holding 1.1.1 and
@@ -227,18 +227,18 @@ fn a_part_is_named_by_its_imap_section_too() {
         ("3", "8"),
     ] {
         let by_section =
-            json(himalaya.run(&["--json", "message", "parse", "--section", section, path]));
-        let by_id = json(himalaya.run(&["--json", "message", "parse", "--part", id, path]));
+            json(client.run(&["--json", "message", "parse", "--section", section, path]));
+        let by_id = json(client.run(&["--json", "message", "parse", "--part", id, path]));
         assert_eq!(by_section, by_id, "section {section}");
     }
     assert_eq!(
-        ok(himalaya.run_stdin(&["message", "parse", "--section", "2", "-"], MIXED)),
+        ok(client.run_stdin(&["message", "parse", "--section", "2", "-"], MIXED)),
         b"\x00\x01\xff\xfe\x00\x0a\x0d"
     );
 
     // NOTE: containers, a part of the attached message and nothing.
     for section in ["1", "1.1", "3.1", "4", "0", ""] {
-        let output = himalaya.run(&["--json", "message", "parse", "--section", section, path]);
+        let output = client.run(&["--json", "message", "parse", "--section", section, path]);
         assert!(!output.status.success(), "section {section:?}");
         let err: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
         let err = err["error"].as_str().unwrap();
@@ -248,14 +248,14 @@ fn a_part_is_named_by_its_imap_section_too() {
         );
     }
 
-    let output = himalaya.run(&["message", "parse", "--part", "7", "--section", "2", path]);
+    let output = client.run(&["message", "parse", "--part", "7", "--section", "2", path]);
     assert!(!output.status.success());
 
     // NOTE: the body of a message that is not multipart is section 1.
     let single = b"Content-Type: application/pdf\r\n\
         Content-Disposition: attachment; filename=\"a.pdf\"\r\n\
         Content-Transfer-Encoding: base64\r\n\r\nJVBERi0xLjQK\r\n";
-    let part = json(himalaya.run_stdin(
+    let part = json(client.run_stdin(
         &["--json", "message", "parse", "--section", "1", "-"],
         single,
     ));
@@ -265,19 +265,19 @@ fn a_part_is_named_by_its_imap_section_too() {
 
 #[test]
 fn a_message_too_complex_is_refused_with_its_code() {
-    let himalaya = Himalaya::new();
+    let client = MailmanCli::new();
     let mut raw = String::new();
     for n in 0..600 {
         raw.push_str(&format!("X-Line-{n}: {n}\r\n"));
     }
     raw.push_str("Content-Type: text/plain\r\n\r\nbody\r\n");
 
-    let output = himalaya.run_stdin(&["--json", "message", "parse"], raw.as_bytes());
+    let output = client.run_stdin(&["--json", "message", "parse"], raw.as_bytes());
     assert!(!output.status.success());
     let err: serde_json::Value = serde_json::from_slice(&output.stdout).unwrap();
     assert_eq!(err["code"], "message-too-complex");
 
-    let output = himalaya.run_stdin(
+    let output = client.run_stdin(
         &["--json", "message", "parse", "--part", "1"],
         raw.as_bytes(),
     );
@@ -312,22 +312,22 @@ fn maildir(dir: &std::path::Path, messages: &[(&str, &[u8])]) -> PathBuf {
 #[cfg(feature = "maildir")]
 #[test]
 fn the_view_and_parts_are_those_of_message_read() {
-    let himalaya = Himalaya::new();
+    let client = MailmanCli::new();
     let store = TempDir::new().unwrap();
     let plain = b"From: a@example.org\nSubject: LF only\n\nbody\n";
     let config = maildir(store.path(), &[("mixed", MIXED), ("plain", plain)]);
     let config = config.to_str().unwrap();
 
     for (id, raw) in [("mixed", MIXED), ("plain", &plain[..])] {
-        let path = himalaya.eml(&format!("{id}.eml"), raw);
+        let path = client.eml(&format!("{id}.eml"), raw);
         let path = path.to_str().unwrap();
 
-        let read_json = ok(himalaya.run(&["-c", config, "--json", "message", "read", id]));
-        let parse = ok(himalaya.run(&["--json", "message", "parse", path]));
+        let read_json = ok(client.run(&["-c", config, "--json", "message", "read", id]));
+        let parse = ok(client.run(&["--json", "message", "parse", path]));
         assert_eq!(parse, read_json, "{id}");
 
-        let read = ok(himalaya.run(&["-c", config, "message", "read", id]));
-        let parse = ok(himalaya.run_stdin(&["message", "parse"], raw));
+        let read = ok(client.run(&["-c", config, "message", "read", id]));
+        let parse = ok(client.run_stdin(&["message", "parse"], raw));
         assert_eq!(parse, read, "{id}");
 
         let view: serde_json::Value = serde_json::from_slice(&read_json).unwrap();
@@ -341,8 +341,8 @@ fn the_view_and_parts_are_those_of_message_read() {
                 .concat();
                 let parse = [json, &["message", "parse", "--part", part, path]].concat();
                 assert_eq!(
-                    ok(himalaya.run(&parse)),
-                    ok(himalaya.run(&download)),
+                    ok(client.run(&parse)),
+                    ok(client.run(&download)),
                     "{id} part {part} {json:?}",
                 );
             }

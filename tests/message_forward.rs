@@ -4,7 +4,7 @@
 //! holding the source, asserting that the attachments of the source
 //! ride along under their own file names, that `--no-attachments`
 //! leaves them out, and that the quoted body survives both. Regression
-//! coverage for <https://github.com/pimalaya/himalaya/issues/780>.
+//! coverage for <https://github.com/pimalaya/client/issues/780>.
 
 #![cfg(all(backend, feature = "maildir"))]
 
@@ -127,7 +127,7 @@ fn forward(config: &Path, home: &Path, flags: &[&str]) -> String {
         .args(["--body", "ok", "src"])
         .env("HOME", home)
         .env("XDG_CONFIG_HOME", home)
-        .env_remove("HIMALAYA_CONFIG")
+        .env_remove("MAILMAN_CONFIG")
         .env_remove("XDG_CONFIG_DIRS")
         .stdin(Stdio::null())
         .output()
@@ -209,7 +209,7 @@ fn forward_carries_an_attachment_without_a_file_name() {
     for (mime, name) in [
         ("application/octet-stream", "attachment.bin"),
         ("application/pdf", "attachment.pdf"),
-        ("application/x-himalaya-unknown", "attachment"),
+        ("application/x-client-unknown", "attachment"),
     ] {
         let source = String::from_utf8_lossy(SOURCE_WITH_NAMELESS_ATTACHMENT)
             .replace("application/octet-stream", mime);

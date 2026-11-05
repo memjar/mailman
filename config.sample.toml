@@ -445,7 +445,7 @@ imap.sasl.plain.password.raw = "***"
 
 # --------------------------------------------------------------------------------
 # pimdir config
-# https://github.com/pimalaya/pimdir
+# the pimdir crate (see Cargo.lock)
 # --------------------------------------------------------------------------------
 
 # A local pimdir store, a SQLite index beside content-addressed blobs, that the
