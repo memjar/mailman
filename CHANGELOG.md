@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed — AXE fork (mailman)
+
+- Forked from Himalaya as `mailman`: full brand rename, own CI (tests / audit / releases), own logos.
+- Default features trimmed to `rustls-ring, imap, smtp, maildir, vendored`. The heavier backends (jmap, gmail, msgraph, mbox, m2dir, sieve, pimdir) and the wizard remain available as opt-in features: `cargo build --release --features jmap,gmail,...`. The default binary drops from 14 MB to 6.5 MB.
+- Releases publish per-target tarballs (`mailman.<target>.tgz` for aarch64/x86_64 darwin+linux) with `SHA256SUMS`; `install.sh` now resolves them from `github.com/memjar/mailman`.
+- `docs/CLIENT-ONBOARDING.md`: wiring mailman for clients on iCloud, Gmail, and any standard IMAP/SMTP/OAuth server (Stalwart, Fastmail, Posteo), secrets kept in the OS keychain or a command helper, never in the config file.
+
+
 ### Added
 
 - Added `--page-token` to `envelope list` and `envelope search`, which print `nextPage` (the next page number while a page comes back full, `null` otherwise), and to `msgraph messages list`, whose `nextPage` is the `$skip` of Graph's next link.

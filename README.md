@@ -57,6 +57,8 @@
 
 ## Installation
 
+Setting mailman up for a client or an agent — iCloud, Gmail, or any IMAP/SMTP/OAuth server, secrets kept out of the config file: see [docs/CLIENT-ONBOARDING.md](./docs/CLIENT-ONBOARDING.md).
+
 ### Pre-built binary
 
 Mailman can be installed with the installer:
