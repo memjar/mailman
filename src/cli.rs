@@ -27,6 +27,7 @@ use pimalaya_config::toml::TomlConfig;
 use crate::gmail::{cli::GmailCommand, client::build_gmail_client};
 #[cfg(feature = "imap")]
 use crate::imap::{cli::ImapCommand, client::build_imap_client};
+use crate::init_templates::InitCommand;
 #[cfg(feature = "jmap")]
 use crate::jmap::{cli::JmapCommand, client::build_jmap_client};
 #[cfg(feature = "m2dir")]
@@ -172,6 +173,8 @@ pub enum Command {
     Configure(ConfigureCommand),
     #[command(subcommand)]
     Account(AccountCommand),
+    /// Print a ready-to-paste account block (iCloud, Gmail or any IMAP/SMTP).
+    Init(InitCommand),
     #[command(alias = "completions")]
     Completion(CompletionCommand),
     #[command(alias = "manuals")]
@@ -507,6 +510,7 @@ impl Command {
             Self::Completion(cmd) => cmd.execute(printer, Cli::command()),
             Self::Manual(cmd) => cmd.execute(printer, Cli::command()),
             Self::JsonSchema(cmd) => cmd.execute(printer, json_schema::registry()),
+            Self::Init(cmd) => cmd.execute(printer),
         }
     }
 }
