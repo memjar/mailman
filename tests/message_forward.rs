@@ -4,7 +4,7 @@
 //! holding the source, asserting that the attachments of the source
 //! ride along under their own file names, that `--no-attachments`
 //! leaves them out, and that the quoted body survives both. Regression
-//! coverage for <https://github.com/pimalaya/client/issues/780>.
+//! coverage for <https://github.com/memjar/mailman/issues/780>.
 
 #![cfg(all(backend, feature = "maildir"))]
 

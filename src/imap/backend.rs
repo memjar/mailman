@@ -506,7 +506,7 @@ impl ImapClient {
     /// `UID SEARCH` of the requested UIDs still there finds the ones
     /// copied.
     ///
-    /// [#781]: https://github.com/pimalaya/mailman/issues/781
+    /// [#781]: https://github.com/memjar/mailman/issues/781
     fn copied_uids(&mut self, copy_uid: ImapCopyUid, requested: SequenceSet) -> Result<Vec<u32>> {
         match copy_uid {
             Some((_, source_uids, _)) => Ok(source_uids),
@@ -1145,7 +1145,7 @@ mod tests {
 
         /// Mailo's `COPYUID` with the forbidden UIDVALIDITY 0 ([#781]).
         ///
-        /// [#781]: https://github.com/pimalaya/mailman/issues/781
+        /// [#781]: https://github.com/memjar/mailman/issues/781
         fn uidvalidity_zero(matched: &[u32]) -> Option<String> {
             (!matched.is_empty()).then(|| copyuid(0, matched))
         }

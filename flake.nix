@@ -8,15 +8,15 @@
     fenix = {
       url = "github:nix-community/fenix/monthly";
     };
-    pimalaya = {
-      url = "github:pimalaya/nix";
+    axe = {
+      url = "github:memjar/nix";
       flake = false;
     };
   };
 
   outputs =
     inputs:
-    (import inputs.pimalaya).mkFlakeOutputs inputs {
+    (import inputs.axe).mkFlakeOutputs inputs {
       shell = ./shell.nix;
       default = ./default.nix;
     };

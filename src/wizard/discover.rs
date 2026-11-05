@@ -391,7 +391,7 @@ mod tests {
 
     #[test]
     fn account_name_defaults_to_the_first_domain_label() {
-        assert_eq!(default_account_name("clement.douin@posteo.net"), "posteo");
+        assert_eq!(default_account_name("new.user@posteo.net"), "posteo");
         assert_eq!(default_account_name("alice@mail.example.co.uk"), "mail");
         assert_eq!(default_account_name("@posteo.net"), "posteo");
         assert_eq!(default_account_name("posteo.net"), "posteo");

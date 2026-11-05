@@ -55,16 +55,16 @@ v3 changes no configuration key: a v2 configuration loads as it is. What changes
 - **Deep refactor on top of the I/O-free pattern.** No async in the CLI, no backend abstraction. Both the binary and the underlying libraries are simpler.
 - **Thinner shared API.** Just enough surface for interfaces (TUI, plugins) to drive any backend, kept deliberately small so it does not break on every release.
 - **Protocol-specific commands** (`mailman imap/jmap/maildir/smtp …`) expose the full native capability of each protocol.
-- **OAuth moved out** to [pimalaya/ortie](https://github.com/pimalaya/ortie).
+- **OAuth moved out** to `ortie`.
 - **Keyring moved out** to any password manager exposed as a shell command (`pass`, `secret-tool`, `gopass`, `security`, …).
-- **Composition and reading moved out** to [pimalaya/mml](https://github.com/pimalaya/mml).
-- **Session reuse moved out** to [pimalaya/sirup](https://github.com/pimalaya/sirup), which exposes a pre-authenticated IMAP/SMTP session over a Unix socket.
+- **Composition and reading moved out** to `mml`.
+- **Session reuse moved out** to `sirup`, which exposes a pre-authenticated IMAP/SMTP session over a Unix socket.
 
 A direct consequence: the v2 binary is about three times smaller than v1!
 
 ### Foundations: I/O-free
 
-Pimalaya has been working for the past year on an adaptation of the [Sans I/O](https://sans-io.readthedocs.io/) pattern for its libraries. The pattern decouples the protocol state machine from any specific I/O runtime: sync vs async, tokio vs async-std vs smol, rustls vs native-tls. The concept has been validated in [pimalaya/ortie](https://github.com/pimalaya/ortie), [pimalaya/cardamum](https://github.com/pimalaya/cardamum) and [pimalaya/calendula](https://github.com/pimalaya/calendula), and is now wired into Mailman CLI v2.
+The dependency stack this CLI builds on has been working for the past year on an adaptation of the [Sans I/O](https://sans-io.readthedocs.io/) pattern for its libraries. The pattern decouples the protocol state machine from any specific I/O runtime: sync vs async, tokio vs async-std vs smol, rustls vs native-tls. The concept has been validated in `ortie`, `cardamum` and `calendula`, and is now wired into Mailman CLI v2.
 
 As a direct consequence, TLS is selectable at build time between `native-tls` and `rustls` (with `aws-lc` or `ring` as the crypto provider).
 
@@ -112,7 +112,7 @@ New in v2: `-b`, `--backend` (force a specific backend for shared commands) and 
 - `messages send` and `messages add` read the raw message from a positional path, an inline raw value, or stdin (the unified `MessageArg`).
 - `export` and `edit` are removed.
 
-See [pimalaya/mml](https://github.com/pimalaya/mml) for a ready-to-use composer / interpreter.
+See `mml` for a ready-to-use composer / interpreter.
 
 #### Attachments
 
@@ -123,7 +123,7 @@ See [pimalaya/mml](https://github.com/pimalaya/mml) for a ready-to-use composer 
 
 #### Template
 
-Fully removed. The template pipeline (compose / reply / forward drafts, MML compile, MIME interpret) lives in [pimalaya/mml](https://github.com/pimalaya/mml) as both a library and a CLI. Chain its CLI into `messages send` / `messages add` (see the README).
+Fully removed. The template pipeline (compose / reply / forward drafts, MML compile, MIME interpret) lives in `mml` as both a library and a CLI. Chain its CLI into `messages send` / `messages add` (see the README).
 
 ### Configuration changes
 
@@ -153,7 +153,7 @@ Account-level `[accounts.<name>.mailbox.alias]` entries override same-named glob
 
 #### Secrets
 
-Every `*.passwd` / `*.password` / `*.token` field accepts either a raw literal (`{ raw = "…" }`) or a shell command (`{ command = "pass show foo" }` or `{ command = ["pass", "show", "foo"] }`). Native keyring support has been removed. Use a password-manager CLI (`pass`, `secret-tool`, `gopass`, `security`, …) as the command. OAuth tokens are produced by an external broker such as [pimalaya/ortie](https://github.com/pimalaya/ortie) and consumed the same way.
+Every `*.passwd` / `*.password` / `*.token` field accepts either a raw literal (`{ raw = "…" }`) or a shell command (`{ command = "pass show foo" }` or `{ command = ["pass", "show", "foo"] }`). Native keyring support has been removed. Use a password-manager CLI (`pass`, `secret-tool`, `gopass`, `security`, …) as the command. OAuth tokens are produced by an external broker such as `ortie` and consumed the same way.
 
 #### IMAP
 
@@ -206,7 +206,7 @@ imap.sasl.scram-sha-256.username = "user@example.com"
 imap.sasl.scram-sha-256.password.raw = "***"
 ```
 
-The OAuth-specific section (`backend.auth.type = "oauth2"`) is gone. Route the access token through SASL `oauthbearer` or `xoauth2` (with a command-sourced token from a broker such as [pimalaya/ortie](https://github.com/pimalaya/ortie)) instead.
+The OAuth-specific section (`backend.auth.type = "oauth2"`) is gone. Route the access token through SASL `oauthbearer` or `xoauth2` (with a command-sourced token from a broker such as `ortie`) instead.
 
 #### SMTP
 
@@ -262,7 +262,7 @@ jmap.drafts-mailbox-id = "M0123abc"
 
 #### Gmail REST API (new)
 
-The native Gmail backend authenticates with a single OAuth 2.0 bearer token from a broker such as [pimalaya/ortie](https://github.com/pimalaya/ortie). Labels are the mailboxes, addressed by name.
+The native Gmail backend authenticates with a single OAuth 2.0 bearer token from a broker such as `ortie`. Labels are the mailboxes, addressed by name.
 
 ```toml
 gmail.auth.token.command = ["ortie", "token", "show", "-a", "gmail"]
@@ -286,5 +286,5 @@ Both backends are removed. Notmuch may come back in a future release.
 1. Copy [config.sample.toml](./config.sample.toml) to a side-by-side path (for example ~/.config/mailman/config.v2.toml) and edit it against your previous configuration.
 2. Run `mailman -c ~/.config/mailman/config.v2.toml account check` to validate the connection for each declared backend.
 3. Once the new file passes the check, replace the v1 config.toml with it.
-4. If you relied on keyring / OAuth, wire a password-manager CLI (`pass`, `secret-tool`, …) and/or [pimalaya/ortie](https://github.com/pimalaya/ortie) as `command = …` secrets.
-5. If you relied on the interactive `write` / `reply` / `forward`, install [pimalaya/mml](https://github.com/pimalaya/mml) and chain it into `mailman messages send` / `messages add` via a tempfile or `>(...)` process substitution (see the README for ready-made `bash`/`zsh` snippets).
+4. If you relied on keyring / OAuth, wire a password-manager CLI (`pass`, `secret-tool`, …) and/or `ortie` as `command = …` secrets.
+5. If you relied on the interactive `write` / `reply` / `forward`, install `mml` and chain it into `mailman messages send` / `messages add` via a tempfile or `>(...)` process substitution (see the README for ready-made `bash`/`zsh` snippets).

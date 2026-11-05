@@ -67,17 +67,17 @@ use crate::backend::Backend;
 /// pointed at when no configuration is found.
 #[cfg(feature = "wizard")]
 pub const CONFIG_SAMPLE_URL: &str =
-    "https://github.com/pimalaya/mailman/blob/master/config.sample.toml";
+    "https://github.com/memjar/mailman/blob/master/config.sample.toml";
 
 /// How to get a configuration, for the errors meeting none.
 #[cfg(feature = "wizard")]
 pub const NO_CONFIG_HINT: &str = "run bare `mailman` to launch the wizard, or write one by hand: \
-     https://github.com/pimalaya/mailman/blob/master/config.sample.toml";
+     https://github.com/memjar/mailman/blob/master/config.sample.toml";
 
 /// How to get a configuration, for the errors meeting none.
 #[cfg(not(feature = "wizard"))]
 pub const NO_CONFIG_HINT: &str = "write one by hand: \
-     https://github.com/pimalaya/mailman/blob/master/config.sample.toml";
+     https://github.com/memjar/mailman/blob/master/config.sample.toml";
 
 /// Skips a field equal to its type's default, so a wizard-generated
 /// configuration omits defaulted scalars.

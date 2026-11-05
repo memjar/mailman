@@ -197,7 +197,7 @@ fn canned_value(key: &str) -> Option<&'static str> {
         "name" => Some(env!("CARGO_PKG_NAME")),
         "version" => Some(env!("CARGO_PKG_VERSION")),
         "vendor" => Some("Pimalaya"),
-        "support-url" => Some("https://github.com/pimalaya/mailman"),
+        "support-url" => Some("https://github.com/memjar/mailman"),
         _ => None,
     }
 }
