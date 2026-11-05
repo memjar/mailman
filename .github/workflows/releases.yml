@@ -4,22 +4,66 @@ on:
   push:
     tags:
       - v*
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
 
 jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - target: aarch64-darwin
+            rust: aarch64-apple-darwin
+            os: macos-latest
+          - target: x86_64-darwin
+            rust: x86_64-apple-darwin
+            os: macos-latest
+          - target: x86_64-linux
+            rust: x86_64-unknown-linux-gnu
+            os: ubuntu-latest
+          - target: aarch64-linux
+            rust: aarch64-unknown-linux-gnu
+            os: ubuntu-24.04-arm
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.89
+          targets: ${{ matrix.rust }}
+          components: clippy,rustfmt
+      - name: Build release binary
+        run: cargo build --release --target ${{ matrix.rust }}
+      - name: Package (mailman.<target>.tgz, binary at tar root)
+        run: |
+          tar -czf mailman.${{ matrix.target }}.tgz \
+            -C target/${{ matrix.rust }}/release mailman
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pkg-${{ matrix.target }}
+          path: mailman.${{ matrix.target }}.tgz
+
   release:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@stable
-      - name: Build
-        run: cargo build --release
-      - name: Upload binary
-        uses: actions/upload-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
-          name: mailman
-          path: target/release/mailman
+          pattern: pkg-*
+          merge-multiple: true
+      - name: Checksums
+        run: sha256sum mailman.*.tgz > SHA256SUMS
       - name: Create release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
-          files: target/release/mailman
+          files: |
+            mailman.aarch64-darwin.tgz
+            mailman.x86_64-darwin.tgz
+            mailman.x86_64-linux.tgz
+            mailman.aarch64-linux.tgz
+            SHA256SUMS
           generate_release_notes: true

@@ -9,7 +9,7 @@ die() {
 
 DESTDIR="${DESTDIR:-}"
 PREFIX="${PREFIX:-"$DESTDIR/usr/local"}"
-RELEASES_URL="https://github.com/pimalaya/mailman/releases"
+RELEASES_URL="https://github.com/memjar/mailman/releases"
 
 binary=mailman
 system=$(uname -s | tr [:upper:] [:lower:])
