@@ -2,7 +2,7 @@ use clap::{Parser, ValueEnum};
 use pimalaya_cli::printer::Printer;
 
 /// Provider presets `init` knows the server details for.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum, serde::Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ValueEnum, serde::Serialize, schemars::JsonSchema)]
 #[serde(rename_all = "lowercase")]
 pub enum Provider {
     /// iCloud / me.com (app password, IMAP 993 + SMTP 587 STARTTLS).
@@ -55,6 +55,25 @@ pub struct AccountIdArg {
     /// Key the account block is written under; defaults to the local part of --email.
     #[arg(long, value_name = "ID")]
     pub account_id: Option<String>,
+}
+
+/// What `init` prints: the block, the key it is written under and the
+/// provider it was templated for. Text shows the block, `--json` the fields.
+#[derive(Debug, serde::Serialize, schemars::JsonSchema)]
+#[serde(rename_all = "camelCase")]
+pub struct InitOutput {
+    /// The key the `[accounts.<id>]` block is written under.
+    pub account: String,
+    /// Which preset the servers came from.
+    pub provider: Provider,
+    /// The ready-to-paste block, comments included.
+    pub config_toml: String,
+}
+
+impl std::fmt::Display for InitOutput {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(&self.config_toml)
+    }
 }
 
 /// The account block and its id, built from the command's arguments.
@@ -146,11 +165,11 @@ impl InitCommand {
     pub fn execute(self, printer: &mut impl Printer) -> anyhow::Result<()> {
         let (id, block) = template_of(&self)?;
         if printer.is_json() {
-            printer.out(serde_json::json!({
-                "account": id,
-                "provider": self.provider.provider,
-                "config_toml": block,
-            }))?;
+            printer.out(InitOutput {
+                account: id,
+                provider: self.provider.provider,
+                config_toml: block,
+            })?;
         } else {
             printer.out(block)?;
         }

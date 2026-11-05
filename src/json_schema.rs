@@ -172,6 +172,7 @@ pub fn registry() -> JsonSchemaRegistry {
         "mailman-account-check",
         crate::account::check::AccountCheckOutput
     );
+    insert!("mailman-init", crate::init_templates::InitOutput);
     insert!(
         "mailman-account-capability",
         crate::account::capability::AccountCapabilityOutput
